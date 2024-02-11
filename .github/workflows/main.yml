@@ -29,13 +29,15 @@ jobs:
         continue-on-error: true
 
       - name: frontend test
-        working-directory: ${{matrix.paths}}
-        run: npm run start 
+        if: ${{matrix.paths}} == './frontend/rucores'
+        working-directory: "./frontend/rucores"
+        run: npm run build
+
         continue-on-error: false
 
-      - name: backend test
-        working-directory: ${{matrix.paths}}
-        run: npm run start
-        continue-on-error: false
+      # - name: backend test
+      #   working-directory: ${{matrix.paths}}
+      #   run: npm run start
+      #   continue-on-error: false
         
     

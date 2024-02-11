@@ -3,13 +3,12 @@
     "dotenv": "^16.4.2",
     "express": "^4.18.2"
   },
-  
-
   "scripts": {
-    "start": "node ./controllers/base.js",
+    "start": "npx nodemon ./controllers/base.js",
     "lint": "npx eslint ./"
   },
   "devDependencies": {
-    "eslint": "^8.56.0"
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.3"
   }
 }
