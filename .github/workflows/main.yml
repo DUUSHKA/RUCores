@@ -1,51 +1,41 @@
 name: main
 on: [push, pull_request]
 jobs:
-  setupNode:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18
-    - run: npm ci
-    - run: npm test
-  eslint:
-    name: Run eslint scanning
-    runs-on: ubuntu-latest
-    needs: setupNode
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install ESLint
-        run: |
-          npm install eslint@8.10.0
-          npm install @microsoft/eslint-formatter-sarif@2.1.7
-
-      - name: Run ESLint
-        run: npx eslint .
-          --config .eslintrc.js
-          --ext .js,.jsx,.ts,.tsx
-          --format @microsoft/eslint-formatter-sarif
-          --output-file eslint-results.sarif
-        continue-on-error: true
-
   compile: 
     runs-on: ubuntu-latest
+
+    #will run the job multiple times. The matrix will take the keys that are defined and create a permutation matrix. The job will run that many times. So here, Path is one 
+    #key with two values so the job will run twice
+
+    strategy:
+        matrix: 
+            paths: ["./backend", "./frontend/rucores"]
+
     steps:
-      - name: frontend test
-        run: | 
-          cd ./frontend/rucores
+      - name: checkout 
+        uses: actions/checkout@v4
+
+      - name: setup node 
+        uses: actions/setup-node@v4
+
+      - name: Install ESLint
+        working-directory: ${{matrix.paths}}
+        run: |
           npm i 
-          npm start 
+
+      - name: Run ESLint
+        working-directory: ${{matrix.paths}}
+        run: npm run lint
+        continue-on-error: true
+
+      - name: frontend test
+        working-directory: ${{matrix.paths}}
+        run: npm run start 
         continue-on-error: false
 
       - name: backend test
-        run: |
-          cd ./backend
-          npm i 
-          npm start
+        working-directory: ${{matrix.paths}}
+        run: npm run start
         continue-on-error: false
         
     
