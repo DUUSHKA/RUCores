@@ -1,14 +1,28 @@
 {
-  "dependencies": {
-    "dotenv": "^16.4.2",
-    "express": "^4.18.2"
-  },
+  "name": "backend",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "start": "npx nodemon ./controllers/base.js",
-    "lint": "npx eslint ./"
+    "start": "npx ts-node app.ts"
+  },
+  "dependencies": {
+    "@types/es6-shim": "^0.31.45",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1",
+    "mysql2": "^3.9.1",
+    "reflect-metadata": "^0.2.1",
+    "typeorm": "^0.3.20",
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
-    "nodemon": "^3.0.3"
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "eslint": "^8.56.0"
   }
 }
