@@ -1,8 +1,6 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 
-
-
 const AppDataSource = new DataSource({
     type: "mysql",
     host: "localhost",
@@ -12,7 +10,7 @@ const AppDataSource = new DataSource({
     database: "rucoresSchema",
     synchronize: true,
     logging: true,
-    entities: [],
+    entities: ["src/database/Entities/**/*.{js,ts}"],
     subscribers: [],
     migrations: [],
 })

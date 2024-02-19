@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 import { Request, Response } from "express";
 import AppDataSource from "./src/database/data-source";
+import { prepopulateDB } from "./src/database/prepopulateDB";
 
 var app = express();
 app.use(logger('dev'));
@@ -40,17 +41,19 @@ app.use('/users', usersRouter);
 
 module.exports = app;
 
+AppDataSource.initialize().then(async () => {
+  console.log("Data Source has been initialized!")
+  await prepopulateDB().catch((err) => console.log(err));
+}).catch((err) => { console.log("Data Source failed to initialize", err) });
+
 
 app.get('/api', (req: Request, res: Response) => {
   res.json({message: 'Hello, Express TypeScript!'});
 });
 
-AppDataSource.initialize().then( () => {
 const port = 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
-});
-
 });
 
 // Start by running npx ts-node app.ts command and opening your web browser to 'http://localhost:3000/api'.
