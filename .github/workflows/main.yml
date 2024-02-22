@@ -1,43 +1,35 @@
 name: main
 on: [push, pull_request]
 jobs:
-  compile: 
+  compile:
     runs-on: ubuntu-latest
 
-    #will run the job multiple times. The matrix will take the keys that are defined and create a permutation matrix. The job will run that many times. So here, Path is one 
+    #will run the job multiple times. The matrix will take the keys that are defined and create a permutation matrix. The job will run that many times. So here, Path is one
     #key with two values so the job will run twice
 
     strategy:
-        matrix: 
-            paths: ["./backend", "./frontend/rucores"]
+      matrix:
+        paths: ["./backend", "./frontend/rucores"]
 
     steps:
-      - name: checkout 
+      - name: checkout
         uses: actions/checkout@v4
 
-      - name: setup node 
+      - name: setup node
         uses: actions/setup-node@v4
 
       - name: Install ESLint
         working-directory: ${{matrix.paths}}
         run: |
-          npm i 
+          npm i
 
       - name: Run ESLint
         working-directory: ${{matrix.paths}}
         run: npm run lint
         continue-on-error: true
 
-      - name: frontend test
-        if: ${{ matrix.paths == './frontend/rucores'}}
-        working-directory: "./frontend/rucores"
+      - name: Build artifacts
+        working-directory: ${{matrix.paths}}
         run: npm run build
 
         continue-on-error: false
-
-      # - name: backend test
-      #   working-directory: ${{matrix.paths}}
-      #   run: npm run start
-      #   continue-on-error: false
-        
-    

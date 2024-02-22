@@ -1,0 +1,5 @@
+echo "Running pre-commit hook"
+echo "Checking backend"
+npx lint-staged --cwd backend
+echo "Checking frontend"
+npx lint-staged --cwd frontend/rucores

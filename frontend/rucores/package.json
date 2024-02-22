@@ -14,12 +14,20 @@
     "rxjs": "^7.8.1",
     "web-vitals": "^2.1.4"
   },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "npm run lint",
+      "npm run format"
+    ]
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "npx eslint ./"
+    "lint": "npx eslint ./",
+    "format": "prettier \"src/**/*.{js,jsx,ts,tsx}\" --write",
+    "format:check": "prettier \"src/**/*.{js,jsx,ts,tsx}\" --check"
   },
   "eslintConfig": {
     "extends": [
@@ -41,6 +49,7 @@
   },
   "devDependencies": {
     "eslint": "^8.56.0",
-    "eslint-plugin-react": "^7.33.2"
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "3.2.5"
   }
 }
