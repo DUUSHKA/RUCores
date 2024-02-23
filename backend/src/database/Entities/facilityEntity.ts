@@ -5,11 +5,12 @@ import {
   ManyToOne,
   OneToMany,
 } from "typeorm";
-import { User } from "./userEntity";
-import { Availability } from "./availabilityEntity";
+import { UserEntity } from "./userEntity";
+import { AvailabilityEntity } from "./availabilityEntity";
+import { Type } from "class-transformer";
 
 @Entity()
-export class Facility {
+export class FacilityEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -22,10 +23,15 @@ export class Facility {
   @Column()
   address: string;
 
-  @ManyToOne(() => User, (provider: User) => provider.managedFacilities, {
-    onDelete: "SET NULL",
-  })
-  provider: User;
+  @ManyToOne(
+    () => UserEntity,
+    (provider: UserEntity) => provider.managedFacilities,
+    {
+      onDelete: "SET NULL",
+    },
+  )
+  @Type(() => UserEntity)
+  provider: UserEntity;
 
   // @ManyToMany(() => User, (user: User) => user.facilities, {onDelete: 'SET NULL'})
   // users: User[];
@@ -34,9 +40,10 @@ export class Facility {
   // bookings: Booking[];
 
   @OneToMany(
-    () => Availability,
-    (availability: Availability) => availability.facility,
+    () => AvailabilityEntity,
+    (availability: AvailabilityEntity) => availability.facility,
     { nullable: true, cascade: true, onDelete: "CASCADE" },
   )
-  availabilities: Availability[];
+  @Type(() => AvailabilityEntity)
+  availabilities: AvailabilityEntity[];
 }

@@ -1,32 +1,50 @@
 import { Entity, ManyToOne, PrimaryColumn, OneToMany, Column } from "typeorm";
-import { Facility } from "./facilityEntity";
-import { Booking } from "./bookingEntity";
+import { FacilityEntity } from "./facilityEntity";
+import { BookingEntity } from "./bookingEntity";
+import { Type } from "class-transformer";
+import { IsDateString, IsNumber, ValidateNested } from "class-validator";
 //import { Provider } from './Provider';
 
 @Entity()
-export class Availability {
+export class AvailabilityEntity {
   @PrimaryColumn()
+  @IsNumber()
   availabilityId: number;
 
   @Column()
+  @IsDateString()
   Date: Date;
 
   @Column()
+  @IsDateString()
   startTime: Date;
 
   @Column()
+  @IsDateString()
   endTime: Date;
 
-  @ManyToOne(() => Facility, (facility: Facility) => facility.availabilities, {
-    eager: true,
-  })
-  facility: Facility;
+  @ManyToOne(
+    () => FacilityEntity,
+    (facility: FacilityEntity) => facility.availabilities,
+    {
+      eager: true,
+    },
+  )
+  @ValidateNested()
+  @Type(() => FacilityEntity)
+  facility: FacilityEntity;
 
-  @OneToMany(() => Booking, (booking: Booking) => booking.availability, {
-    cascade: true,
-    eager: true,
-  })
-  bookings: Booking[];
+  @OneToMany(
+    () => BookingEntity,
+    (booking: BookingEntity) => booking.availability,
+    {
+      cascade: true,
+      eager: true,
+    },
+  )
+  @ValidateNested()
+  @Type(() => BookingEntity)
+  bookings: BookingEntity[];
 
   // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
   // @JoinColumn({ name: "userId"})

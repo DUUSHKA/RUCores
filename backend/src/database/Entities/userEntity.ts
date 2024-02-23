@@ -1,37 +1,52 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Facility } from "./facilityEntity";
-import { Booking } from "./bookingEntity";
+import { FacilityEntity } from "./facilityEntity";
+import { BookingEntity } from "./bookingEntity";
+import { Type } from "class-transformer";
+import {
+  IsBoolean,
+  IsDateString,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 
 @Entity()
-export class User {
+export class UserEntity {
   @PrimaryGeneratedColumn()
+  @IsNumber()
   id: number;
 
   @Column()
+  @IsString()
   firstName: string;
 
   @Column()
+  @IsString()
   lastName: string;
 
   @Column({ nullable: true })
+  @IsBoolean()
   isProvider: boolean;
 
   @Column({ nullable: true })
+  @IsNumber()
   apikey: number;
 
   @Column({ nullable: true })
+  @IsDateString()
   apiKeyExpiration: Date;
 
   // @Column({nullable: true})
   // managedFacilities: Facility[];
 
-  @OneToMany(() => Facility, (facility) => facility.provider, {
+  @OneToMany(() => FacilityEntity, (facility) => facility.provider, {
     nullable: true,
     onDelete: "SET NULL",
     cascade: true,
     eager: true,
   })
-  managedFacilities: Facility[];
+  @Type(() => FacilityEntity)
+  managedFacilities: FacilityEntity[];
 
   // @ManyToMany(() => Facility, facility => facility.users, {nullable: true, onDelete: 'SET NULL'})
   // @JoinTable()
@@ -41,10 +56,12 @@ export class User {
   // @JoinTable()
   // facilities: Facility[];
 
-  @OneToMany(() => Booking, (booking) => booking.user, {
+  @OneToMany(() => BookingEntity, (booking) => booking.user, {
     nullable: true,
     onDelete: "CASCADE",
     cascade: true,
   })
-  bookings: Booking[];
+  @ValidateNested()
+  @Type(() => BookingEntity)
+  bookings: BookingEntity[];
 }

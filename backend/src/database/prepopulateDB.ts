@@ -1,18 +1,18 @@
-import { User } from "./Entities/userEntity";
+import { UserEntity } from "./Entities/userEntity";
 import AppDataSource from "./data-source";
-import { Booking } from "./Entities/bookingEntity";
-import { Facility } from "./Entities/facilityEntity";
-import { Availability } from "./Entities/availabilityEntity";
+import { BookingEntity } from "./Entities/bookingEntity";
+import { FacilityEntity } from "./Entities/facilityEntity";
+import { AvailabilityEntity } from "./Entities/availabilityEntity";
 
 const firstname = "johny";
 const lastname = "bravo";
 
 export const prepopulateDB = async () => {
   for (let i = 0; i < 5; i++) {
-    const user = new User();
-    const booking = new Booking();
-    const facility = new Facility();
-    const availability = new Availability();
+    const user = new UserEntity();
+    const booking = new BookingEntity();
+    const facility = new FacilityEntity();
+    const availability = new AvailabilityEntity();
     user.id = i;
     booking.bookingId = i;
     facility.id = i;

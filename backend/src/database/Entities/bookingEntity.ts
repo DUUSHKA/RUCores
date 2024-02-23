@@ -1,29 +1,38 @@
 import { Entity, ManyToOne, JoinColumn, PrimaryColumn, Column } from "typeorm";
-import { User } from "./userEntity";
-import { Availability } from "./availabilityEntity";
+import { UserEntity } from "./userEntity";
+import { AvailabilityEntity } from "./availabilityEntity";
+import { Type } from "class-transformer";
+import { IsDateString, IsNumber, ValidateNested } from "class-validator";
 //import { Provider } from './Provider';
 
 @Entity()
-export class Booking {
+export class BookingEntity {
   @PrimaryColumn()
+  @IsNumber()
   bookingId: number;
 
   @Column()
+  @IsDateString()
   startDateTime: Date;
 
   @Column()
+  @IsDateString()
   endDateTime: Date;
 
-  @ManyToOne(() => User, (user: User) => user.bookings)
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.bookings)
   @JoinColumn({ name: "userId" }) //specify join name for instance if you already have a DB
-  user: User;
+  @ValidateNested()
+  @Type(() => UserEntity)
+  user: UserEntity;
 
   @ManyToOne(
-    () => Availability,
-    (availability: Availability) => availability.bookings,
+    () => AvailabilityEntity,
+    (availability: AvailabilityEntity) => availability.bookings,
   )
   @JoinColumn({ name: "availabilityId" })
-  availability: Availability;
+  @ValidateNested()
+  @Type(() => AvailabilityEntity)
+  availability: AvailabilityEntity;
 
   // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
   // @JoinColumn({ name: "userId"})

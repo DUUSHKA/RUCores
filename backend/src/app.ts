@@ -3,22 +3,31 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 
-import indexRouter from "./routes/index";
-import usersRouter from "./routes/users";
 import { Request, Response } from "express";
 import express from "express";
 import AppDataSource from "./database/data-source";
 import { prepopulateDB } from "./database/prepopulateDB";
+import { createExpressServer } from "routing-controllers";
+import log from "./utils/logger";
+import { fetchUser, verifyUser } from "./middleware/UserAuth";
+import swaggerLoader from "./utils/swaggerLoader";
 
-const app = express();
+const routingControllersOptions = {
+  routePrefix: "/api",
+  classTransformer: true,
+  authorizationChecker: verifyUser,
+  currentUserChecker: fetchUser,
+  defaultErrorHandler: false,
+  middlewares: [__dirname + "/middleware/*.ts"],
+  controllers: [__dirname + "/controllers/*.ts"],
+};
+
+const app = createExpressServer(routingControllersOptions);
+
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+swaggerLoader(app, routingControllersOptions);
 
 // // catch 404 and forward to error handler
 // app.use(function(req: Request, res: Response, next: NextFunction) {
@@ -40,7 +49,7 @@ module.exports = app;
 
 AppDataSource.initialize()
   .then(async () => {
-    console.log("Data Source has been initialized!");
+    log.debug("Data Source initialized");
     await prepopulateDB().catch((err) => console.log(err));
   })
   .catch((err) => {
@@ -51,9 +60,10 @@ app.get("/api", (req: Request, res: Response) => {
   res.json({ message: "Hello, Express TypeScript!" });
 });
 
-const port = 3000;
+log.info(`Server starting on port ${process.env.PORT ?? 3000}`);
+const port = process.env.PORT ?? 3000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  log.debug(`Server is running on port ${port}`);
 });
 
 // Start by running npx ts-node app.ts command and opening your web browser to 'http://localhost:3000/api'.

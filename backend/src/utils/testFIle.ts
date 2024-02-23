@@ -1,7 +1,7 @@
 //can use query builder to build queries
 
 import AppDataSource from "../database/data-source";
-import { User } from "../database/Entities/userEntity";
+import { UserEntity } from "../database/Entities/userEntity";
 
 // const user = new User();
 // user.firstName = "John";
@@ -14,7 +14,7 @@ export const createUser = async (
   lastName: string,
   isProvider: boolean,
 ) => {
-  const user = new User();
+  const user = new UserEntity();
   user.firstName = firstName;
   user.lastName = lastName;
   user.isProvider = isProvider;
@@ -26,5 +26,5 @@ export const createUser = async (
 // Database would be to use repositories for each entity.
 
 export const getUsers = async () => {
-  return AppDataSource.getRepository(User).find();
+  return AppDataSource.getRepository(UserEntity).find();
 };
