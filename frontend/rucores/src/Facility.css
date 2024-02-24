@@ -1,0 +1,11 @@
+.facilityInfo {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  text-align: left;
+}
+
+.facilityInfo h1 {
+  color: #d32f2f; 
+}
+
