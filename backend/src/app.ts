@@ -60,8 +60,8 @@ app.get("/api", (req: Request, res: Response) => {
   res.json({ message: "Hello, Express TypeScript!" });
 });
 
-log.info(`Server starting on port ${process.env.PORT ?? 3000}`);
-const port = process.env.PORT ?? 3000;
+const port = process.env.APP_PORT ?? 3000;
+log.info(`Server starting on port ${port}`);
 app.listen(port, () => {
   log.debug(`Server is running on port ${port}`);
 });

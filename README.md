@@ -1,5 +1,27 @@
 # RUCores
 
+## Setup 🛠
+
+Use the following commands from the **root** of the repo:
+
+```bash
+npm i # install all packages
+npm start # start the front and backend
+npm run lint # show but not fix
+npm run lint:fix # show and attempt to fix automatically
+npm run format # fix formatting
+npm run format:check # check formatting but not fix
+```
+
+### Install Node.js
+
+You will need to have Node.js installed on your machine. You can download it [here](https://nodejs.org/en/).
+
+### Install MySQL
+
+You can download MySQL [here](https://dev.mysql.com/downloads/installer/)
+
+
 ## Developing 🚀
 
 ### MySQL
