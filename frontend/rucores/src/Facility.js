@@ -1,5 +1,5 @@
 import React from 'react';
-import './Facility.css'; 
+import './Facility.css';
 
 function FacilityInfo() {
   const facilityDetails = {
@@ -16,8 +16,7 @@ function FacilityInfo() {
       <p><strong>Description:</strong> {facilityDetails.description}</p>
       <p><strong>Available Equipment:</strong> {facilityDetails.equipment.join(', ')}</p>
       <p><strong>Operating Hours:</strong> {facilityDetails.operatingHours}</p>
-      <p><strong>Cost:</strong> {facilityDetails.cost}</p>
-      {}
+      <p className="cost"><strong>Cost:</strong> {facilityDetails.cost}</p>
     </div>
   );
 }
