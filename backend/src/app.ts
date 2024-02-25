@@ -1,15 +1,14 @@
-import "dotenv/config";
-import path from "path";
 import cookieParser from "cookie-parser";
+import "dotenv/config";
 import logger from "morgan";
+import path from "path";
 
-import { Request, Response } from "express";
-import express from "express";
+import express, { Request, Response } from "express";
+import { createExpressServer } from "routing-controllers";
 import AppDataSource from "./database/data-source";
 import { prepopulateDB } from "./database/prepopulateDB";
-import { createExpressServer } from "routing-controllers";
-import log from "./utils/logger";
 import { fetchUser, verifyUser } from "./middleware/UserAuth";
+import log from "./utils/logger";
 import swaggerLoader from "./utils/swaggerLoader";
 
 const routingControllersOptions = {
@@ -22,7 +21,7 @@ const routingControllersOptions = {
   controllers: [__dirname + "/controllers/*.ts"],
 };
 
-const app = createExpressServer(routingControllersOptions);
+const app: express.Application = createExpressServer(routingControllersOptions);
 
 app.use(logger("dev"));
 app.use(cookieParser());
@@ -62,6 +61,13 @@ app.get("/api", (req: Request, res: Response) => {
 
 const port = process.env.APP_PORT ?? 3000;
 log.info(`Server starting on port ${port}`);
+log.info("Available routes:");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app._router.stack.forEach((r: any) => {
+  if (r.route && r.route.path) {
+    log.debug(r.route.path);
+  }
+});
 app.listen(port, () => {
   log.debug(`Server is running on port ${port}`);
 });

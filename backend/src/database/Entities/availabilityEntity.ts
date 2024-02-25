@@ -1,11 +1,11 @@
-import { Entity, ManyToOne, PrimaryColumn, OneToMany, Column } from "typeorm";
-import { FacilityEntity } from "./facilityEntity";
-import { BookingEntity } from "./bookingEntity";
 import { Type } from "class-transformer";
 import { IsDateString, IsNumber, ValidateNested } from "class-validator";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { BookingEntity } from "./bookingEntity";
+import { FacilityEntity } from "./facilityEntity";
 //import { Provider } from './Provider';
 
-@Entity()
+@Entity({ name: "availability" })
 export class AvailabilityEntity {
   @PrimaryColumn()
   @IsNumber()

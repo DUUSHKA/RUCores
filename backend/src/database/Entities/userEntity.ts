@@ -1,16 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { FacilityEntity } from "./facilityEntity";
+import { Exclude, Type } from "class-transformer";
+import { IsNumber, IsString, ValidateNested } from "class-validator";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { BookingEntity } from "./bookingEntity";
-import { Type } from "class-transformer";
-import {
-  IsBoolean,
-  IsDateString,
-  IsNumber,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { FacilityEntity } from "./facilityEntity";
+import { SessionEntity } from "./sessionEntity";
 
-@Entity()
+@Entity({ name: "user" })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   @IsNumber()
@@ -24,17 +19,27 @@ export class UserEntity {
   @IsString()
   lastName: string;
 
-  @Column({ nullable: true })
-  @IsBoolean()
-  isProvider: boolean;
+  @Column()
+  @IsString()
+  email: string;
 
-  @Column({ nullable: true })
-  @IsNumber()
-  apikey: number;
+  @Column()
+  @IsString()
+  username: string;
 
+  @Column()
+  @IsString()
+  @Exclude()
+  hashedPassword: string;
+
+  // Send the salt to the client for hashing the password
   @Column({ nullable: true })
-  @IsDateString()
-  apiKeyExpiration: Date;
+  @IsString()
+  salt: string;
+
+  @Column("simple-array", { nullable: true, array: true })
+  @IsString({ each: true })
+  roles: string[];
 
   // @Column({nullable: true})
   // managedFacilities: Facility[];
@@ -64,4 +69,11 @@ export class UserEntity {
   @ValidateNested()
   @Type(() => BookingEntity)
   bookings: BookingEntity[];
+
+  @OneToMany(() => SessionEntity, (session) => session.user, {
+    nullable: true,
+    onDelete: "CASCADE",
+    cascade: true,
+  })
+  sessions: SessionEntity[];
 }

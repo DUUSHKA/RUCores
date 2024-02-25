@@ -1,8 +1,10 @@
-import { UserEntity } from "./Entities/userEntity";
-import AppDataSource from "./data-source";
+import crypto from "crypto";
+import { AvailabilityEntity } from "./Entities/availabilityEntity";
 import { BookingEntity } from "./Entities/bookingEntity";
 import { FacilityEntity } from "./Entities/facilityEntity";
-import { AvailabilityEntity } from "./Entities/availabilityEntity";
+import { SessionEntity } from "./Entities/sessionEntity";
+import { UserEntity } from "./Entities/userEntity";
+import AppDataSource from "./data-source";
 
 const firstname = "johny";
 const lastname = "bravo";
@@ -13,6 +15,7 @@ export const prepopulateDB = async () => {
     const booking = new BookingEntity();
     const facility = new FacilityEntity();
     const availability = new AvailabilityEntity();
+    const session = new SessionEntity();
     user.id = i;
     booking.bookingId = i;
     facility.id = i;
@@ -20,9 +23,18 @@ export const prepopulateDB = async () => {
 
     user.firstName = firstname.substring(0, i);
     user.lastName = lastname.substring(0, i);
-    user.isProvider = true;
+    user.username = "username " + i;
+    user.email = "email " + i;
+    const salt = crypto.randomBytes(16).toString("hex");
+    user.salt = salt;
+    const hmac = crypto.createHmac("sha256", salt);
+    user.hashedPassword = hmac.update("password").digest("hex");
+
+    user.roles = ["provider", "admin"];
     user.bookings = [booking];
     user.managedFacilities = [facility];
+
+    session.user = user;
 
     booking.startDateTime = new Date();
     booking.endDateTime = new Date();
@@ -42,6 +54,7 @@ export const prepopulateDB = async () => {
     facility.address = "address " + i;
 
     await AppDataSource.manager.save(user).catch((err) => console.log(err));
+    await AppDataSource.manager.save(session).catch((err) => console.log(err));
     // await AppDataSource.manager.save(booking).catch((err) => console.log(err));
     // await AppDataSource.manager.save(facility).catch((err) => console.log(err));
     // await AppDataSource.manager.save(availability).catch((err) => console.log(err));

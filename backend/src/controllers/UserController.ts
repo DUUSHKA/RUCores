@@ -1,28 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Response } from "express";
 import {
-  Param,
+  Authorized,
   Body,
+  BodyParam,
+  CurrentUser,
+  Delete,
   Get,
+  HttpCode,
+  JsonController,
+  Param,
   Post,
   Put,
-  Delete,
-  JsonController,
-  Authorized,
-  CurrentUser,
-  HttpCode,
+  Res,
 } from "routing-controllers";
-import { UserModel } from "../types/UserModel";
 import { UserEntity } from "../database/Entities/userEntity";
+import UserService from "../services/UserService";
+import { UserModel } from "../types/UserModel";
 import log from "../utils/logger";
-import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 
 @JsonController("/users")
-@Authorized()
 export class UserController {
   @Get()
   @HttpCode(200)
   @Authorized(["admin"])
-  async getAll(@CurrentUser() user: UserEntity): Promise<UserEntity> {
+  async getCurrent(@CurrentUser() user: UserEntity): Promise<UserEntity> {
     log.debug("Current user: ", user);
     return user;
   }
@@ -36,6 +38,21 @@ export class UserController {
   @HttpCode(201)
   post(@Body() user: UserModel) {
     return "Saving user...";
+  }
+
+  @Post("/login")
+  @HttpCode(200)
+  async login(
+    @BodyParam("username") username: string,
+    @BodyParam("password") password: string,
+    @Res() response: Response,
+  ) {
+    const userService = new UserService();
+    const session = await userService.login(username, password);
+    response.cookie("session", session.token);
+    log.debug(`Logged in as ${username}`);
+    log.silly(`Session token: ${session.token}`);
+    return session.user;
   }
 
   @Put("/:id")

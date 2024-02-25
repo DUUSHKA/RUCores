@@ -1,15 +1,15 @@
+import { Type } from "class-transformer";
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
+  Entity,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from "typeorm";
-import { UserEntity } from "./userEntity";
 import { AvailabilityEntity } from "./availabilityEntity";
-import { Type } from "class-transformer";
+import { UserEntity } from "./userEntity";
 
-@Entity()
+@Entity({ name: "facility" })
 export class FacilityEntity {
   @PrimaryGeneratedColumn()
   id: number;

@@ -1,14 +1,14 @@
 // Reference: https://github.com/w3tecch/express-typescript-boilerplate/blob/develop/src/loaders/swaggerLoader.ts
 
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
+import express from "express";
+import { SchemaObject } from "openapi3-ts/dist/model/OpenApi";
 import {
   getMetadataArgsStorage,
   RoutingControllersOptions,
 } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import * as swaggerUi from "swagger-ui-express";
-import express from "express";
-import { SchemaObject } from "openapi3-ts/dist/model/OpenApi";
 import log from "./logger";
 
 export default (
