@@ -5,7 +5,7 @@ import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 //import { Provider } from './Provider';
 
-@Entity({ name: "availability" })
+@Entity({ name: "availability", schema: "rucores" })
 export class AvailabilityEntity {
   @PrimaryColumn()
   @IsNumber()

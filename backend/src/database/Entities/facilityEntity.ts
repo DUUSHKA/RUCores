@@ -2,14 +2,14 @@ import { Type } from "class-transformer";
 import {
   Column,
   Entity,
-  ManyToOne,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
 import { UserEntity } from "./userEntity";
 
-@Entity({ name: "facility" })
+@Entity({ name: "facility", schema: "rucores" })
 export class FacilityEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,7 +23,7 @@ export class FacilityEntity {
   @Column()
   address: string;
 
-  @ManyToOne(
+  @ManyToMany(
     () => UserEntity,
     (provider: UserEntity) => provider.managedFacilities,
     {
@@ -31,7 +31,7 @@ export class FacilityEntity {
     },
   )
   @Type(() => UserEntity)
-  provider: UserEntity;
+  providers: UserEntity[];
 
   // @ManyToMany(() => User, (user: User) => user.facilities, {onDelete: 'SET NULL'})
   // users: User[];

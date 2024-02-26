@@ -1,4 +1,9 @@
-import { IsEmail, IsNotEmpty, IsStrongPassword } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsStrongPassword,
+} from "class-validator";
 
 export class UserModel {
   @IsNotEmpty()
@@ -7,9 +12,15 @@ export class UserModel {
   @IsNotEmpty()
   lastName: string;
 
+  @IsNotEmpty()
+  username: string;
+
   @IsEmail()
   email: string;
 
   @IsStrongPassword()
   password: string;
+
+  @IsOptional()
+  isProvider: boolean;
 }

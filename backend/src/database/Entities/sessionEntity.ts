@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { UserEntity } from "./userEntity";
 
-@Entity({ name: "session" })
+@Entity({ name: "session", schema: "rucores" })
 export class SessionEntity {
   @PrimaryGeneratedColumn()
   @Exclude()

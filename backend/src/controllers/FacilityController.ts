@@ -24,24 +24,14 @@ export class UserController {
   @Get()
   @HttpCode(200)
   @Authorized(["admin"])
-  async getAll(): Promise<UserEntity[]> {
-    const allUsers = new UserService().getAll();
-    log.debug("All users: ", allUsers);
-    return allUsers;
-  }
-
-  @Get()
-  @HttpCode(200)
   async getCurrent(@CurrentUser() user: UserEntity): Promise<UserEntity> {
     log.debug("Current user: ", user);
     return user;
   }
-
+  // FOr posting a new facility, make sure to add the current logged in user as a provider
+  // if ( !facility.providers.includes(@currentuser user.id) then add the current user to the providers array) {
   @Get("/:id")
   getOne(@Param("id") id: number) {
-    const user = new UserService().getOne(id);
-    log.debug("All users: ", user);
-
     return "This action returns user #" + id;
   }
 

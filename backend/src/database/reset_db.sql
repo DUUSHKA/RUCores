@@ -4,4 +4,5 @@ drop table if exists availability;
 drop table if exists booking;
 drop table if exists facility;
 drop table if exists user;
+drop table if exists session;
 SET FOREIGN_KEY_CHECKS = 1;

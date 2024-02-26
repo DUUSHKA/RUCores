@@ -1,11 +1,18 @@
 import { Exclude, Type } from "class-transformer";
 import { IsNumber, IsString, ValidateNested } from "class-validator";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import { SessionEntity } from "./sessionEntity";
 
-@Entity({ name: "user" })
+@Entity({ name: "user", schema: "rucores" })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   @IsNumber()
@@ -37,14 +44,15 @@ export class UserEntity {
   @IsString()
   salt: string;
 
-  @Column("simple-array", { nullable: true, array: true })
+  @Column("simple-array", { nullable: true })
   @IsString({ each: true })
   roles: string[];
 
   // @Column({nullable: true})
   // managedFacilities: Facility[];
 
-  @OneToMany(() => FacilityEntity, (facility) => facility.provider, {
+  @JoinTable()
+  @ManyToMany(() => FacilityEntity, (facility) => facility.providers, {
     nullable: true,
     onDelete: "SET NULL",
     cascade: true,
