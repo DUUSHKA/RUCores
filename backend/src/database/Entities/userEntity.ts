@@ -51,10 +51,11 @@ export class UserEntity {
   // @Column({nullable: true})
   // managedFacilities: Facility[];
 
-  @JoinTable()
+  @JoinTable({
+    joinColumn: { name: "userId" },
+    inverseJoinColumn: { name: "facilityId" },
+  })
   @ManyToMany(() => FacilityEntity, (facility) => facility.providers, {
-    nullable: true,
-    onDelete: "SET NULL",
     cascade: true,
     eager: true,
   })

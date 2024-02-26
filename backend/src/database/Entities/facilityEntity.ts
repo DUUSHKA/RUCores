@@ -26,9 +26,6 @@ export class FacilityEntity {
   @ManyToMany(
     () => UserEntity,
     (provider: UserEntity) => provider.managedFacilities,
-    {
-      onDelete: "SET NULL",
-    },
   )
   @Type(() => UserEntity)
   providers: UserEntity[];

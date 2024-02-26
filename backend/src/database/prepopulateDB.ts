@@ -38,6 +38,8 @@ export const prepopulateDB = async () => {
 
     user.roles = ["provider", "admin"];
     user.bookings = [booking];
+    //console.log("user: ", user);
+    //console.log("facility: ", facility);
     user.managedFacilities = [facility];
 
     user.sessions = [session];
@@ -55,11 +57,11 @@ export const prepopulateDB = async () => {
 
     facility.name = "facility " + i;
     facility.availabilities = [availability];
-    facility.providers = [user];
+    //facility.providers = [user];
     facility.description = "description " + i;
     facility.address = "address " + i;
 
-    await AppDataSource.manager.save(user).catch((err) => console.log(err));
+    await AppDataSource.manager.save(user);
     //await AppDataSource.manager.save(session).catch((err) => console.log(err));
     // await AppDataSource.manager.save(booking).catch((err) => console.log(err));
     // await AppDataSource.manager.save(facility).catch((err) => console.log(err));
