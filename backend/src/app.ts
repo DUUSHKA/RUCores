@@ -7,6 +7,8 @@ import express, { Request, Response } from "express";
 import fs from "fs";
 import mysql from "mysql2";
 import { createExpressServer } from "routing-controllers";
+import FacilityController from "./controllers/FacilityController";
+import { UserController } from "./controllers/UserController";
 import AppDataSource from "./database/data-source";
 import { prepopulateDB } from "./database/prepopulateDB";
 import { fetchUser, verifyUser } from "./middleware/UserAuth";
@@ -20,7 +22,7 @@ const routingControllersOptions = {
   currentUserChecker: fetchUser,
   defaultErrorHandler: false,
   middlewares: [__dirname + "/middleware/*.ts"],
-  controllers: [__dirname + "/controllers/*.ts"],
+  controllers: [UserController, FacilityController],
 };
 
 const app: express.Application = createExpressServer(routingControllersOptions);

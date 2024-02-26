@@ -1,4 +1,5 @@
-import { Exclude } from "class-transformer";
+import { Exclude, Type } from "class-transformer";
+import { IsDate, IsNumber, IsString, ValidateNested } from "class-validator";
 import crypto from "crypto";
 import {
   BeforeInsert,
@@ -13,17 +14,22 @@ import { UserEntity } from "./userEntity";
 export class SessionEntity {
   @PrimaryGeneratedColumn()
   @Exclude()
+  @IsNumber()
   id: number;
 
   @ManyToOne(() => UserEntity, (user) => user.sessions, {
     eager: true,
   })
+  @ValidateNested()
+  @Type(() => UserEntity)
   user: UserEntity;
 
   @Column()
+  @IsString()
   token: string;
 
   @Column()
+  @IsDate()
   expiration: Date;
 
   @BeforeInsert()

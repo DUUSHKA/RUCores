@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
+  IsString,
   IsStrongPassword,
 } from "class-validator";
 
@@ -22,5 +23,6 @@ export class UserModel {
   password: string;
 
   @IsOptional()
-  isProvider: boolean;
+  @IsString({ each: true })
+  roles: string[];
 }

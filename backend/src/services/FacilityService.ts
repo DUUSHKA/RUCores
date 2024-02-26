@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { ForbiddenError, NotFoundError } from "routing-controllers";
 import { Repository } from "typeorm";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
+import { UserEntity } from "../database/Entities/userEntity";
 import AppDataSource from "../database/data-source";
 import { FacilityModel } from "../types/FacilityModel";
 import UserService from "./UserService";
@@ -14,15 +16,14 @@ class FacilityService {
 
   public async createFacility(
     facility: FacilityModel,
-    providers: number[],
   ): Promise<FacilityEntity> {
-    const newFacility = new FacilityEntity();
-    newFacility.name = facility.name;
-    newFacility.address = facility.address;
-    newFacility.description = facility.description;
-    const users = new UserService().getAllByID(providers);
-    newFacility.providers = await users;
-    return this.repository.save(newFacility);
+    const facilityEntity = new FacilityEntity();
+    facilityEntity.name = facility.name;
+    facilityEntity.address = facility.address;
+    facilityEntity.description = facility.description;
+    const users = new UserService().getAllByID(facility.providers);
+    facilityEntity.providers = await users;
+    return this.repository.save(facilityEntity);
   }
 
   public async getOne(id: number): Promise<FacilityEntity> {
@@ -57,23 +58,24 @@ class FacilityService {
     return this.repository.find();
   }
 
-  // public async login(
-  //   username: string,
-  //   password: string,
-  // ): Promise<SessionEntity> {
-  //   const user = await this.repository.findOneBy({ username });
-  //   if (!user) {
-  //     throw new UnauthorizedError("Invalid username");
-  //   }
-  //   if (user.hashedPassword !== this.hashPassword(password, user)) {
-  //     throw new ForbiddenError("Invalid password");
-  //   }
-  //   return new SessionService().createSession(user);
-  // }
+  public async deleteFacility(
+    currentUser: UserEntity,
+    id: number,
+  ): Promise<void> {
+    const facilityToDelete = await this.repository.findOneBy({ id });
+    if (!facilityToDelete) {
+      throw new NotFoundError("Facility not found");
+    }
+    if (facilityToDelete.providers.includes(currentUser)) {
+      await this.repository.remove(facilityToDelete);
+    } else {
+      throw new ForbiddenError("Not a provider for this facility");
+    }
+  }
 
   public async updateFacility(
     id: number,
-    facility: FacilityModel,
+    facility: Partial<FacilityModel>,
   ): Promise<FacilityEntity> {
     const facilityToUpdate = await this.repository.findOneBy({ id });
     if (!facilityToUpdate) {
@@ -81,19 +83,11 @@ class FacilityService {
     }
     Object.assign(facilityToUpdate, facility); //Might throw an error due to FacilityEntity provider type.
     //If error, use if statements inside the if block below
-    if (facility.providerID !== undefined && facility.providerID.length > 0) {
-      const users = new UserService().getAllByID(facility.providerID);
+    if (facility.providers !== undefined && facility.providers.length > 0) {
+      const users = new UserService().getAllByID(facility.providers);
       facilityToUpdate.providers = await users;
     }
     return this.repository.save(facilityToUpdate);
-  }
-
-  public async deleteFacility(id: number): Promise<void> {
-    const facilityToDelete = await this.repository.findOneBy({ id });
-    if (!facilityToDelete) {
-      throw new Error("User not found");
-    }
-    await this.repository.remove(facilityToDelete);
   }
 }
 

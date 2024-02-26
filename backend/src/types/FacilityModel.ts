@@ -12,6 +12,6 @@ export class FacilityModel {
 
   @IsOptional()
   @IsNumber({}, { each: true })
-  providerID: number[];
+  providers: number[];
   //Other wise use the logged in user to create the facility
 }

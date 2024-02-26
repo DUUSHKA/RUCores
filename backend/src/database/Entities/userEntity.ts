@@ -84,5 +84,7 @@ export class UserEntity {
     onDelete: "CASCADE",
     cascade: true,
   })
+  @ValidateNested()
+  @Type(() => SessionEntity)
   sessions: SessionEntity[];
 }

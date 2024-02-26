@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Response } from "express";
 import {
   Authorized,
   Body,
-  BodyParam,
   CurrentUser,
   Delete,
   Get,
@@ -12,57 +10,87 @@ import {
   Param,
   Post,
   Put,
-  Res,
 } from "routing-controllers";
+import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
+import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
-import UserService from "../services/UserService";
-import { UserModel } from "../types/UserModel";
-import log from "../utils/logger";
+import FacilityService from "../services/FacilityService";
+import { FacilityModel } from "../types/FacilityModel";
 
-@JsonController("/users")
-export class UserController {
+@JsonController("/facility")
+@OpenAPI({
+  security: [{ cookieAuth: [] }],
+})
+@Authorized()
+export class FacilityController {
+  service: FacilityService;
+
+  constructor() {
+    this.service = new FacilityService();
+  }
+
   @Get()
   @HttpCode(200)
-  @Authorized(["admin"])
-  async getCurrent(@CurrentUser() user: UserEntity): Promise<UserEntity> {
-    log.debug("Current user: ", user);
-    return user;
+  @OpenAPI({
+    summary: "Get all facilities",
+  })
+  @ResponseSchema(FacilityEntity, { isArray: true })
+  async getAll(): Promise<FacilityEntity[]> {
+    return this.service.getAll();
   }
-  // FOr posting a new facility, make sure to add the current logged in user as a provider
-  // if ( !facility.providers.includes(@currentuser user.id) then add the current user to the providers array) {
-  @Get("/:id")
-  getOne(@Param("id") id: number) {
-    return "This action returns user #" + id;
+
+  @Get("/managed")
+  @HttpCode(200)
+  @Authorized(["provider"])
+  @OpenAPI({
+    summary: "Get all facilities managed by the current user",
+  })
+  @ResponseSchema(FacilityEntity, { isArray: true })
+  async getManaged(@CurrentUser() user: UserEntity): Promise<FacilityEntity[]> {
+    return user.managedFacilities;
   }
 
   @Post()
   @HttpCode(201)
-  post(@Body() user: UserModel) {
-    return "Saving user...";
-  }
-
-  @Post("/login")
-  @HttpCode(200)
-  async login(
-    @BodyParam("username") username: string,
-    @BodyParam("password") password: string,
-    @Res() response: Response,
-  ) {
-    const userService = new UserService();
-    const session = await userService.login(username, password);
-    response.cookie("session", session.token);
-    log.debug(`Logged in as ${username}`);
-    log.silly(`Session token: ${session.token}`);
-    return session.user;
+  @Authorized(["provider"])
+  @OpenAPI({
+    summary: "Create a new facility, requires provider role",
+  })
+  @ResponseSchema(FacilityEntity)
+  post(
+    @CurrentUser() user: UserEntity,
+    @Body() facility: FacilityModel,
+  ): Promise<FacilityEntity> {
+    const providers = facility.providers;
+    if (!providers.includes(user.id)) {
+      providers.push(user.id);
+    }
+    return this.service.createFacility(facility);
   }
 
   @Put("/:id")
-  put(@Param("id") id: number, @Body() user: UserModel) {
-    return "Updating a user...";
+  @HttpCode(200)
+  @Authorized(["provider"])
+  @OpenAPI({
+    summary: "Update a facility, requires provider role",
+  })
+  @ResponseSchema(FacilityEntity)
+  put(
+    @Param("id") id: number,
+    @Body() facility: FacilityModel,
+  ): Promise<FacilityEntity> {
+    return this.service.updateFacility(id, facility);
   }
 
   @Delete("/:id")
-  remove(@Param("id") id: number) {
-    return "Removing user...";
+  @HttpCode(204)
+  @OpenAPI({
+    summary: "Delete a facility, requires provider role",
+  })
+  @Authorized(["provider"])
+  remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
+    return this.service.deleteFacility(user, id);
   }
 }
+
+export default FacilityController;

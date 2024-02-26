@@ -14,6 +14,7 @@ import {
   Put,
   Res,
 } from "routing-controllers";
+import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import { UserEntity } from "../database/Entities/userEntity";
 import UserService from "../services/UserService";
 import { UserModel } from "../types/UserModel";
@@ -24,6 +25,7 @@ export class UserController {
   @Get()
   @HttpCode(200)
   @Authorized(["admin"])
+  @ResponseSchema(UserEntity, { isArray: true })
   async getAll(): Promise<UserEntity[]> {
     const allUsers = new UserService().getAll();
     log.debug("All users: ", allUsers);
@@ -32,12 +34,15 @@ export class UserController {
 
   @Get()
   @HttpCode(200)
+  @ResponseSchema(UserEntity)
   async getCurrent(@CurrentUser() user: UserEntity): Promise<UserEntity> {
     log.debug("Current user: ", user);
     return user;
   }
 
   @Get("/:id")
+  @HttpCode(200)
+  @ResponseSchema(UserEntity)
   getOne(@Param("id") id: number) {
     const user = new UserService().getOne(id);
     log.debug("All users: ", user);
@@ -53,6 +58,35 @@ export class UserController {
 
   @Post("/login")
   @HttpCode(200)
+  @OpenAPI({
+    description: "Logs in a user and sets a session cookie",
+    responses: {
+      "200": {
+        description: "User logged in",
+        headers: {
+          "Set-Cookie": {
+            schema: {
+              type: "string",
+              example: "session=abc",
+            },
+          },
+        },
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                user: {
+                  $ref: "#/components/schemas/UserEntity",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ResponseSchema(UserEntity)
   async login(
     @BodyParam("username") username: string,
     @BodyParam("password") password: string,
