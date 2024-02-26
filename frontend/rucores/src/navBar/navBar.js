@@ -15,7 +15,6 @@ function NavBar() {
             <li><Link to="/dashboard">Dashboard</Link></li> {}
             <li><Link to="/schedule">Schedule</Link></li>
             <li><Link to="/wallet">Wallet</Link></li>
-            <li><Link to="/analytics">Analytics</Link></li>
             <li><Link to="/account">Account</Link></li>
             <li><Link to="/faq">FAQ</Link></li>
             <li><Link to="/FacilityInfo">FacilityInfo</Link></li>

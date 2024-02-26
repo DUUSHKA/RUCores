@@ -1,0 +1,19 @@
+.CenterContent{
+    display: flex;
+    justify-content: center;
+}
+
+.leftSideContent{
+    padding-right: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.transHistCard{
+    padding-top: 20px;
+}
+
+.purchaseCard{
+    padding-top: 20px;
+}

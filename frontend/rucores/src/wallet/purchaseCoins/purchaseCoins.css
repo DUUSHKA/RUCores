@@ -1,0 +1,21 @@
+.purchase{
+    border: 2px solid grey;
+    border-radius: 3px;
+    margin: auto;
+    padding: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    height:120px;
+}
+
+.outerContainer{
+    padding-bottom: 20px;
+}
+
+.purchaseInputs{
+    display: flex;
+}
+.purchaseBtnPadding{
+    margin-top: -10px;
+    display: flex;
+    justify-content: right;
+}

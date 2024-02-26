@@ -6,6 +6,8 @@ import NavBar from './navBar/navBar';
 import FAQ from './FAQ';
 import Dashboard from './Dashboard';
 import FacilityInfo from './Facility';
+import Wallet from './wallet/wallet';
+
 
 function App() {
   return (
@@ -57,10 +59,7 @@ function App() {
           <Route path="/wallet" element={
           <>
             <NavBar />
-          </>} />
-          <Route path="/analytics" element={
-          <>
-            <NavBar />
+            <Wallet />
           </>} />
           <Route path="/account" element={
           <>
