@@ -6,6 +6,7 @@ import {
   BodyParam,
   CurrentUser,
   Delete,
+  ForbiddenError,
   Get,
   HttpCode,
   JsonController,
@@ -17,17 +18,23 @@ import {
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import { UserEntity } from "../database/Entities/userEntity";
 import UserService from "../services/UserService";
+import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
 import log from "../utils/logger";
 
 @JsonController("/users")
 export class UserController {
+  service: UserService;
+
+  constructor() {
+    this.service = new UserService();
+  }
   @Get()
   @HttpCode(200)
   @Authorized(["admin"])
   @ResponseSchema(UserEntity, { isArray: true })
   async getAll(): Promise<UserEntity[]> {
-    const allUsers = new UserService().getAll();
+    const allUsers = this.service.getAll();
     log.debug("All users: ", allUsers);
     return allUsers;
   }
@@ -44,16 +51,33 @@ export class UserController {
   @HttpCode(200)
   @ResponseSchema(UserEntity)
   getOne(@Param("id") id: number) {
-    const user = new UserService().getOne(id);
-    log.debug("All users: ", user);
+    const user = this.service.getOne(id);
+    log.debug(" user found by ID: ", user);
+    return user;
+  }
 
-    return "This action returns user #" + id;
+  @Get("/providers")
+  @Authorized(["provider"])
+  @HttpCode(200)
+  @ResponseSchema(ProviderIDMapping, { isArray: true })
+  async getProviders(
+    @CurrentUser() user: UserEntity,
+  ): Promise<ProviderIDMapping[]> {
+    if (user.isProvider === false) {
+      throw new ForbiddenError("User is not a provider");
+    }
+    const providers = this.service.getAllProviderIDs();
+    log.debug("All providers: ", providers);
+    return providers;
   }
 
   @Post()
   @HttpCode(201)
+  @ResponseSchema(UserEntity)
   post(@Body() user: UserModel) {
-    return "Saving user...";
+    const newUser = this.service.createUser(user);
+    log.debug("New user created: ", newUser);
+    return newUser;
   }
 
   @Post("/login")
