@@ -18,6 +18,7 @@ function NavBar() {
             <li><Link to="/account">Account</Link></li>
             <li><Link to="/faq">FAQ</Link></li>
             <li><Link to="/FacilityInfo">FacilityInfo</Link></li>
+            <li><Link to="/AddFacility">Add Facility</Link></li>
             <li><Link to="/">Log Out</Link></li>
           </ul>
         </nav>

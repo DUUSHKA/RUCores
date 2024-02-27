@@ -7,7 +7,7 @@ import FAQ from './FAQ';
 import Dashboard from './Dashboard';
 import FacilityInfo from './Facility';
 import Wallet from './wallet/wallet';
-
+import AddFacility from './addFacility/addFacility';
 
 function App() {
   return (
@@ -64,6 +64,11 @@ function App() {
           <Route path="/account" element={
           <>
             <NavBar />
+          </>} />
+          <Route path="/addFacility" element={
+          <>
+            <NavBar />
+            <AddFacility />
           </>} />
           
 
