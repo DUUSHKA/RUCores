@@ -89,3 +89,8 @@ body {
     }
   }
   
+
+.addFacilitySeperator{
+  display: flex;
+  justify-content: space-evenly;
+}

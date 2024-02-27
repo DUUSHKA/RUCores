@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_green.css"; // Import the Flatpickr styles
+import FacilityInfo from '../Facility';
 
 function AddFacility() {
   const [title, setTitle] = useState("");
@@ -21,8 +22,21 @@ function AddFacility() {
     });
   };
 
+  
+
+  const facilityDetails = {
+    name: title,
+    equipment: equipment,
+    operatingHours: formatTime(startTime)+" - " +formatTime(endTime),
+    cost: cost,
+    description: description,
+  };
   return (
     <>
+
+    <div className="addFacilitySeperator">
+        <div>
+    <h2>Enter Info:</h2>
       <div className="facilityInfo">
         <InputGroup className="mb-3">
           <InputGroup.Text>Title</InputGroup.Text>
@@ -94,24 +108,12 @@ function AddFacility() {
           />
         </InputGroup>
       </div>
+      </div>
+      <div>
       <h2>Preview:</h2>
-      <div className="facilityPreview">
-        <h3>{title || "Facility Title"}</h3>
-        <p>
-          <strong>Description:</strong>{" "}
-          {description || "Facility description goes here."}
-        </p>
-        <p>
-          <strong>Available Equipment:</strong>{" "}
-          {equipment || "List of equipment."}
-        </p>
-        <p>
-          <strong>Operating Hours:</strong> {formatTime(startTime)} to{" "}
-          {formatTime(endTime)}
-        </p>
-        <p>
-          <strong>Cost:</strong> {cost || "Cost information."}
-        </p>
+      
+      <FacilityInfo facilityDetails = {facilityDetails}/>
+      </div>
       </div>
     </>
   );
