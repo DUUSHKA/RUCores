@@ -7,9 +7,19 @@ import FAQ from './FAQ';
 import Dashboard from './Dashboard';
 import FacilityInfo from './Facility';
 import Wallet from './wallet/wallet';
-
+import AddFacility from './addFacility/addFacility';
 
 function App() {
+
+
+  const facilityDetails = {
+    name: "Lab A - Chemistry",
+    equipment: ["Microscopes", "Bunsen Burners", "Chemical Reactors"],
+    operatingHours: "9 AM - 5 PM",
+    cost: "50 RU Coins per hour",
+    description: "Lab A specializes in chemistry research and offers a wide range of equipment for various experiments.",
+  };
+
   return (
     <Router>
 
@@ -50,7 +60,7 @@ function App() {
         <Route path="/FacilityInfo" element={
           <>
             <NavBar />
-            <FacilityInfo />
+            <FacilityInfo facilityDetails={facilityDetails}/>
           </>} />
         <Route path="/schedule" element={
           <>
@@ -64,6 +74,11 @@ function App() {
           <Route path="/account" element={
           <>
             <NavBar />
+          </>} />
+          <Route path="/addFacility" element={
+          <>
+            <NavBar />
+            <AddFacility />
           </>} />
           
 

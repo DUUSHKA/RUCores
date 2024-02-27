@@ -12,9 +12,10 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 
 
-function BalanceHistoryGraph() {
+function BalanceHistoryGraph(props) {
     /**
      * chart renderer
      */
@@ -61,7 +62,7 @@ function BalanceHistoryGraph() {
     /**
      * data values for graph
      */
-    const dataValues = [0, 23, 14, 56, 75, 31, 56, 34, 12, 56, 78, 100];
+    const dataValues = props.balanceHistoryGraphData.historyData;
 
     /**
      * graph data
@@ -89,5 +90,9 @@ function BalanceHistoryGraph() {
     );
 
 }
+
+BalanceHistoryGraph.propTypes = {
+    balanceHistoryGraphData:PropTypes.object,
+};
 
 export default BalanceHistoryGraph;
