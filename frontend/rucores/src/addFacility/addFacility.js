@@ -1,24 +1,36 @@
 import React, { useState } from "react";
 import "./addFacility.css";
-import FacilityInfo from "../Facility";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_green.css"; // Import the Flatpickr styles
 
 function AddFacility() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [equipment, setEquipment] = useState("");
+  const [cost, setCost] = useState("");
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
   return (
     <>
       <div className="facilityInfo">
         <InputGroup className="mb-3">
-          <InputGroup.Text id="basic-addon1">Title</InputGroup.Text>
+          <InputGroup.Text>Title</InputGroup.Text>
           <Form.Control
             placeholder="Facility Title"
             aria-label="Title"
-            aria-describedby="basic-addon1"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </InputGroup>
         <InputGroup className="mb-3">
@@ -27,6 +39,8 @@ function AddFacility() {
             as="textarea"
             placeholder="Description"
             aria-label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </InputGroup>
         <InputGroup className="mb-3">
@@ -34,6 +48,8 @@ function AddFacility() {
           <Form.Control
             placeholder="Available Equipment"
             aria-label="Available Equipment"
+            value={equipment}
+            onChange={(e) => setEquipment(e.target.value)}
           />
         </InputGroup>
         <div className="mb-3">
@@ -70,11 +86,33 @@ function AddFacility() {
         </div>
         <InputGroup className="mb-3">
           <InputGroup.Text>Cost</InputGroup.Text>
-          <Form.Control placeholder="Cost" aria-label="Cost" />
+          <Form.Control
+            placeholder="Cost"
+            aria-label="Cost"
+            value={cost}
+            onChange={(e) => setCost(e.target.value)}
+          />
         </InputGroup>
       </div>
-      <h2>Example:</h2>
-      <FacilityInfo />
+      <h2>Preview:</h2>
+      <div className="facilityPreview">
+        <h3>{title || "Facility Title"}</h3>
+        <p>
+          <strong>Description:</strong>{" "}
+          {description || "Facility description goes here."}
+        </p>
+        <p>
+          <strong>Available Equipment:</strong>{" "}
+          {equipment || "List of equipment."}
+        </p>
+        <p>
+          <strong>Operating Hours:</strong> {formatTime(startTime)} to{" "}
+          {formatTime(endTime)}
+        </p>
+        <p>
+          <strong>Cost:</strong> {cost || "Cost information."}
+        </p>
+      </div>
     </>
   );
 }
