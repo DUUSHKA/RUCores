@@ -1,5 +1,5 @@
 import { Exclude, Type } from "class-transformer";
-import { IsNumber, IsString, ValidateNested } from "class-validator";
+import { IsBoolean, IsNumber, IsString, ValidateNested } from "class-validator";
 import {
   Column,
   Entity,
@@ -48,8 +48,9 @@ export class UserEntity {
   @IsString({ each: true })
   roles: string[];
 
-  // @Column({nullable: true})
-  // managedFacilities: Facility[];
+  @Column()
+  @IsBoolean()
+  isProvider: boolean;
 
   @JoinTable({
     joinColumn: { name: "userId" },
@@ -59,6 +60,7 @@ export class UserEntity {
     cascade: true,
     eager: true,
   })
+  @ValidateNested({ each: true })
   @Type(() => FacilityEntity)
   managedFacilities: FacilityEntity[];
 
@@ -75,16 +77,17 @@ export class UserEntity {
     onDelete: "CASCADE",
     cascade: true,
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => BookingEntity)
-  bookings: BookingEntity[];
+  bookings: Promise<BookingEntity[]>; // Lazy loading, also need eager to be false (default)
 
   @OneToMany(() => SessionEntity, (session) => session.user, {
     nullable: true,
     onDelete: "CASCADE",
     cascade: true,
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => SessionEntity)
-  sessions: SessionEntity[];
+  @Exclude()
+  sessions: Promise<SessionEntity[]>;
 }

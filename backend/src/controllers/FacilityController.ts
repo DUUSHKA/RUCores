@@ -4,6 +4,7 @@ import {
   Body,
   CurrentUser,
   Delete,
+  ForbiddenError,
   Get,
   HttpCode,
   JsonController,
@@ -76,10 +77,21 @@ export class FacilityController {
   })
   @ResponseSchema(FacilityEntity)
   put(
+    @CurrentUser() user: UserEntity,
     @Param("id") id: number,
-    @Body() facility: FacilityModel,
+    @Body({
+      validate: { forbidUnknownValues: true, skipMissingProperties: true },
+    })
+    facility: FacilityModel,
   ): Promise<FacilityEntity> {
-    return this.service.updateFacility(id, facility);
+    const managedFacilityIDs = user.managedFacilities.map(
+      (facility: FacilityEntity) => facility.id,
+    );
+
+    if (managedFacilityIDs.includes(id) || user.roles.includes("admin")) {
+      return this.service.updateFacility(id, facility);
+    }
+    throw new ForbiddenError("Not a provider for this facility");
   }
 
   @Delete("/:id")

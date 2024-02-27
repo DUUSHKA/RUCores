@@ -81,11 +81,17 @@ class FacilityService {
     if (!facilityToUpdate) {
       throw new Error("User not found");
     }
-    Object.assign(facilityToUpdate, facility); //Might throw an error due to FacilityEntity provider type.
-    //If error, use if statements inside the if block below
+    facilityToUpdate.name = facility.name ?? facilityToUpdate.name;
+    facilityToUpdate.address = facility.address ?? facilityToUpdate.address;
+    facilityToUpdate.description =
+      facility.description ?? facilityToUpdate.description;
+
+    //check if all providers suggested are actually providers
     if (facility.providers !== undefined && facility.providers.length > 0) {
       const users = new UserService().getAllByID(facility.providers);
-      facilityToUpdate.providers = await users;
+      facilityToUpdate.providers = (await users).filter((user: UserEntity) => {
+        return user.isProvider;
+      });
     }
     return this.repository.save(facilityToUpdate);
   }

@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import AppDataSource from "../database/data-source";
+import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
 import SessionService from "./SessionService";
 
@@ -31,6 +32,24 @@ class UserService {
     newUser.roles = ["user"];
     return this.repository.save(newUser);
   }
+  public async createProvider(provider: UserModel): Promise<UserEntity> {
+    if (provider.isProvider === false) {
+      throw new ForbiddenError("User is not a provider");
+    }
+    const providerEntity = new UserEntity();
+    providerEntity.firstName = provider.firstName;
+    providerEntity.lastName = provider.lastName;
+    providerEntity.username = provider.username;
+    providerEntity.email = provider.email;
+    providerEntity.salt = crypto.randomBytes(16).toString("hex");
+    providerEntity.hashedPassword = this.hashPassword(
+      provider.password,
+      providerEntity,
+    );
+    providerEntity.roles = ["provider"];
+    providerEntity.isProvider = true;
+    return this.repository.save(providerEntity);
+  }
 
   public async getOne(id: number): Promise<UserEntity> {
     const user = await this.repository.findOneBy({ id }); //parameter is automatically the where clause
@@ -51,6 +70,26 @@ class UserService {
       where: ids.map((id: number) => {
         return { id };
       }),
+    });
+  }
+  // const {username, id} = providers[0];
+  // equivalent to
+  // const username = providers[0].username;
+  // const id = providers[0].id;
+  // Allows to make following
+  // const a = {username, id}
+  // Which is {username: username, id: id}
+
+  public async getAllProviderIDs(): Promise<ProviderIDMapping[]> {
+    const providers = await this.repository.find({
+      where: { isProvider: true },
+    });
+
+    return providers.map((provider: UserEntity) => {
+      return {
+        username: provider.username,
+        id: provider.id,
+      };
     });
   }
 

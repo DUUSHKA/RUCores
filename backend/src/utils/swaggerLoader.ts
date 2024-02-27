@@ -12,7 +12,7 @@ import * as swaggerUi from "swagger-ui-express";
 import log from "./logger";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { defaultMetadataStorage } = require("class-transformer/cjs/storage");
+//const { defaultMetadataStorage } = require("class-transformer/cjs/storage");
 
 export default (
   expressApp: express.Application,
@@ -23,7 +23,7 @@ export default (
 
     const schemas = validationMetadatasToSchemas({
       refPointerPrefix: "#/components/schemas/",
-      classTransformerMetadataStorage: defaultMetadataStorage,
+      //classTransformerMetadataStorage: defaultMetadataStorage,
     });
 
     const swaggerFile = routingControllersToSpec(

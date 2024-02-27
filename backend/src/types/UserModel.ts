@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -25,4 +26,8 @@ export class UserModel {
   @IsOptional()
   @IsString({ each: true })
   roles: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  isProvider: boolean;
 }
