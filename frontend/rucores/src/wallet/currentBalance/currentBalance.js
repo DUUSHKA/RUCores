@@ -7,23 +7,22 @@ import{
     Tooltip,
     Legend
 } from 'chart.js';
-
 import{Doughnut} from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 
-
-function CurrentBalance() {
+function CurrentBalance(props) {
 
     ChartJS.register(ArcElement, Tooltip, Legend);
     
     /**
      * the pending balance of the user (in RU COINS)
      */
-    const pendingBalance = 25;
+    const pendingBalance = props.currentBalancedata.pendingBalance;
 
     /**
      * the current balance of the user (in RU COINS)
      */
-    const availibleBalance = 75;
+    const availibleBalance = props.currentBalancedata.availibleBalance;
 
     /**
      * data for the Doughnut Chart
@@ -70,5 +69,11 @@ function CurrentBalance() {
     );
 
 }
+
+CurrentBalance.propTypes = {
+  currentBalancedata: PropTypes.object, 
+};
+
+
 
 export default CurrentBalance;

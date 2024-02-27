@@ -14,17 +14,35 @@ import TransactionHistory from './transactionHistory/transactionHistory';
  * @returns none
  */
 function Wallet() {
+    
 
+    /**
+     * data needed for current balance
+     */
+    const currentBalancedata = {
+        pendingBalance: 10,
+        availibleBalance: 75
 
+    };
 
+    /**
+     * data needed for transaction History
+     */
+    const transactionHistoryData = {
+        history:["spent xx coins on mm-dd-yy","spent xx coins on mm-dd-yy","spent xx coins on mm-dd-yy","spent xx coins on mm-dd-yy","spent xx coins on mm-dd-yy","spent xx coins on mm-dd-yy"]
+    };
+
+    const balanceHistoryGraphData= {
+        historyData:[0, 23, 14, 56, 75, 31, 56, 34, 12, 56, 78, 100],
+    };
 
     return (
         <>
             <div className="CenterContent">
                 <div className='leftSideContent'>
-                    <CurrentBalance />
+                    <CurrentBalance currentBalancedata={currentBalancedata}/>
                     <div className='transHistCard'>
-                    <TransactionHistory />
+                    <TransactionHistory transactionHistoryData={transactionHistoryData} />
                     </div>
                     <div className='purchaseCard'>
                     <PurchaseCoins/>
@@ -32,7 +50,7 @@ function Wallet() {
 
                 </div>
                 <div className='rightSideContent'>
-                    <BalanceHistoryGraph />
+                    <BalanceHistoryGraph balanceHistoryGraphData={balanceHistoryGraphData}/>
                 </div>
                 
             </div>

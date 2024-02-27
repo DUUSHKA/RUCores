@@ -13,3 +13,8 @@
     display: flex;
     justify-content: center;
 }
+
+
+.HistoryList{
+    height: 164px;
+}
