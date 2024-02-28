@@ -31,7 +31,7 @@ export class UserController {
   constructor() {
     this.service = new UserService();
   }
-  @Get()
+  @Get("/getAll")
   @HttpCode(200)
   @Authorized(["admin"])
   @ResponseSchema(UserEntity, { isArray: true })
@@ -127,12 +127,16 @@ export class UserController {
   }
 
   @Put("/:id")
-  put(@Param("id") id: number, @Body() user: UserModel) {
-    return "Updating a user...";
+  async put(@Param("id") id: number, @Body() user: UserModel) {
+    //Update a user
+    const updateUser = await this.service.updateUser(id, user);
+    log.debug("User updated: ", updateUser);
+    return "Updated user successfully.";
   }
 
   @Delete("/:id")
   remove(@Param("id") id: number) {
-    return "Removing user...";
+    const deletedUser = this.service.deleteUser(id);
+    return "Removed user successfully.";
   }
 }

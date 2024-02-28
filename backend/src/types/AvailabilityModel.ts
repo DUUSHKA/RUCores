@@ -1,15 +1,18 @@
-import { IsNotEmpty } from "class-validator";
-import { FacilityModel } from "./FacilityModel";
+import { IsDate, IsNotEmpty } from "class-validator";
 
 export class AvailabilityModel {
   @IsNotEmpty()
+  @IsDate()
   public Date: Date;
 
   @IsNotEmpty()
+  @IsDate()
   startTime: Date;
 
   @IsNotEmpty()
+  @IsDate()
   endTime: Date;
 
-  facility: FacilityModel;
+  @IsNotEmpty()
+  facility_id: number;
 }

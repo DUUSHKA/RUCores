@@ -1,15 +1,17 @@
-import { IsNotEmpty } from "class-validator";
-import { AvailabilityModel } from "./AvailabilityModel";
-import { UserModel } from "./UserModel";
+import { IsDate, IsNotEmpty } from "class-validator";
 
 export class BookingModel {
   @IsNotEmpty()
+  @IsDate()
   public startDateTime: Date;
 
   @IsNotEmpty()
+  @IsDate()
   endDateTime: Date;
 
-  user: UserModel;
+  @IsNotEmpty()
+  user_id: number;
 
-  availability: AvailabilityModel;
+  @IsNotEmpty()
+  availability_id: number;
 }
