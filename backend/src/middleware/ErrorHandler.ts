@@ -8,6 +8,11 @@ import {
 } from "routing-controllers";
 import log from "../utils/logger";
 
+// This is a fix for the HttpError type, which does not include an errors field
+type HttpFix = HttpError & {
+  errors: string[];
+};
+
 /*
  * This middleware intercepts errors and logs them to the console.
  * Currently not activated, needs to be registered in app.ts
@@ -15,7 +20,7 @@ import log from "../utils/logger";
 @Middleware({ type: "after" })
 export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
   public error(
-    error: HttpError,
+    error: HttpFix,
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
@@ -24,6 +29,7 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
     res.json({
       name: error.name,
       message: error.message,
+      errors: error.errors || [],
     });
 
     log.error(`[${error.name}] ${error.message}`, error.stack);

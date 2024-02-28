@@ -1,37 +1,48 @@
-import { Type } from "class-transformer";
+import { Exclude, Type } from "class-transformer";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import {
   Column,
   Entity,
-  ManyToOne,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
 import { UserEntity } from "./userEntity";
 
-@Entity({ name: "facility" })
+@Entity({ name: "facility", schema: "rucores" })
 export class FacilityEntity {
   @PrimaryGeneratedColumn()
+  @IsNumber()
   id: number;
 
   @Column()
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @Column()
+  @IsString()
+  @IsNotEmpty()
   description: string;
 
   @Column()
+  @IsString()
   address: string;
 
-  @ManyToOne(
+  @ManyToMany(
     () => UserEntity,
     (provider: UserEntity) => provider.managedFacilities,
-    {
-      onDelete: "SET NULL",
-    },
   )
   @Type(() => UserEntity)
-  provider: UserEntity;
+  @Exclude()
+  @ValidateNested()
+  providers: UserEntity[];
 
   // @ManyToMany(() => User, (user: User) => user.facilities, {onDelete: 'SET NULL'})
   // users: User[];
@@ -44,6 +55,7 @@ export class FacilityEntity {
     (availability: AvailabilityEntity) => availability.facility,
     { nullable: true, cascade: true, onDelete: "CASCADE" },
   )
+  @ValidateNested()
   @Type(() => AvailabilityEntity)
   availabilities: AvailabilityEntity[];
 }

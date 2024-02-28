@@ -9,7 +9,7 @@ export async function verifyUser(
   roles: string[],
 ): Promise<boolean> {
   const sessionService = new SessionService();
-  const cookies = cookie.parse(action.request.headers.cookie || "");
+  const cookies = cookie.parse(action.request.headers.cookie ?? "");
   const token = cookies["session"];
   log.silly(`Found token: [${token}] in cookies`);
   if (!token) {

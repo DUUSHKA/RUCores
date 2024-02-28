@@ -1,11 +1,24 @@
 import { Exclude, Type } from "class-transformer";
-import { IsNumber, IsString, ValidateNested } from "class-validator";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  IsBoolean,
+  IsNumber,
+  IsString,
+  ValidateNested,
+  ValidatePromise,
+} from "class-validator";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import { SessionEntity } from "./sessionEntity";
 
-@Entity({ name: "user" })
+@Entity({ name: "user", schema: "rucores" })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   @IsNumber()
@@ -37,19 +50,23 @@ export class UserEntity {
   @IsString()
   salt: string;
 
-  @Column("simple-array", { nullable: true, array: true })
+  @Column("simple-array", { nullable: true })
   @IsString({ each: true })
   roles: string[];
 
-  // @Column({nullable: true})
-  // managedFacilities: Facility[];
+  @Column()
+  @IsBoolean()
+  isProvider: boolean;
 
-  @OneToMany(() => FacilityEntity, (facility) => facility.provider, {
-    nullable: true,
-    onDelete: "SET NULL",
+  @JoinTable({
+    joinColumn: { name: "userId" },
+    inverseJoinColumn: { name: "facilityId" },
+  })
+  @ManyToMany(() => FacilityEntity, (facility) => facility.providers, {
     cascade: true,
     eager: true,
   })
+  @ValidateNested()
   @Type(() => FacilityEntity)
   managedFacilities: FacilityEntity[];
 
@@ -67,13 +84,18 @@ export class UserEntity {
     cascade: true,
   })
   @ValidateNested()
+  @ValidatePromise()
   @Type(() => BookingEntity)
-  bookings: BookingEntity[];
+  bookings: BookingEntity[]; // Lazy loading, also need eager to be false (default)
 
   @OneToMany(() => SessionEntity, (session) => session.user, {
     nullable: true,
     onDelete: "CASCADE",
     cascade: true,
   })
+  @ValidateNested()
+  @ValidatePromise()
+  @Type(() => SessionEntity)
+  @Exclude()
   sessions: SessionEntity[];
 }

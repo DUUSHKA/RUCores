@@ -10,6 +10,12 @@ const firstname = "johny";
 const lastname = "bravo";
 
 export const prepopulateDB = async () => {
+  // const sqlFilePath = path.join(__dirname, './reset_db.sql');
+  // const sql_reset = fs.readFileSync(sqlFilePath, 'utf8');
+  // const reset_result = await AppDataSource.query(sql_reset);
+  // console.log("Resetting DB");
+  // console.log(reset_result);
+
   for (let i = 0; i < 5; i++) {
     const user = new UserEntity();
     const booking = new BookingEntity();
@@ -31,10 +37,13 @@ export const prepopulateDB = async () => {
     user.hashedPassword = hmac.update("password").digest("hex");
 
     user.roles = ["provider", "admin"];
-    user.bookings = [booking];
+    user.bookings = [booking]; // Store in lazy loading
+    //console.log("user: ", user);
+    //console.log("facility: ", facility);
     user.managedFacilities = [facility];
 
-    session.user = user;
+    user.sessions = [session];
+    user.isProvider = true;
 
     booking.startDateTime = new Date();
     booking.endDateTime = new Date();
@@ -49,12 +58,12 @@ export const prepopulateDB = async () => {
 
     facility.name = "facility " + i;
     facility.availabilities = [availability];
-    facility.provider = user;
+    //facility.providers = [user];
     facility.description = "description " + i;
     facility.address = "address " + i;
 
-    await AppDataSource.manager.save(user).catch((err) => console.log(err));
-    await AppDataSource.manager.save(session).catch((err) => console.log(err));
+    await AppDataSource.manager.save(user);
+    //await AppDataSource.manager.save(session).catch((err) => console.log(err));
     // await AppDataSource.manager.save(booking).catch((err) => console.log(err));
     // await AppDataSource.manager.save(facility).catch((err) => console.log(err));
     // await AppDataSource.manager.save(availability).catch((err) => console.log(err));

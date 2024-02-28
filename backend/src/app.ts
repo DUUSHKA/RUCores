@@ -4,7 +4,12 @@ import logger from "morgan";
 import path from "path";
 
 import express, { Request, Response } from "express";
+import fs from "fs";
+import mysql from "mysql2";
 import { createExpressServer } from "routing-controllers";
+import { BookingController } from "./controllers/BookingController";
+import FacilityController from "./controllers/FacilityController";
+import { UserController } from "./controllers/UserController";
 import AppDataSource from "./database/data-source";
 import { prepopulateDB } from "./database/prepopulateDB";
 import { fetchUser, verifyUser } from "./middleware/UserAuth";
@@ -18,7 +23,7 @@ const routingControllersOptions = {
   currentUserChecker: fetchUser,
   defaultErrorHandler: false,
   middlewares: [__dirname + "/middleware/*.ts"],
-  controllers: [__dirname + "/controllers/*.ts"],
+  controllers: [UserController, FacilityController, BookingController],
 };
 
 const app: express.Application = createExpressServer(routingControllersOptions);
@@ -45,6 +50,39 @@ swaggerLoader(app, routingControllersOptions);
 // });
 
 module.exports = app;
+
+if (process.env.DB_TYPE === "mysql") {
+  const connection = mysql.createConnection({
+    host: process.env.MYSQL_HOST ?? "localhost",
+    port: parseInt(process.env.MYSQL_PORT ?? "3306"),
+    user: process.env.MYSQL_USERNAME ?? "root",
+    password: process.env.MYSQL_PASSWORD ?? "root",
+    database: process.env.MYSQL_DATABASE ?? "rucores",
+    multipleStatements: true,
+  });
+
+  connection.connect((err) => {
+    if (err) throw err;
+    console.log("Connected to the database.");
+
+    // Read the SQL script
+    let sql = fs.readFileSync("src/database/reset_db.sql", "utf8");
+    sql = sql.replace(/\r|\n/g, " ");
+    console.log("SQL script: {%s}", sql);
+
+    // Execute the SQL script
+    connection.query(sql, (err) => {
+      if (err) throw err;
+      console.log("SQL script executed successfully.");
+
+      // Close the connection
+      connection.end((err) => {
+        if (err) throw err;
+        console.log("Connection closed.");
+      });
+    });
+  });
+}
 
 AppDataSource.initialize()
   .then(async () => {

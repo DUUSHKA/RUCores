@@ -6,6 +6,7 @@ import {
   BodyParam,
   CurrentUser,
   Delete,
+  ForbiddenError,
   Get,
   HttpCode,
   JsonController,
@@ -14,34 +15,104 @@ import {
   Put,
   Res,
 } from "routing-controllers";
+import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import { UserEntity } from "../database/Entities/userEntity";
+import { auth_errors } from "../documentation/common";
 import UserService from "../services/UserService";
+import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
 import log from "../utils/logger";
 
 @JsonController("/users")
+@OpenAPI(auth_errors)
 export class UserController {
-  @Get()
+  service: UserService;
+
+  constructor() {
+    this.service = new UserService();
+  }
+  @Get("/getAll")
   @HttpCode(200)
   @Authorized(["admin"])
+  @ResponseSchema(UserEntity, { isArray: true })
+  async getAll(): Promise<UserEntity[]> {
+    const allUsers = this.service.getAll();
+    log.debug("All users: ", allUsers);
+    return allUsers;
+  }
+
+  @Get()
+  @HttpCode(200)
+  @ResponseSchema(UserEntity)
   async getCurrent(@CurrentUser() user: UserEntity): Promise<UserEntity> {
     log.debug("Current user: ", user);
     return user;
   }
 
   @Get("/:id")
+  @HttpCode(200)
+  @ResponseSchema(UserEntity)
   getOne(@Param("id") id: number) {
-    return "This action returns user #" + id;
+    const user = this.service.getOne(id);
+    log.debug(" user found by ID: ", user);
+    return user;
+  }
+
+  @Get("/providers")
+  @Authorized(["provider"])
+  @HttpCode(200)
+  @ResponseSchema(ProviderIDMapping, { isArray: true })
+  async getProviders(
+    @CurrentUser() user: UserEntity,
+  ): Promise<ProviderIDMapping[]> {
+    if (user.isProvider === false) {
+      throw new ForbiddenError("User is not a provider");
+    }
+    const providers = this.service.getAllProviderIDs();
+    log.debug("All providers: ", providers);
+    return providers;
   }
 
   @Post()
   @HttpCode(201)
+  @ResponseSchema(UserEntity)
   post(@Body() user: UserModel) {
-    return "Saving user...";
+    const newUser = this.service.createUser(user);
+    log.debug("New user created: ", newUser);
+    return newUser;
   }
 
   @Post("/login")
   @HttpCode(200)
+  @OpenAPI({
+    description: "Logs in a user and sets a session cookie",
+    responses: {
+      "200": {
+        description: "User logged in",
+        headers: {
+          "Set-Cookie": {
+            schema: {
+              type: "string",
+              example: "session=abc",
+            },
+          },
+        },
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                user: {
+                  $ref: "#/components/schemas/UserEntity",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ResponseSchema(UserEntity)
   async login(
     @BodyParam("username") username: string,
     @BodyParam("password") password: string,
@@ -56,12 +127,16 @@ export class UserController {
   }
 
   @Put("/:id")
-  put(@Param("id") id: number, @Body() user: UserModel) {
-    return "Updating a user...";
+  async put(@Param("id") id: number, @Body() user: UserModel) {
+    //Update a user
+    const updateUser = await this.service.updateUser(id, user);
+    log.debug("User updated: ", updateUser);
+    return "Updated user successfully.";
   }
 
   @Delete("/:id")
   remove(@Param("id") id: number) {
-    return "Removing user...";
+    const deletedUser = this.service.deleteUser(id);
+    return "Removed user successfully.";
   }
 }

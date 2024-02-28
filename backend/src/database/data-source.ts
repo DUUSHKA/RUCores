@@ -7,7 +7,7 @@ const mysql_config: DataSourceOptions = {
   port: parseInt(process.env.MYSQL_PORT ?? "3306"),
   username: process.env.MYSQL_USERNAME ?? "root",
   password: process.env.MYSQL_PASSWORD ?? "root",
-  database: process.env.MYSQL_DATABASE ?? "RUCores",
+  database: process.env.MYSQL_DATABASE ?? "rucores",
   logging: process.env.DB_LOGGING === "true",
   entities: ["src/database/Entities/**/*.{js,ts}"],
   subscribers: [],

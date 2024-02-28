@@ -3,9 +3,8 @@ import { IsDateString, IsNumber, ValidateNested } from "class-validator";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
-//import { Provider } from './Provider';
 
-@Entity({ name: "availability" })
+@Entity({ name: "availability", schema: "rucores" })
 export class AvailabilityEntity {
   @PrimaryColumn()
   @IsNumber()
@@ -45,8 +44,4 @@ export class AvailabilityEntity {
   @ValidateNested()
   @Type(() => BookingEntity)
   bookings: BookingEntity[];
-
-  // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
-  // @JoinColumn({ name: "userId"})
-  // provider: Provider;
 }
