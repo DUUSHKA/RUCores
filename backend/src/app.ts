@@ -7,6 +7,7 @@ import express, { Request, Response } from "express";
 import fs from "fs";
 import mysql from "mysql2";
 import { createExpressServer } from "routing-controllers";
+import { BookingController } from "./controllers/BookingController";
 import FacilityController from "./controllers/FacilityController";
 import { UserController } from "./controllers/UserController";
 import AppDataSource from "./database/data-source";
@@ -22,7 +23,7 @@ const routingControllersOptions = {
   currentUserChecker: fetchUser,
   defaultErrorHandler: false,
   middlewares: [__dirname + "/middleware/*.ts"],
-  controllers: [UserController, FacilityController],
+  controllers: [UserController, FacilityController, BookingController],
 };
 
 const app: express.Application = createExpressServer(routingControllersOptions);

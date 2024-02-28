@@ -41,7 +41,7 @@ export class FacilityEntity {
   )
   @Type(() => UserEntity)
   @Exclude()
-  @ValidateNested({ each: true })
+  @ValidateNested()
   providers: UserEntity[];
 
   // @ManyToMany(() => User, (user: User) => user.facilities, {onDelete: 'SET NULL'})
@@ -55,7 +55,7 @@ export class FacilityEntity {
     (availability: AvailabilityEntity) => availability.facility,
     { nullable: true, cascade: true, onDelete: "CASCADE" },
   )
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => AvailabilityEntity)
   availabilities: AvailabilityEntity[];
 }

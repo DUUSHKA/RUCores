@@ -17,12 +17,14 @@ import {
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import { UserEntity } from "../database/Entities/userEntity";
+import { auth_errors } from "../documentation/common";
 import UserService from "../services/UserService";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
 import log from "../utils/logger";
 
 @JsonController("/users")
+@OpenAPI(auth_errors)
 export class UserController {
   service: UserService;
 

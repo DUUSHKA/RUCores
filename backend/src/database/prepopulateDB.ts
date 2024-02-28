@@ -37,12 +37,12 @@ export const prepopulateDB = async () => {
     user.hashedPassword = hmac.update("password").digest("hex");
 
     user.roles = ["provider", "admin"];
-    user.bookings = Promise.resolve([booking]); // Store in lazy loading
+    user.bookings = [booking]; // Store in lazy loading
     //console.log("user: ", user);
     //console.log("facility: ", facility);
     user.managedFacilities = [facility];
 
-    user.sessions = Promise.resolve([session]);
+    user.sessions = [session];
     user.isProvider = true;
 
     booking.startDateTime = new Date();

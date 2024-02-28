@@ -8,6 +8,7 @@ import {
   Get,
   HttpCode,
   JsonController,
+  OnUndefined,
   Param,
   Post,
   Put,
@@ -15,13 +16,12 @@ import {
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
+import { auth_errors } from "../documentation/common";
 import FacilityService from "../services/FacilityService";
 import { FacilityModel } from "../types/FacilityModel";
 
 @JsonController("/facility")
-@OpenAPI({
-  security: [{ cookieAuth: [] }],
-})
+@OpenAPI(auth_errors)
 @Authorized()
 export class FacilityController {
   service: FacilityService;
@@ -100,6 +100,7 @@ export class FacilityController {
     summary: "Delete a facility, requires provider role",
   })
   @Authorized(["provider"])
+  @OnUndefined(204)
   remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
     return this.service.deleteFacility(user, id);
   }
