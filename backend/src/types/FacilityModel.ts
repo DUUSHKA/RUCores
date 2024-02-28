@@ -1,13 +1,16 @@
-import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class FacilityModel {
   @IsNotEmpty()
-  public name: string;
+  @IsString()
+  name: string;
 
   @IsNotEmpty()
+  @IsString()
   description: string;
 
   @IsNotEmpty()
+  @IsString()
   address: string;
 
   @IsOptional()

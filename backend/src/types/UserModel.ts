@@ -9,12 +9,15 @@ import {
 
 export class UserModel {
   @IsNotEmpty()
-  public firstName: string;
+  @IsString()
+  firstName: string;
 
   @IsNotEmpty()
+  @IsString()
   lastName: string;
 
   @IsNotEmpty()
+  @IsString()
   username: string;
 
   @IsEmail()

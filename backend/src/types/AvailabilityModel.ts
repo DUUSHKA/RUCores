@@ -1,9 +1,9 @@
-import { IsDate, IsNotEmpty } from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber } from "class-validator";
 
 export class AvailabilityModel {
   @IsNotEmpty()
   @IsDate()
-  public Date: Date;
+  Date: Date;
 
   @IsNotEmpty()
   @IsDate()
@@ -14,5 +14,6 @@ export class AvailabilityModel {
   endTime: Date;
 
   @IsNotEmpty()
+  @IsNumber()
   facility_id: number;
 }
