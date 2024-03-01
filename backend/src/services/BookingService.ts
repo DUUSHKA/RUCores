@@ -88,7 +88,6 @@ class BookingService extends GenericService<BookingEntity> {
     if (booking.startDateTime >= booking.endDateTime) {
       throw new Error("Start time must be before end time");
     }
-
     //end time must be at least 30 minutes after the start time, and the booking length
     //should be a multiple of 30
     if (

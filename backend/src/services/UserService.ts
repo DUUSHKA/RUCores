@@ -28,7 +28,8 @@ class UserService extends GenericService<UserEntity> {
     newUser.email = user.email;
     newUser.salt = crypto.randomBytes(16).toString("hex");
     newUser.hashedPassword = this.hashPassword(user.password, newUser.salt);
-    newUser.roles = ["user"];
+    newUser.roles = user.roles;
+    newUser.isProvider = user.isProvider;
     return this.repository.save(newUser);
   }
 
