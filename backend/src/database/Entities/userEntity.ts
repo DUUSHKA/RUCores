@@ -82,6 +82,7 @@ export class UserEntity {
     nullable: true,
     onDelete: "CASCADE",
     cascade: true,
+    eager: true,
   })
   @ValidateNested()
   @ValidatePromise()
