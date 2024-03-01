@@ -43,7 +43,6 @@ export async function fetchUser(action: Action): Promise<UserEntity> {
   if (!token) {
     throw new UnauthorizedError("No token provided");
   }
-
   const session = await sessionService.findSessionByToken(token);
   if (!session) {
     throw new ForbiddenError("Invalid token");

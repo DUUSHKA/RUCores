@@ -71,6 +71,7 @@ export class UserEntity extends GenericEntity {
     nullable: true,
     onDelete: "CASCADE",
     cascade: true,
+    eager: true,
   })
   @ValidateNested()
   @ValidatePromise()

@@ -154,6 +154,18 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
 
     return this.repository.save(oldAvailability);
   }
+
+  public async deleteAvailability(user: UserEntity, availability_id: number) {
+    const availability = await this.getOneByID(availability_id);
+    if (!availability) {
+      throw new NotFoundError("Availability not found");
+    }
+    const facility_id = availability.facility.id;
+    if (!(await this.verifyOwnership(user, facility_id))) {
+      throw new NotFoundError("User does not have access to this facility");
+    }
+    return this.repository.delete(availability_id);
+  }
 }
 
 export default AvailabilityService;

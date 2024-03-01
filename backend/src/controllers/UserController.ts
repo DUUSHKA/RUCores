@@ -116,8 +116,8 @@ export class UserController {
   })
   @ResponseSchema(UserEntity)
   async login(
-    @BodyParam("username") username: string,
-    @BodyParam("password") password: string,
+    @BodyParam("username", { required: true }) username: string,
+    @BodyParam("password", { required: true }) password: string,
     @Res() response: Response,
   ) {
     const userService = new UserService();
