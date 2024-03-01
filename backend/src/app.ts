@@ -21,7 +21,7 @@ const routingControllersOptions = {
   classTransformer: true,
   authorizationChecker: verifyUser,
   currentUserChecker: fetchUser,
-  defaultErrorHandler: false,
+  defaultErrorHandler: (process.env.RESPONSE_STACKTRACE ?? "true") === "true",
   middlewares: [__dirname + "/middleware/*.ts"],
   controllers: [UserController, FacilityController, BookingController],
 };

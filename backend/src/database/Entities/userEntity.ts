@@ -1,29 +1,18 @@
 import { Exclude, Type } from "class-transformer";
 import {
   IsBoolean,
-  IsNumber,
   IsString,
   ValidateNested,
   ValidatePromise,
 } from "class-validator";
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
+import GenericEntity from "./genericEntity";
 import { SessionEntity } from "./sessionEntity";
 
 @Entity({ name: "user", schema: "rucores" })
-export class UserEntity {
-  @PrimaryGeneratedColumn()
-  @IsNumber()
-  id: number;
-
+export class UserEntity extends GenericEntity {
   @Column()
   @IsString()
   firstName: string;
@@ -98,4 +87,7 @@ export class UserEntity {
   @Type(() => SessionEntity)
   @Exclude()
   sessions: SessionEntity[];
+
+  @Exclude()
+  getName = () => "User";
 }

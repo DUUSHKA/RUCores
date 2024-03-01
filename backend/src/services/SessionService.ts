@@ -1,14 +1,11 @@
-import { Repository } from "typeorm";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
-import AppDataSource from "../database/data-source";
 import log from "../utils/logger";
+import GenericService from "./GenericService";
 
-class SessionService {
-  repository: Repository<SessionEntity>;
-
+class SessionService extends GenericService<SessionEntity> {
   constructor() {
-    this.repository = AppDataSource.getRepository(SessionEntity);
+    super(SessionEntity);
   }
 
   public async createSession(user: UserEntity): Promise<SessionEntity> {

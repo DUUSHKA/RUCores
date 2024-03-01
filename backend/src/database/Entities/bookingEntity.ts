@@ -1,16 +1,13 @@
-import { Type } from "class-transformer";
-import { IsDateString, IsNumber, ValidateNested } from "class-validator";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Exclude, Type } from "class-transformer";
+import { IsDateString, ValidateNested } from "class-validator";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
+import GenericEntity from "./genericEntity";
 import { UserEntity } from "./userEntity";
 //import { Provider } from './Provider';
 
 @Entity({ name: "booking", schema: "rucores" })
-export class BookingEntity {
-  @PrimaryColumn()
-  @IsNumber()
-  bookingId: number;
-
+export class BookingEntity extends GenericEntity {
   @Column()
   @IsDateString()
   startDateTime: Date;
@@ -37,4 +34,7 @@ export class BookingEntity {
   // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
   // @JoinColumn({ name: "userId"})
   // provider: Provider;
+
+  @Exclude()
+  getName = () => "Booking";
 }

@@ -20,6 +20,10 @@ export async function verifyUser(
   if (!session) {
     throw new ForbiddenError("Invalid token");
   }
+  if (!session.user) {
+    sessionService.delete(session.id);
+    throw new ForbiddenError("No user found in session");
+  }
   if (!session.user.roles && roles.length !== 0) {
     throw new ForbiddenError("User has no roles");
   }

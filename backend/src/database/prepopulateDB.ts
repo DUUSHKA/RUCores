@@ -23,9 +23,9 @@ export const prepopulateDB = async () => {
     const availability = new AvailabilityEntity();
     const session = new SessionEntity();
     user.id = i;
-    booking.bookingId = i;
+    booking.id = i;
     facility.id = i;
-    availability.availabilityId = i;
+    availability.id = i;
 
     user.firstName = firstname.substring(0, i);
     user.lastName = lastname.substring(0, i);

@@ -13,12 +13,14 @@ import {
   Param,
   Post,
   Put,
+  QueryParams,
   Res,
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
 import UserService from "../services/UserService";
+import { GetAllQuery } from "../types/GenericUtilTypes";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
 import log from "../utils/logger";
@@ -35,8 +37,8 @@ export class UserController {
   @HttpCode(200)
   @Authorized(["admin"])
   @ResponseSchema(UserEntity, { isArray: true })
-  async getAll(): Promise<UserEntity[]> {
-    const allUsers = this.service.getAll();
+  async getAll(@QueryParams() query: GetAllQuery): Promise<UserEntity[]> {
+    const allUsers = this.service.getAll(query);
     log.debug("All users: ", allUsers);
     return allUsers;
   }
@@ -53,7 +55,7 @@ export class UserController {
   @HttpCode(200)
   @ResponseSchema(UserEntity)
   getOne(@Param("id") id: number) {
-    const user = this.service.getOne(id);
+    const user = this.service.getOneByID(id);
     log.debug(" user found by ID: ", user);
     return user;
   }

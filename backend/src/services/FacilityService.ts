@@ -1,17 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ForbiddenError, NotFoundError } from "routing-controllers";
-import { Repository } from "typeorm";
+import { NotFoundError } from "routing-controllers";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
-import AppDataSource from "../database/data-source";
 import { FacilityModel } from "../types/FacilityModel";
+import GenericService from "./GenericService";
 import UserService from "./UserService";
 
-class FacilityService {
-  repository: Repository<FacilityEntity>;
-
+class FacilityService extends GenericService<FacilityEntity> {
   constructor() {
-    this.repository = AppDataSource.getRepository(FacilityEntity);
+    super(FacilityEntity);
   }
 
   public async createFacility(
@@ -26,51 +23,29 @@ class FacilityService {
     return this.repository.save(facilityEntity);
   }
 
-  public async getOne(id: number): Promise<FacilityEntity> {
-    const facility = await this.repository
-      .findOne({
-        where: { id: id },
-      })
-      .catch((error) => {
-        throw new Error(error);
-      });
-    if (!facility) {
-      throw new Error("User not found");
-    }
-    return facility;
-  }
-
   public async getOneByName(name: string): Promise<FacilityEntity> {
-    const facility = await this.repository
-      .findOne({
-        where: { name: name },
-      })
-      .catch((error) => {
-        throw new Error(error);
-      });
+    const facility = await this.repository.findOne({
+      where: { name: name },
+    });
     if (!facility) {
-      throw new Error("User not found");
+      throw new NotFoundError("Facility not found");
     }
     return facility;
-  }
-
-  public async getAll(): Promise<FacilityEntity[]> {
-    return this.repository.find();
   }
 
   public async deleteFacility(
     currentUser: UserEntity,
     id: number,
   ): Promise<void> {
-    const facilityToDelete = await this.repository.findOneBy({ id });
-    if (!facilityToDelete) {
-      throw new NotFoundError("Facility not found");
+    const facility = await this.getOneByID(id, {
+      providers: {
+        id: currentUser.id,
+      },
+    });
+    if (!facility) {
+      throw new NotFoundError("Facility not found for this user");
     }
-    if (facilityToDelete.providers.includes(currentUser)) {
-      await this.repository.remove(facilityToDelete);
-    } else {
-      throw new ForbiddenError("Not a provider for this facility");
-    }
+    return this.delete(id);
   }
 
   public async updateFacility(

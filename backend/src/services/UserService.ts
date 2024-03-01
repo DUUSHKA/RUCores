@@ -1,19 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import crypto from "crypto";
 import { ForbiddenError, UnauthorizedError } from "routing-controllers";
-import { Repository } from "typeorm";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
-import AppDataSource from "../database/data-source";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
+import GenericService from "./GenericService";
 import SessionService from "./SessionService";
 
-class UserService {
-  repository: Repository<UserEntity>;
-
+class UserService extends GenericService<UserEntity> {
   constructor() {
-    this.repository = AppDataSource.getRepository(UserEntity);
+    super(UserEntity);
   }
 
   private hashPassword(password: string, user: UserEntity): string {
@@ -49,19 +46,6 @@ class UserService {
     providerEntity.roles = ["provider"];
     providerEntity.isProvider = true;
     return this.repository.save(providerEntity);
-  }
-
-  public async getOne(id: number): Promise<UserEntity> {
-    const user = await this.repository.findOneBy({ id }); //parameter is automatically the where clause
-    //because of findOneBy. Also keeping just id is the same as id : id
-    if (!user) {
-      throw new Error("User not found");
-    }
-    return user;
-  }
-
-  public async getAll(): Promise<UserEntity[]> {
-    return this.repository.find();
   }
 
   public async getAllByID(ids: number[]): Promise<UserEntity[]> {
@@ -131,17 +115,7 @@ class UserService {
   }
 
   public async deleteUser(id: number): Promise<void> {
-    const userToDelete = await this.repository
-      .findOne({
-        where: { id: id },
-      })
-      .catch((error) => {
-        throw new Error(error);
-      });
-    if (!userToDelete) {
-      throw new Error("User not found");
-    }
-    await this.repository.remove(userToDelete);
+    this.delete(id);
   }
 }
 

@@ -12,6 +12,7 @@ import {
   Param,
   Post,
   Put,
+  QueryParams,
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
@@ -19,6 +20,7 @@ import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
 import FacilityService from "../services/FacilityService";
 import { FacilityModel } from "../types/FacilityModel";
+import { GetAllQuery } from "../types/GenericUtilTypes";
 
 @JsonController("/facility")
 @OpenAPI(auth_errors)
@@ -36,8 +38,8 @@ export class FacilityController {
     summary: "Get all facilities",
   })
   @ResponseSchema(FacilityEntity, { isArray: true })
-  async getAll(): Promise<FacilityEntity[]> {
-    return this.service.getAll();
+  async getAll(@QueryParams() query: GetAllQuery): Promise<FacilityEntity[]> {
+    return this.service.getAll(query);
   }
 
   @Get("/managed")

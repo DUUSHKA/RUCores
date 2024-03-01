@@ -1,18 +1,14 @@
 import { NotFoundError } from "routing-controllers";
-import { Repository } from "typeorm";
 import { BookingEntity } from "../database/Entities/bookingEntity";
 import { UserEntity } from "../database/Entities/userEntity";
-import AppDataSource from "../database/data-source";
 import { BookingModel } from "../types/BookingModel";
+import { GetAllQuery } from "../types/GenericUtilTypes";
 import AvailabilityService from "./AvailabilityService";
+import GenericService from "./GenericService";
 
-class BookingService {
-  repository: Repository<BookingEntity>;
-  //availabilityRepository: Repository<AvailabilityEntity>;
-
+class BookingService extends GenericService<BookingEntity> {
   constructor() {
-    this.repository = AppDataSource.getRepository(BookingEntity);
-    //this.availabilityRepository = AppDataSource.getRepository(AvailabilityEntity);
+    super(BookingEntity);
   }
 
   public async conflictingBookingsCheck(
@@ -34,7 +30,7 @@ class BookingService {
     if (booking.startDateTime >= booking.endDateTime) {
       throw new Error("Start time must be before end time");
     }
-    const availability = await new AvailabilityService().getAvailabilityByID(
+    const availability = await new AvailabilityService().getOneByID(
       booking.availability_id,
     );
     if (!availability) {
@@ -46,15 +42,12 @@ class BookingService {
     ) {
       throw new Error("Booking must be within the availability");
     }
-    return;
   }
 
   public async getBookingsForAvailability(
     id: number,
   ): Promise<BookingEntity[]> {
-    const availability = await new AvailabilityService().getAvailabilityByID(
-      id,
-    );
+    const availability = await new AvailabilityService().getOneByID(id);
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
@@ -80,7 +73,7 @@ class BookingService {
     newBooking.startDateTime = booking.startDateTime;
     newBooking.endDateTime = booking.endDateTime;
     newBooking.user = user;
-    const availability = await new AvailabilityService().getAvailabilityByID(
+    const availability = await new AvailabilityService().getOneByID(
       availabilityId,
     );
     if (!availability) {
@@ -98,7 +91,7 @@ class BookingService {
   ): Promise<BookingEntity> {
     await this.vailidateBooking(booking);
     const oldBooking = await this.repository.findOne({
-      where: { bookingId: booking_id },
+      where: { id: booking_id },
     });
     if (!oldBooking) {
       throw new NotFoundError("Booking not found");
@@ -109,37 +102,38 @@ class BookingService {
 
     //Check conflicts, but ignore if we are currently comparing the update to the old booking
     for (const currentBooking of existingBookings) {
-      if (currentBooking.bookingId === booking_id) continue;
+      if (currentBooking.id === booking_id) continue;
 
       if (await this.conflictingBookingsCheck(currentBooking, booking)) {
         throw new Error("New Booking Conflicts with existing booking");
       }
     }
-    oldBooking.startDateTime = booking.startDateTime;
-    oldBooking.endDateTime = booking.endDateTime;
-    const availability = await new AvailabilityService().getAvailabilityByID(
+    const availability = await new AvailabilityService().getOneByID(
       availabilityId,
     );
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
+    oldBooking.startDateTime = booking.startDateTime;
+    oldBooking.endDateTime = booking.endDateTime;
     oldBooking.availability = availability;
     return this.repository.save(oldBooking);
   }
 
-  public async getBookings(user: UserEntity) {
-    return user.bookings;
+  public async getBookings(user: UserEntity, filter: GetAllQuery) {
+    return this.getAll(filter, {
+      where: { user: user },
+    });
   }
 
   public async deleteBooking(user: UserEntity, booking_id: number) {
-    const bookings = user.bookings;
-    const booking = bookings.find(
-      (booking: BookingEntity) => booking.bookingId === booking_id,
-    );
+    const booking = await this.getOneByID(booking_id, {
+      user: user,
+    });
     if (!booking) {
       throw new NotFoundError("Booking not found on current user");
     }
-    return this.repository.remove(booking);
+    return this.delete(booking_id);
   }
 }
 

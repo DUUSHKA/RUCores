@@ -1,22 +1,12 @@
 import { Exclude, Type } from "class-transformer";
-import { IsDate, IsNumber, IsString, ValidateNested } from "class-validator";
+import { IsDate, IsString, ValidateNested } from "class-validator";
 import crypto from "crypto";
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
+import GenericEntity from "./genericEntity";
 import { UserEntity } from "./userEntity";
 
 @Entity({ name: "session", schema: "rucores" })
-export class SessionEntity {
-  @PrimaryGeneratedColumn()
-  @Exclude()
-  @IsNumber()
-  id: number;
-
+export class SessionEntity extends GenericEntity {
   @ManyToOne(() => UserEntity, (user) => user.sessions, {
     eager: true,
   })
@@ -43,4 +33,7 @@ export class SessionEntity {
   setToken() {
     this.token = crypto.randomBytes(32).toString("hex");
   }
+
+  @Exclude()
+  getName = () => "Session";
 }

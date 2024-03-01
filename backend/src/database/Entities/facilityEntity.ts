@@ -1,26 +1,12 @@
 import { Exclude, Type } from "class-transformer";
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  ValidateNested,
-} from "class-validator";
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
+import GenericEntity from "./genericEntity";
 import { UserEntity } from "./userEntity";
 
 @Entity({ name: "facility", schema: "rucores" })
-export class FacilityEntity {
-  @PrimaryGeneratedColumn()
-  @IsNumber()
-  id: number;
-
+export class FacilityEntity extends GenericEntity {
   @Column()
   @IsString()
   @IsNotEmpty()
@@ -38,6 +24,7 @@ export class FacilityEntity {
   @ManyToMany(
     () => UserEntity,
     (provider: UserEntity) => provider.managedFacilities,
+    { nullable: true, onDelete: "CASCADE" },
   )
   @Type(() => UserEntity)
   @Exclude()
@@ -58,4 +45,7 @@ export class FacilityEntity {
   @ValidateNested()
   @Type(() => AvailabilityEntity)
   availabilities: AvailabilityEntity[];
+
+  @Exclude()
+  getName = () => "Facility";
 }
