@@ -36,7 +36,7 @@ export class BookingController {
   })
   @ResponseSchema(BookingEntity, { isArray: true })
   async getManaged(@CurrentUser() user: UserEntity): Promise<BookingEntity[]> {
-    return user.bookings;
+    return this.service.getBookings(user);
   }
 
   @Post()
