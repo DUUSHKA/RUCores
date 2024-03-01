@@ -37,7 +37,7 @@ export class BookingController {
     summary: "Get all bookings scheduled by the current user",
   })
   @ResponseSchema(BookingEntity, { isArray: true })
-  async getManaged(
+  async getBooked(
     @CurrentUser() user: UserEntity,
     @QueryParams() query: GetAllQuery,
   ): Promise<BookingEntity[]> {

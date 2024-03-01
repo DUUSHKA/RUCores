@@ -1,12 +1,12 @@
-import { IsDate, IsNotEmpty, IsNumber } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber } from "class-validator";
 
 export class BookingModel {
   @IsNotEmpty()
-  @IsDate()
+  @IsDateString()
   startDateTime: Date;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsDateString()
   endDateTime: Date;
 
   @IsNotEmpty()
