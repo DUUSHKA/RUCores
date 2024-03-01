@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { ForbiddenError, UnauthorizedError } from "routing-controllers";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
+import { GetAllQuery } from "../types/GenericUtilTypes";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
 import BookingService from "./BookingService";
@@ -14,8 +15,8 @@ class UserService extends GenericService<UserEntity> {
     super(UserEntity);
   }
 
-  private hashPassword(password: string, user: UserEntity): string {
-    const hmac = crypto.createHmac("sha256", user.salt);
+  private hashPassword(password: string, salt: string): string {
+    const hmac = crypto.createHmac("sha256", salt);
     return hmac.update(password).digest("hex");
   }
 
@@ -26,32 +27,27 @@ class UserService extends GenericService<UserEntity> {
     newUser.username = user.username;
     newUser.email = user.email;
     newUser.salt = crypto.randomBytes(16).toString("hex");
-    newUser.hashedPassword = this.hashPassword(user.password, newUser);
+    newUser.hashedPassword = this.hashPassword(user.password, newUser.salt);
     newUser.roles = ["user"];
     return this.repository.save(newUser);
   }
+
   public async createProvider(provider: UserModel): Promise<UserEntity> {
     if (provider.isProvider === false) {
       throw new ForbiddenError("User is not a provider");
     }
-    const providerEntity = new UserEntity();
-    providerEntity.firstName = provider.firstName;
-    providerEntity.lastName = provider.lastName;
-    providerEntity.username = provider.username;
-    providerEntity.email = provider.email;
-    providerEntity.salt = crypto.randomBytes(16).toString("hex");
-    providerEntity.hashedPassword = this.hashPassword(
-      provider.password,
-      providerEntity,
-    );
-    providerEntity.roles = ["provider"];
-    providerEntity.isProvider = true;
-    return this.repository.save(providerEntity);
+    const baseUser = await this.createUser(provider);
+    baseUser.roles.push("provider");
+    baseUser.isProvider = true;
+    return this.repository.save(baseUser);
   }
 
-  public async getAllByID(ids: number[]): Promise<UserEntity[]> {
+  public async getAllByID(
+    ids: number[],
+    query?: GetAllQuery,
+  ): Promise<UserEntity[]> {
     if (ids.length === 0) return [];
-    return this.repository.find({
+    return this.getAll(query, {
       where: ids.map((id: number) => {
         return { id };
       }),
@@ -65,8 +61,10 @@ class UserService extends GenericService<UserEntity> {
   // const a = {username, id}
   // Which is {username: username, id: id}
 
-  public async getAllProviderIDs(): Promise<ProviderIDMapping[]> {
-    const providers = await this.repository.find({
+  public async getAllProviderIDs(
+    query?: GetAllQuery,
+  ): Promise<ProviderIDMapping[]> {
+    const providers = await this.getAll(query, {
       where: { isProvider: true },
     });
 
@@ -86,7 +84,7 @@ class UserService extends GenericService<UserEntity> {
     if (!user) {
       throw new UnauthorizedError("Invalid username");
     }
-    if (user.hashedPassword !== this.hashPassword(password, user)) {
+    if (user.hashedPassword !== this.hashPassword(password, user.salt)) {
       throw new ForbiddenError("Invalid password");
     }
     return new SessionService().createSession(user);
@@ -110,7 +108,7 @@ class UserService extends GenericService<UserEntity> {
     userToUpdate.salt = crypto.randomBytes(16).toString("hex");
     userToUpdate.hashedPassword = this.hashPassword(
       user.password,
-      userToUpdate,
+      userToUpdate.salt,
     );
     return this.repository.save(userToUpdate);
   }

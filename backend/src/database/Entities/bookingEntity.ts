@@ -24,7 +24,7 @@ export class BookingEntity extends GenericEntity {
   @JoinColumn({ name: "userId" }) //specify join name for instance if you already have a DB
   @ValidateNested()
   @Type(() => UserEntity)
-  user: UserEntity;
+  user: Promise<UserEntity>;
 
   @ManyToOne(
     () => AvailabilityEntity,
@@ -33,7 +33,7 @@ export class BookingEntity extends GenericEntity {
   @JoinColumn({ name: "availabilityId" })
   @ValidateNested()
   @Type(() => AvailabilityEntity)
-  availability: AvailabilityEntity;
+  availability: Promise<AvailabilityEntity>;
 
   // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
   // @JoinColumn({ name: "userId"})

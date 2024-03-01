@@ -78,7 +78,7 @@ export class FacilityController {
     summary: "Update a facility, requires provider role",
   })
   @ResponseSchema(FacilityEntity)
-  put(
+  async put(
     @CurrentUser() user: UserEntity,
     @Param("id") id: number,
     @Body({
@@ -86,7 +86,7 @@ export class FacilityController {
     })
     facility: FacilityModel,
   ): Promise<FacilityEntity> {
-    const managedFacilityIDs = user.managedFacilities.map(
+    const managedFacilityIDs = (await user.managedFacilities).map(
       (facility: FacilityEntity) => facility.id,
     );
 

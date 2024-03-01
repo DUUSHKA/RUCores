@@ -44,9 +44,10 @@ class BookingService extends GenericService<BookingEntity> {
       return 0;
     }
     user.balance -= totalCost;
-    availability.facility.balance += totalCost;
+    const facility = await availability.facility;
+    facility.balance += totalCost;
     AppDataSource.getRepository(UserEntity).save(user);
-    AppDataSource.getRepository(FacilityEntity).save(availability.facility);
+    AppDataSource.getRepository(FacilityEntity).save(facility);
     return totalCost;
   }
 
@@ -59,7 +60,7 @@ class BookingService extends GenericService<BookingEntity> {
     // who made the booking
     if (
       !user.roles.some((role) => role === "provider") &&
-      user.id !== booking.user.id
+      user.id !== (await booking.user).id
     ) {
       throw new Error("User is not authorized to refund this booking");
     }
@@ -73,16 +74,17 @@ class BookingService extends GenericService<BookingEntity> {
       1800000;
     const totalCost = availability.price * bookingIntervals;
     user.balance += totalCost;
-    availability.facility.balance -= totalCost;
+    const facility = await availability.facility;
+    facility.balance -= totalCost;
     AppDataSource.getRepository(UserEntity).save(user);
-    AppDataSource.getRepository(FacilityEntity).save(availability.facility);
+    AppDataSource.getRepository(FacilityEntity).save(facility);
     return totalCost;
   }
 
   public async vailidateBooking(
-    user: UserEntity,
     booking: BookingModel,
-  ): Promise<void> {
+    user: UserEntity,
+  ): Promise<AvailabilityEntity> {
     if (booking.startDateTime >= booking.endDateTime) {
       throw new Error("Start time must be before end time");
     }
@@ -126,7 +128,7 @@ class BookingService extends GenericService<BookingEntity> {
     if (maxBookings.length > 30) {
       throw new Error("User has reached the maximum number of bookings");
     }
-    return;
+    return availability;
   }
 
   public getAllFutureUserBookings(user: UserEntity): Promise<BookingEntity[]> {
@@ -195,10 +197,8 @@ class BookingService extends GenericService<BookingEntity> {
     user: UserEntity,
     booking: BookingModel,
   ): Promise<BookingEntity> {
-    await this.vailidateBooking(user, booking);
-    const availabilityId = booking.availability_id;
-    const existingBookings =
-      await this.getBookingsForAvailability(availabilityId);
+    const availability = await this.vailidateBooking(booking, user);
+    const existingBookings = await availability.bookings;
     //Go through the list of bookings in the availability and check if the new booking starttime or end time conflicts with any of the existing bookings
     for (const currentBooking of existingBookings) {
       if (await this.conflictingBookingsCheck(currentBooking, booking)) {
@@ -206,25 +206,17 @@ class BookingService extends GenericService<BookingEntity> {
       }
       //charge for the booking
     }
-    const cost = await this.chargeForBooking(
-      user,
-      await new AvailabilityService().getOneByID(availabilityId),
-      booking,
-    );
+    const cost = await this.chargeForBooking(user, availability, booking);
 
     const newBooking = new BookingEntity();
     newBooking.startDateTime = booking.startDateTime;
     newBooking.endDateTime = booking.endDateTime;
-    newBooking.user = user;
+    newBooking.user = Promise.resolve(user);
     newBooking.cost = cost;
-
-    const availability = await new AvailabilityService().getOneByID(
-      availabilityId,
-    );
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
-    newBooking.availability = availability;
+    newBooking.availability = Promise.resolve(availability);
     return this.repository.save(newBooking);
   }
 
@@ -234,16 +226,12 @@ class BookingService extends GenericService<BookingEntity> {
     booking_id: number,
     booking: BookingModel,
   ): Promise<BookingEntity> {
-    await this.vailidateBooking(user, booking);
-    const oldBooking = await this.repository.findOne({
-      where: { id: booking_id },
-    });
-    if (!oldBooking) {
+    const availability = await this.vailidateBooking(booking, user);
+    const currentBooking = await this.getOneByID(booking_id);
+    if (!currentBooking) {
       throw new NotFoundError("Booking not found");
     }
-    const availabilityId = booking.availability_id;
-    const existingBookings =
-      await this.getBookingsForAvailability(availabilityId);
+    const existingBookings = await availability.bookings;
 
     //Check conflicts, but ignore if we are currently comparing the update to the old booking
     for (const currentBooking of existingBookings) {
@@ -253,33 +241,36 @@ class BookingService extends GenericService<BookingEntity> {
         throw new Error("New Booking Conflicts with existing booking");
       }
     }
-    const availability = await new AvailabilityService().getOneByID(
-      availabilityId,
-    );
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
-    oldBooking.startDateTime = booking.startDateTime;
-    oldBooking.endDateTime = booking.endDateTime;
-    oldBooking.availability = availability;
-    return this.repository.save(oldBooking);
+    currentBooking.startDateTime = booking.startDateTime;
+    currentBooking.endDateTime = booking.endDateTime;
+    currentBooking.availability = Promise.resolve(availability);
+    return this.repository.save(currentBooking);
   }
 
   public async getBookings(user: UserEntity, filter: GetAllQuery) {
     return await this.getAll(filter, {
-      where: { user: { id: user.id } },
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
     });
   }
 
   public async deleteBooking(user: UserEntity, booking_id: number) {
     const booking = await this.getOneByID(booking_id, {
-      user: user,
+      user: {
+        id: user.id,
+      },
     });
     if (!booking) {
       throw new NotFoundError("Booking not found on current user");
     }
     //refund the booking
-    await this.refundBooking(user, booking.availability, booking);
+    await this.refundBooking(user, await booking.availability, booking);
     return this.delete(booking_id);
   }
 }
