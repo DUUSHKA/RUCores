@@ -1,5 +1,5 @@
 import { Exclude, Type } from "class-transformer";
-import { IsDateString, ValidateNested } from "class-validator";
+import { IsDateString, IsNumber, ValidateNested } from "class-validator";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
 import GenericEntity from "./genericEntity";
@@ -15,6 +15,10 @@ export class BookingEntity extends GenericEntity {
   @Column()
   @IsDateString()
   endDateTime: Date;
+
+  @Column()
+  @IsNumber()
+  cost: number;
 
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.bookings)
   @JoinColumn({ name: "userId" }) //specify join name for instance if you already have a DB

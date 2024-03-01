@@ -87,7 +87,10 @@ if (process.env.DB_TYPE === "mysql") {
 AppDataSource.initialize()
   .then(async () => {
     log.debug("Data Source initialized");
-    await prepopulateDB().catch((err) => console.log(err));
+    if (process.env.PREPOPULATE_DB === "true") {
+      await prepopulateDB().catch((err) => console.log(err));
+      log.debug("Database prepopulated");
+    }
   })
   .catch((err) => {
     console.log("Data Source failed to initialize", err);

@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNumber, IsOptional, IsString, Max } from "class-validator";
 
 enum Order {
   ASC = "ASC",
@@ -7,6 +7,7 @@ enum Order {
 
 class GetAllQuery {
   @IsNumber()
+  @Max(50)
   limit: number;
 
   @IsNumber()

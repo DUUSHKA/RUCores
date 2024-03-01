@@ -1,7 +1,10 @@
 import { NotFoundError } from "routing-controllers";
+import { LessThan, MoreThan } from "typeorm";
 import { AvailabilityEntity } from "../database/Entities/availabilityEntity";
 import { BookingEntity } from "../database/Entities/bookingEntity";
+import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
+import AppDataSource from "../database/data-source";
 import { BookingModel } from "../types/BookingModel";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 import AvailabilityService from "./AvailabilityService";
@@ -27,12 +30,86 @@ class BookingService extends GenericService<BookingEntity> {
     return false;
   }
 
+  public async chargeForBooking(
+    user: UserEntity,
+    availability: AvailabilityEntity,
+    booking: BookingModel,
+  ): Promise<number> {
+    //get the number of 30 minute intervals in the booking
+    const bookingIntervals =
+      (booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
+      1800000;
+    const totalCost = availability.price * bookingIntervals;
+    if (totalCost > user.balance) {
+      return 0;
+    }
+    user.balance -= totalCost;
+    const facility = await availability.facility;
+    facility.balance += totalCost;
+    AppDataSource.getRepository(UserEntity).save(user);
+    AppDataSource.getRepository(FacilityEntity).save(facility);
+    return totalCost;
+  }
+
+  public async refundBooking(
+    user: UserEntity,
+    availability: AvailabilityEntity,
+    booking: BookingEntity,
+  ): Promise<number> {
+    //check if the user is authorized to do a refund. It can be any provider role, or the user
+    // who made the booking
+    if (
+      !user.roles.some((role) => role === "provider") &&
+      user.id !== (await booking.user).id
+    ) {
+      throw new Error("User is not authorized to refund this booking");
+    }
+
+    //check if the start time of the booking is in the future
+    if (booking.startDateTime.getTime() < Date.now()) {
+      throw new Error("Booking start time has already passed");
+    }
+    const bookingIntervals =
+      (booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
+      1800000;
+    const totalCost = availability.price * bookingIntervals;
+    user.balance += totalCost;
+    const facility = await availability.facility;
+    facility.balance -= totalCost;
+    AppDataSource.getRepository(UserEntity).save(user);
+    AppDataSource.getRepository(FacilityEntity).save(facility);
+    return totalCost;
+  }
+
   public async vailidateBooking(
     booking: BookingModel,
+    user: UserEntity,
   ): Promise<AvailabilityEntity> {
     if (booking.startDateTime >= booking.endDateTime) {
       throw new Error("Start time must be before end time");
     }
+
+    //end time must be at least 30 minutes after the start time, and the booking length
+    //should be a multiple of 30
+    if (
+      booking.startDateTime.getMinutes() !== 0 &&
+      booking.startDateTime.getMinutes() !== 30
+    ) {
+      throw new Error("Booking start time must be on the hour or half hour");
+    }
+    if (
+      booking.endDateTime.getMinutes() !== 0 &&
+      booking.endDateTime.getMinutes() !== 30
+    ) {
+      throw new Error("Booking end time must be on the hour or half hour");
+    }
+    if (
+      booking.endDateTime.getTime() - booking.startDateTime.getTime() <
+      1800000
+    ) {
+      throw new Error("Booking must be at least 30 minutes long");
+    }
+
     const availability = await new AvailabilityService().getOneByID(
       booking.availability_id,
     );
@@ -45,7 +122,65 @@ class BookingService extends GenericService<BookingEntity> {
     ) {
       throw new Error("Booking must be within the availability");
     }
+
+    //check if the user making the booking can afford the availability
+    const maxBookings = await this.getAllFutureUserBookings(user);
+    if (maxBookings.length > 30) {
+      throw new Error("User has reached the maximum number of bookings");
+    }
     return availability;
+  }
+
+  public getAllFutureUserBookings(user: UserEntity): Promise<BookingEntity[]> {
+    const currentDate = new Date();
+    return this.getAll(
+      { limit: 30, offset: 0 },
+      {
+        where: { user: { id: user.id }, startDateTime: MoreThan(currentDate) },
+      },
+    );
+  }
+
+  public async getAllFutureFacilityBookings(
+    facility: FacilityEntity,
+  ): Promise<BookingEntity[]> {
+    const currentDate = new Date();
+    return this.getAll(
+      { limit: 30, offset: 0 },
+      {
+        where: {
+          availability: { facility: { id: facility.id } },
+          startDateTime: MoreThan(currentDate),
+        },
+      },
+    );
+  }
+
+  public async getAllPastUserBookings(
+    user: UserEntity,
+  ): Promise<BookingEntity[]> {
+    const currentDate = new Date();
+    return this.getAll(
+      { limit: 30, offset: 0 },
+      {
+        where: { user: { id: user.id }, endDateTime: LessThan(currentDate) },
+      },
+    );
+  }
+
+  public async getAllPastFacilityBookings(
+    facility: FacilityEntity,
+  ): Promise<BookingEntity[]> {
+    const currentDate = new Date();
+    return this.getAll(
+      { limit: 30, offset: 0 },
+      {
+        where: {
+          availability: { facility: { id: facility.id } },
+          endDateTime: LessThan(currentDate),
+        },
+      },
+    );
   }
 
   public async getBookingsForAvailability(
@@ -62,19 +197,22 @@ class BookingService extends GenericService<BookingEntity> {
     user: UserEntity,
     booking: BookingModel,
   ): Promise<BookingEntity> {
-    const availability = await this.vailidateBooking(booking);
+    const availability = await this.vailidateBooking(booking, user);
     const existingBookings = await availability.bookings;
     //Go through the list of bookings in the availability and check if the new booking starttime or end time conflicts with any of the existing bookings
     for (const currentBooking of existingBookings) {
       if (await this.conflictingBookingsCheck(currentBooking, booking)) {
         throw new Error("New Booking Conflicts with existing booking");
       }
+      //charge for the booking
     }
+    const cost = await this.chargeForBooking(user, availability, booking);
 
     const newBooking = new BookingEntity();
     newBooking.startDateTime = booking.startDateTime;
     newBooking.endDateTime = booking.endDateTime;
     newBooking.user = Promise.resolve(user);
+    newBooking.cost = cost;
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
@@ -88,7 +226,7 @@ class BookingService extends GenericService<BookingEntity> {
     booking_id: number,
     booking: BookingModel,
   ): Promise<BookingEntity> {
-    const availability = await this.vailidateBooking(booking);
+    const availability = await this.vailidateBooking(booking, user);
     const currentBooking = await this.getOneByID(booking_id);
     if (!currentBooking) {
       throw new NotFoundError("Booking not found");
@@ -113,7 +251,7 @@ class BookingService extends GenericService<BookingEntity> {
   }
 
   public async getBookings(user: UserEntity, filter: GetAllQuery) {
-    return this.getAll(filter, {
+    return await this.getAll(filter, {
       where: {
         user: {
           id: user.id,
@@ -131,6 +269,8 @@ class BookingService extends GenericService<BookingEntity> {
     if (!booking) {
       throw new NotFoundError("Booking not found on current user");
     }
+    //refund the booking
+    await this.refundBooking(user, await booking.availability, booking);
     return this.delete(booking_id);
   }
 }

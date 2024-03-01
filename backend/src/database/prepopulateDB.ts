@@ -45,23 +45,28 @@ export const prepopulateDB = async () => {
 
     user.sessions = Promise.resolve([session]);
     user.isProvider = true;
+    user.balance = i * 150;
 
     booking.startDateTime = new Date();
     booking.endDateTime = new Date();
     booking.user = Promise.resolve(user);
     booking.availability = Promise.resolve(availability);
+    booking.cost = 100;
 
     availability.Date = new Date();
     availability.startTime = new Date();
     availability.endTime = new Date();
     availability.facility = Promise.resolve(facility);
     availability.bookings = Promise.resolve([booking]);
+    availability.price = i;
 
     facility.name = "facility " + i;
     facility.availabilities = Promise.resolve([availability]);
     //facility.providers = [user];
     facility.description = "description " + i;
     facility.address = "address " + i;
+    facility.balance = i * 150;
+    facility.equipment = "equipment " + i;
 
     await AppDataSource.manager.save(user);
     //await AppDataSource.manager.save(session).catch((err) => console.log(err));
