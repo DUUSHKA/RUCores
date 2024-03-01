@@ -5,6 +5,7 @@ import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
+import BookingService from "./BookingService";
 import GenericService from "./GenericService";
 import SessionService from "./SessionService";
 
@@ -116,6 +117,28 @@ class UserService extends GenericService<UserEntity> {
 
   public async deleteUser(id: number): Promise<void> {
     this.delete(id);
+  }
+
+  public async liquidateUserBalance(
+    id: number,
+    widthdrawal: number,
+  ): Promise<UserEntity> {
+    const user = await this.repository.findOneBy({ id });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    //find all future bookings in order to determine pending balance
+    const allBookings = await new BookingService().getAllFutureUserBookings(
+      user,
+    );
+    const pendingBalance = allBookings.reduce((acc, booking) => {
+      return acc + booking.cost;
+    }, 0);
+    if (user.balance - pendingBalance < widthdrawal) {
+      throw new Error("Insufficient balance");
+    }
+    user.balance -= widthdrawal;
+    return this.repository.save(user);
   }
 }
 

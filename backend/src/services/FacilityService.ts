@@ -3,6 +3,7 @@ import { NotFoundError } from "routing-controllers";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { FacilityModel } from "../types/FacilityModel";
+import BookingService from "./BookingService";
 import GenericService from "./GenericService";
 import UserService from "./UserService";
 
@@ -69,6 +70,30 @@ class FacilityService extends GenericService<FacilityEntity> {
       });
     }
     return this.repository.save(facilityToUpdate);
+  }
+
+  public async liquidateFacilityBalance(
+    id: number,
+    widthrawal: number,
+  ): Promise<FacilityEntity> {
+    const facility = await this.getOneByID(id);
+    if (!facility) {
+      throw new NotFoundError("Facility not found");
+    }
+    //find all future bookings in order to determine pending balance
+    const allBookings = await new BookingService().getAllFutureFacilityBookings(
+      facility,
+    );
+    const pendingBalance = allBookings.reduce((acc, booking) => {
+      return acc + booking.cost;
+    }, 0);
+    if (facility.balance - pendingBalance < widthrawal) {
+      throw new Error(
+        "Facility does not have enough balance to make this withdrawal",
+      );
+    }
+    facility.balance -= widthrawal;
+    return this.repository.save(facility);
   }
 }
 

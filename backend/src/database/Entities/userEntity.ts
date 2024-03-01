@@ -1,6 +1,8 @@
 import { Exclude, Type } from "class-transformer";
 import {
   IsBoolean,
+  IsNotEmpty,
+  IsNumber,
   IsString,
   ValidateNested,
   ValidatePromise,
@@ -42,6 +44,10 @@ export class UserEntity extends GenericEntity {
   @Column("simple-array", { nullable: true })
   @IsString({ each: true })
   roles: string[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  balance: number;
 
   @Column()
   @IsBoolean()
