@@ -22,25 +22,21 @@ export class AvailabilityEntity extends GenericEntity {
   @ManyToOne(
     () => FacilityEntity,
     (facility: FacilityEntity) => facility.availabilities,
-    {
-      eager: true,
-    },
   )
   @ValidateNested()
   @Type(() => FacilityEntity)
-  facility: FacilityEntity;
+  facility: Promise<FacilityEntity>;
 
   @OneToMany(
     () => BookingEntity,
     (booking: BookingEntity) => booking.availability,
     {
       cascade: true,
-      eager: true,
     },
   )
   @ValidateNested()
   @Type(() => BookingEntity)
-  bookings: BookingEntity[];
+  bookings: Promise<BookingEntity[]>;
 
   @Exclude()
   getName = () => "Availability";

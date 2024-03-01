@@ -1,5 +1,6 @@
 import { NotFoundError } from "routing-controllers";
 import { AvailabilityEntity } from "../database/Entities/availabilityEntity";
+import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { AvailabilityModel } from "../types/AvailabilityModel";
 import FacilityService from "./FacilityService";
@@ -10,13 +11,14 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     super(AvailabilityEntity);
   }
 
+  // Verify availability times and facility id is valid
   public async validateAvailability(
     availability: AvailabilityModel,
-  ): Promise<void> {
+  ): Promise<FacilityEntity> {
     if (availability.startTime >= availability.endTime)
       throw new Error("Start time must be before end time");
 
-    //availability should not be longer for 12 hours
+    //availability time span must be within the same day
     if (availability.endTime.getDate() !== availability.Date.getDate())
       throw new Error(
         "Availability start and end time must be on the same date",
@@ -28,18 +30,15 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     if (!facility) {
       throw new NotFoundError("Facility not found");
     }
-    return;
+    return facility;
   }
 
   public async verifyOwnership(
     user: UserEntity,
-    facility_id: number,
+    facility: FacilityEntity,
   ): Promise<boolean> {
-    const facility = await new FacilityService().getOneByID(facility_id);
-    if (!facility) {
-      throw new NotFoundError("Facility not found");
-    }
-    if (!facility.providers.some((provider) => provider.id === user.id)) {
+    const providers = await facility.providers;
+    if (!providers.some((provider) => provider.id === user.id)) {
       throw new NotFoundError("User does not have access to this facility");
     }
     return true;
@@ -74,17 +73,15 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     availability: AvailabilityModel,
   ): Promise<AvailabilityEntity> {
     //validate the availability
-    await this.validateAvailability(availability);
+    const facility = await this.validateAvailability(availability);
 
-    const facility_id = availability.facility_id;
     //verify that the user has the right to control this facility
-    if (!(await this.verifyOwnership(user, facility_id))) {
+    if (!(await this.verifyOwnership(user, facility))) {
       throw new NotFoundError("User does not have access to this facility");
     }
     //Go through the list of availabilities in the facility and check if the new availability
     //starttime or end time conflicts with any of the existing availabilities
-    const currentFacilityAvailabilities =
-      await this.getAvailabilityByFacilityID(facility_id);
+    const currentFacilityAvailabilities = await facility.availabilities;
     for (const currentAvailability of currentFacilityAvailabilities) {
       if (
         await this.checkConflictingAvailabilities(
@@ -102,9 +99,7 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     newAvailability.startTime = availability.startTime;
     newAvailability.endTime = availability.endTime;
     newAvailability.Date = availability.Date;
-    newAvailability.facility = await new FacilityService().getOneByID(
-      facility_id,
-    );
+    newAvailability.facility = Promise.resolve(facility);
     return this.repository.save(newAvailability);
   }
 
@@ -114,20 +109,18 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     availability: AvailabilityModel,
   ): Promise<AvailabilityEntity> {
     //validate the availability
-    await this.validateAvailability(availability);
+    const facility = await this.validateAvailability(availability);
 
-    const oldAvailability = await this.getOneByID(availability_id);
-    if (!oldAvailability) {
+    const existingAvailability = await this.getOneByID(availability_id);
+    if (!existingAvailability) {
       throw new NotFoundError("Availability not found");
     }
-    const facility_id = oldAvailability.facility.id;
 
     //verify ownership
-    if (!(await this.verifyOwnership(user, facility_id))) {
+    if (!(await this.verifyOwnership(user, facility))) {
       throw new NotFoundError("User does not have access to this facility");
     }
-    const currentFacilityAvailabilities =
-      await this.getAvailabilityByFacilityID(facility_id);
+    const currentFacilityAvailabilities = await facility.availabilities;
 
     //Go through the list of availabilities in the facility and check if the new availability
     //starttime or end time conflicts with any of the existing availabilities
@@ -145,14 +138,12 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
       }
     }
     //Update the availability
-    oldAvailability.startTime = availability.startTime;
-    oldAvailability.endTime = availability.endTime;
-    oldAvailability.Date = availability.Date;
-    oldAvailability.facility = await new FacilityService().getOneByID(
-      facility_id,
-    );
+    existingAvailability.startTime = availability.startTime;
+    existingAvailability.endTime = availability.endTime;
+    existingAvailability.Date = availability.Date;
+    existingAvailability.facility = Promise.resolve(facility);
 
-    return this.repository.save(oldAvailability);
+    return this.repository.save(existingAvailability);
   }
 
   public async deleteAvailability(user: UserEntity, availability_id: number) {
@@ -160,8 +151,8 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
-    const facility_id = availability.facility.id;
-    if (!(await this.verifyOwnership(user, facility_id))) {
+    const facility = await availability.facility;
+    if (!(await this.verifyOwnership(user, facility))) {
       throw new NotFoundError("User does not have access to this facility");
     }
     return this.repository.delete(availability_id);

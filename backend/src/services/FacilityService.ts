@@ -19,7 +19,7 @@ class FacilityService extends GenericService<FacilityEntity> {
     facilityEntity.address = facility.address;
     facilityEntity.description = facility.description;
     const users = new UserService().getAllByID(facility.providers);
-    facilityEntity.providers = await users;
+    facilityEntity.providers = users;
     return this.repository.save(facilityEntity);
   }
 
@@ -63,10 +63,12 @@ class FacilityService extends GenericService<FacilityEntity> {
 
     //check if all providers suggested are actually providers
     if (facility.providers !== undefined && facility.providers.length > 0) {
-      const users = new UserService().getAllByID(facility.providers);
-      facilityToUpdate.providers = (await users).filter((user: UserEntity) => {
-        return user.isProvider;
-      });
+      const users = await new UserService().getAllByID(facility.providers);
+      facilityToUpdate.providers = Promise.resolve(
+        users.filter((user: UserEntity) => {
+          return user.isProvider;
+        }),
+      );
     }
     return this.repository.save(facilityToUpdate);
   }

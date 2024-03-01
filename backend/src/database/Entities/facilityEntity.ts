@@ -29,7 +29,7 @@ export class FacilityEntity extends GenericEntity {
   @Type(() => UserEntity)
   @Exclude()
   @ValidateNested()
-  providers: UserEntity[];
+  providers: Promise<UserEntity[]>;
 
   // @ManyToMany(() => User, (user: User) => user.facilities, {onDelete: 'SET NULL'})
   // users: User[];
@@ -44,7 +44,7 @@ export class FacilityEntity extends GenericEntity {
   )
   @ValidateNested()
   @Type(() => AvailabilityEntity)
-  availabilities: AvailabilityEntity[];
+  availabilities: Promise<AvailabilityEntity[]>;
 
   @Exclude()
   getName = () => "Facility";

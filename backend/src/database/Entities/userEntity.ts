@@ -53,11 +53,10 @@ export class UserEntity extends GenericEntity {
   })
   @ManyToMany(() => FacilityEntity, (facility) => facility.providers, {
     cascade: true,
-    eager: true,
   })
   @ValidateNested()
   @Type(() => FacilityEntity)
-  managedFacilities: FacilityEntity[];
+  managedFacilities: Promise<FacilityEntity[]>;
 
   // @ManyToMany(() => Facility, facility => facility.users, {nullable: true, onDelete: 'SET NULL'})
   // @JoinTable()
@@ -76,7 +75,7 @@ export class UserEntity extends GenericEntity {
   @ValidateNested()
   @ValidatePromise()
   @Type(() => BookingEntity)
-  bookings: BookingEntity[]; // Lazy loading, also need eager to be false (default)
+  bookings: Promise<BookingEntity[]>;
 
   @OneToMany(() => SessionEntity, (session) => session.user, {
     nullable: true,
@@ -87,7 +86,7 @@ export class UserEntity extends GenericEntity {
   @ValidatePromise()
   @Type(() => SessionEntity)
   @Exclude()
-  sessions: SessionEntity[];
+  sessions: Promise<SessionEntity[]>;
 
   @Exclude()
   getName = () => "User";

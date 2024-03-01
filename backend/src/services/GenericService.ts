@@ -38,9 +38,13 @@ class GenericService<T extends GenericEntity> {
    * Allows you to specify additional options with extraOptions
    */
   public async getAll(
-    filter: GetAllQuery,
+    filter?: GetAllQuery,
     extraOptions?: FindManyOptions<T>,
   ): Promise<T[]> {
+    filter = filter ?? {
+      limit: 50,
+      offset: 0,
+    };
     const options: FindManyOptions<T> = {
       order: {
         [filter.orderBy ?? "id"]: filter.order ?? "ASC",

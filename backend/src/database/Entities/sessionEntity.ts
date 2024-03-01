@@ -7,9 +7,7 @@ import { UserEntity } from "./userEntity";
 
 @Entity({ name: "session", schema: "rucores" })
 export class SessionEntity extends GenericEntity {
-  @ManyToOne(() => UserEntity, (user) => user.sessions, {
-    eager: true,
-  })
+  @ManyToOne(() => UserEntity, (user) => user.sessions)
   @ValidateNested()
   @Type(() => UserEntity)
   user: UserEntity;

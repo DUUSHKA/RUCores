@@ -1,4 +1,5 @@
 import { NotFoundError } from "routing-controllers";
+import { AvailabilityEntity } from "../database/Entities/availabilityEntity";
 import { BookingEntity } from "../database/Entities/bookingEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { BookingModel } from "../types/BookingModel";
@@ -26,7 +27,9 @@ class BookingService extends GenericService<BookingEntity> {
     return false;
   }
 
-  public async vailidateBooking(booking: BookingModel): Promise<void> {
+  public async vailidateBooking(
+    booking: BookingModel,
+  ): Promise<AvailabilityEntity> {
     if (booking.startDateTime >= booking.endDateTime) {
       throw new Error("Start time must be before end time");
     }
@@ -42,6 +45,7 @@ class BookingService extends GenericService<BookingEntity> {
     ) {
       throw new Error("Booking must be within the availability");
     }
+    return availability;
   }
 
   public async getBookingsForAvailability(
@@ -58,10 +62,8 @@ class BookingService extends GenericService<BookingEntity> {
     user: UserEntity,
     booking: BookingModel,
   ): Promise<BookingEntity> {
-    await this.vailidateBooking(booking);
-    const availabilityId = booking.availability_id;
-    const existingBookings =
-      await this.getBookingsForAvailability(availabilityId);
+    const availability = await this.vailidateBooking(booking);
+    const existingBookings = await availability.bookings;
     //Go through the list of bookings in the availability and check if the new booking starttime or end time conflicts with any of the existing bookings
     for (const currentBooking of existingBookings) {
       if (await this.conflictingBookingsCheck(currentBooking, booking)) {
@@ -72,14 +74,11 @@ class BookingService extends GenericService<BookingEntity> {
     const newBooking = new BookingEntity();
     newBooking.startDateTime = booking.startDateTime;
     newBooking.endDateTime = booking.endDateTime;
-    newBooking.user = user;
-    const availability = await new AvailabilityService().getOneByID(
-      availabilityId,
-    );
+    newBooking.user = Promise.resolve(user);
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
-    newBooking.availability = availability;
+    newBooking.availability = Promise.resolve(availability);
     return this.repository.save(newBooking);
   }
 
@@ -89,16 +88,12 @@ class BookingService extends GenericService<BookingEntity> {
     booking_id: number,
     booking: BookingModel,
   ): Promise<BookingEntity> {
-    await this.vailidateBooking(booking);
-    const oldBooking = await this.repository.findOne({
-      where: { id: booking_id },
-    });
-    if (!oldBooking) {
+    const availability = await this.vailidateBooking(booking);
+    const currentBooking = await this.getOneByID(booking_id);
+    if (!currentBooking) {
       throw new NotFoundError("Booking not found");
     }
-    const availabilityId = booking.availability_id;
-    const existingBookings =
-      await this.getBookingsForAvailability(availabilityId);
+    const existingBookings = await availability.bookings;
 
     //Check conflicts, but ignore if we are currently comparing the update to the old booking
     for (const currentBooking of existingBookings) {
@@ -108,27 +103,30 @@ class BookingService extends GenericService<BookingEntity> {
         throw new Error("New Booking Conflicts with existing booking");
       }
     }
-    const availability = await new AvailabilityService().getOneByID(
-      availabilityId,
-    );
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
-    oldBooking.startDateTime = booking.startDateTime;
-    oldBooking.endDateTime = booking.endDateTime;
-    oldBooking.availability = availability;
-    return this.repository.save(oldBooking);
+    currentBooking.startDateTime = booking.startDateTime;
+    currentBooking.endDateTime = booking.endDateTime;
+    currentBooking.availability = Promise.resolve(availability);
+    return this.repository.save(currentBooking);
   }
 
   public async getBookings(user: UserEntity, filter: GetAllQuery) {
     return this.getAll(filter, {
-      where: { user: user },
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
     });
   }
 
   public async deleteBooking(user: UserEntity, booking_id: number) {
     const booking = await this.getOneByID(booking_id, {
-      user: user,
+      user: {
+        id: user.id,
+      },
     });
     if (!booking) {
       throw new NotFoundError("Booking not found on current user");
