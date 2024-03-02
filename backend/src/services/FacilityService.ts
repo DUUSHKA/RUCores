@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NotFoundError } from "routing-controllers";
+import { GetAllQuery } from "src/types/GenericUtilTypes";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { FacilityModel } from "../types/FacilityModel";
@@ -32,6 +33,31 @@ class FacilityService extends GenericService<FacilityEntity> {
       throw new NotFoundError("Facility not found");
     }
     return facility;
+  }
+
+  public async getAllFacilities(
+    filter: GetAllQuery,
+  ): Promise<FacilityEntity[]> {
+    return this.getAll(filter);
+  }
+
+  //get All genericService method will not work with array of providers, and the join clause does
+  //not allow for conditional checks, so we use query builder
+  public async getAllManagedFacilities(
+    user: UserEntity,
+    filter: GetAllQuery,
+  ): Promise<FacilityEntity[]> {
+    //verify user is a provider
+    if (!user.isProvider) {
+      throw new NotFoundError("User is not a provider");
+    }
+    const facilities = await this.repository
+      .createQueryBuilder("facility")
+      .leftJoinAndSelect("facility.providers", "provider")
+      .where("provider.id = :providerId", { providerId: user.id })
+      .getMany();
+
+    return facilities;
   }
 
   public async deleteFacility(

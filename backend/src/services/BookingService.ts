@@ -40,7 +40,13 @@ class BookingService extends GenericService<BookingEntity> {
       (booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
       1800000;
     const totalCost = availability.price * bookingIntervals;
-    if (totalCost > user.balance) {
+    //get all future bookings for the user, and calculate the total cost of all the bookings
+    const futureBookings = await this.getAllFutureUserBookings(user);
+    const pendingBalance = futureBookings.reduce((acc, booking) => {
+      return acc + booking.cost;
+    }, 0);
+    //check if the user can afford the booking
+    if (totalCost > user.balance - pendingBalance) {
       return 0;
     }
     user.balance -= totalCost;
