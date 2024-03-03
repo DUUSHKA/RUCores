@@ -7,6 +7,7 @@ import express, { Request, Response } from "express";
 import fs from "fs";
 import mysql from "mysql2";
 import { createExpressServer } from "routing-controllers";
+import AvailabilityController from "./controllers/AvailabilityController";
 import { BookingController } from "./controllers/BookingController";
 import FacilityController from "./controllers/FacilityController";
 import { UserController } from "./controllers/UserController";
@@ -23,7 +24,12 @@ const routingControllersOptions = {
   currentUserChecker: fetchUser,
   defaultErrorHandler: (process.env.RESPONSE_STACKTRACE ?? "true") === "true",
   middlewares: [__dirname + "/middleware/*.ts"],
-  controllers: [UserController, FacilityController, BookingController],
+  controllers: [
+    UserController,
+    FacilityController,
+    BookingController,
+    AvailabilityController,
+  ],
 };
 
 const app: express.Application = createExpressServer(routingControllersOptions);

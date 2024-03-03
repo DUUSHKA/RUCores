@@ -51,7 +51,7 @@ export class UserController {
     return user;
   }
 
-  @Get("/:id")
+  @Get("/userID/:id")
   @HttpCode(200)
   @ResponseSchema(UserEntity)
   getOne(@Param("id") id: number) {

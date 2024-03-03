@@ -18,6 +18,7 @@ import { BookingEntity } from "../database/Entities/bookingEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
 import BookingService from "../services/BookingService";
+import FacilityService from "../services/FacilityService";
 import { BookingModel } from "../types/BookingModel";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 
@@ -42,6 +43,14 @@ export class BookingController {
     @QueryParams() query: GetAllQuery,
   ): Promise<BookingEntity[]> {
     return this.service.getBookings(user, query);
+  }
+
+  @Get("/bookingID/:id")
+  @HttpCode(200)
+  @ResponseSchema(BookingEntity)
+  getOne(@Param("id") id: number) {
+    const booking = this.service.getOneByID(id);
+    return booking;
   }
 
   @Post()
@@ -82,6 +91,27 @@ export class BookingController {
   @OnUndefined(204)
   remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
     return this.service.deleteBooking(user, id);
+  }
+
+  @Get("/availabilityID/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all bookings for an availability",
+  })
+  @ResponseSchema(BookingEntity, { isArray: true })
+  getBookingsByAvailability(@Param("id") id: number): Promise<BookingEntity[]> {
+    return this.service.getBookingsForAvailability(id);
+  }
+
+  @Get("/futureFacility/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all future bookings for a facility",
+  })
+  @ResponseSchema(BookingEntity, { isArray: true })
+  async getFuture(@Param("id") id: number): Promise<BookingEntity[]> {
+    const facility = await new FacilityService().getOneByID(id);
+    return this.service.getAllFutureFacilityBookings(facility);
   }
 }
 
