@@ -1,0 +1,26 @@
+.loginCard {
+    border: 2px solid grey;
+    border-radius: 3px;
+    margin: auto;
+    padding: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.userNameInput{
+    padding-top: 10px;
+}
+
+.passwordInput{
+    padding-top: 10px;
+    padding-bottom: 60px;
+}
+
+.image{
+    width: 300px;
+    padding-bottom: 40px;
+}
