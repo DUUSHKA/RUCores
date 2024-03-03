@@ -12,6 +12,7 @@ import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
 import { SessionEntity } from "./sessionEntity";
+import { TransactionEntity } from "./transactionEntity";
 
 @Entity({ name: "user", schema: "rucores" })
 export class UserEntity extends GenericEntity {
@@ -96,4 +97,7 @@ export class UserEntity extends GenericEntity {
 
   @Exclude()
   getName = () => "User";
+
+  @OneToMany(() => TransactionEntity, (transactions) => transactions.user)
+  transactions: TransactionEntity[];
 }

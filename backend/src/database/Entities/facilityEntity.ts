@@ -8,6 +8,7 @@ import {
 import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
 import GenericEntity from "./genericEntity";
+import { TransactionEntity } from "./transactionEntity";
 import { UserEntity } from "./userEntity";
 
 @Entity({ name: "facility", schema: "rucores" })
@@ -60,6 +61,9 @@ export class FacilityEntity extends GenericEntity {
   @ValidateNested()
   @Type(() => AvailabilityEntity)
   availabilities: Promise<AvailabilityEntity[]>;
+
+  @OneToMany(() => TransactionEntity, (transactions) => transactions.facility)
+  transactions: TransactionEntity[];
 
   @Exclude()
   getName = () => "Facility";

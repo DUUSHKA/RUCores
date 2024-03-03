@@ -1,10 +1,14 @@
 import crypto from "crypto";
+import AppDataSource from "./data-source";
 import { AvailabilityEntity } from "./Entities/availabilityEntity";
 import { BookingEntity } from "./Entities/bookingEntity";
 import { FacilityEntity } from "./Entities/facilityEntity";
 import { SessionEntity } from "./Entities/sessionEntity";
+import {
+  TransactionEntity,
+  TransactionType,
+} from "./Entities/transactionEntity";
 import { UserEntity } from "./Entities/userEntity";
-import AppDataSource from "./data-source";
 
 const firstname = "johny";
 const lastname = "bravo";
@@ -22,7 +26,7 @@ export const prepopulateDB = async () => {
     const facility = new FacilityEntity();
     const availability = new AvailabilityEntity();
     const session = new SessionEntity();
-
+    const transaction = new TransactionEntity();
     // user.id = i;
     // booking.bookingId = i;
     // facility.id = i;
@@ -67,6 +71,15 @@ export const prepopulateDB = async () => {
     facility.address = "address " + i;
     facility.balance = i * 150;
     facility.equipment = "equipment " + i;
+
+    transaction.amountChanged = Math.floor(Math.random() * 1001) - 500;
+    transaction.date = new Date();
+    transaction.eventDesription = "Transaction " + i;
+    if (i % 3 == 0) transaction.transactionType = TransactionType.Refund;
+    else if (i % 3 == 1) transaction.transactionType = TransactionType.Refill;
+    else transaction.transactionType = TransactionType.Transfer;
+    transaction.user = user;
+    transaction.facility = facility;
 
     await AppDataSource.manager.save(user);
     //await AppDataSource.manager.save(session).catch((err) => console.log(err));
