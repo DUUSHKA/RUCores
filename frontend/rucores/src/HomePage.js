@@ -1,5 +1,6 @@
 import React from "react";
-import "./HomePage.css"; // Link to the CSS file for styling
+import { Link } from "react-router-dom";
+import "./HomePage.css";
 
 function HomePage() {
   return (
@@ -9,16 +10,16 @@ function HomePage() {
         <nav>
           <ul>
             <li>
-              <a href="/schedule">Schedule</a>
+              <Link to="/schedule">Schedule</Link>
             </li>
             <li>
-              <a href="/wallet">Wallet</a>
+              <Link to="/wallet">Wallet</Link>
             </li>
             <li>
-              <a href="/analytics">Analytics</a>
+              <Link to="/analytics">Analytics</Link>
             </li>
             <li>
-              <a href="/account">Account</a>
+              <Link to="/account">Account</Link>
             </li>
           </ul>
         </nav>

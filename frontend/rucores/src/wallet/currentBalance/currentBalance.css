@@ -1,0 +1,17 @@
+.walletCardStyling{
+    border: 2px solid grey;
+    border-radius: 3px;
+    margin: auto;
+    padding: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    width: 300px;
+}
+
+.Content{
+    display: flex;
+
+}
+
+.pendingBalance{
+    padding-top: 10px;
+}

@@ -1,14 +1,14 @@
+import PropTypes from "prop-types";
 import React from "react";
 import "./Facility.css";
 
-function FacilityInfo() {
+function FacilityInfo(prop) {
   const facilityDetails = {
-    name: "Lab A - Chemistry",
-    equipment: ["Microscopes", "Bunsen Burners", "Chemical Reactors"],
-    operatingHours: "9 AM - 5 PM",
-    cost: "50 RU Coins per hour",
-    description:
-      "Lab A specializes in chemistry research and offers a wide range of equipment for various experiments.",
+    name: prop.facilityDetails.name,
+    equipment: prop.facilityDetails.equipment,
+    operatingHours: prop.facilityDetails.operatingHours,
+    cost: prop.facilityDetails.cost,
+    description: prop.facilityDetails.description,
   };
 
   return (
@@ -18,18 +18,18 @@ function FacilityInfo() {
         <strong>Description:</strong> {facilityDetails.description}
       </p>
       <p>
-        <strong>Available Equipment:</strong>{" "}
-        {facilityDetails.equipment.join(", ")}
+        <strong>Available Equipment:</strong> {facilityDetails.equipment}
       </p>
       <p>
         <strong>Operating Hours:</strong> {facilityDetails.operatingHours}
       </p>
-      <p>
+      <p className="cost">
         <strong>Cost:</strong> {facilityDetails.cost}
       </p>
-      {}
     </div>
   );
 }
-
+FacilityInfo.propTypes = {
+  facilityDetails: PropTypes.object,
+};
 export default FacilityInfo;
