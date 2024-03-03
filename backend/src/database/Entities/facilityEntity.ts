@@ -1,37 +1,50 @@
+import { Exclude, Type } from "class-transformer";
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  OneToMany,
-} from "typeorm";
-import { UserEntity } from "./userEntity";
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from "class-validator";
+import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
-import { Type } from "class-transformer";
+import GenericEntity from "./genericEntity";
+import { UserEntity } from "./userEntity";
 
-@Entity()
-export class FacilityEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+@Entity({ name: "facility", schema: "rucores" })
+export class FacilityEntity extends GenericEntity {
   @Column()
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @Column()
+  @IsString()
+  @IsNotEmpty()
   description: string;
 
   @Column()
+  @IsNumber()
+  @IsNotEmpty()
+  balance: number;
+
+  @Column()
+  @IsString()
+  @IsNotEmpty()
+  equipment: string;
+
+  @Column()
+  @IsString()
   address: string;
 
-  @ManyToOne(
+  @ManyToMany(
     () => UserEntity,
     (provider: UserEntity) => provider.managedFacilities,
-    {
-      onDelete: "SET NULL",
-    },
+    { nullable: true, onDelete: "CASCADE" },
   )
   @Type(() => UserEntity)
-  provider: UserEntity;
+  @Exclude()
+  @ValidateNested()
+  providers: Promise<UserEntity[]>;
 
   // @ManyToMany(() => User, (user: User) => user.facilities, {onDelete: 'SET NULL'})
   // users: User[];
@@ -44,6 +57,10 @@ export class FacilityEntity {
     (availability: AvailabilityEntity) => availability.facility,
     { nullable: true, cascade: true, onDelete: "CASCADE" },
   )
+  @ValidateNested()
   @Type(() => AvailabilityEntity)
-  availabilities: AvailabilityEntity[];
+  availabilities: Promise<AvailabilityEntity[]>;
+
+  @Exclude()
+  getName = () => "Facility";
 }

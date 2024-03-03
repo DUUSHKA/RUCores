@@ -1,52 +1,54 @@
-import { Entity, ManyToOne, PrimaryColumn, OneToMany, Column } from "typeorm";
-import { FacilityEntity } from "./facilityEntity";
+import { Exclude, Type } from "class-transformer";
+import { IsDate, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { BookingEntity } from "./bookingEntity";
-import { Type } from "class-transformer";
-import { IsDateString, IsNumber, ValidateNested } from "class-validator";
-//import { Provider } from './Provider';
+import { FacilityEntity } from "./facilityEntity";
+import GenericEntity from "./genericEntity";
 
-@Entity()
-export class AvailabilityEntity {
-  @PrimaryColumn()
-  @IsNumber()
-  availabilityId: number;
-
+@Entity({ name: "availability", schema: "rucores" })
+export class AvailabilityEntity extends GenericEntity {
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
+  @IsNotEmpty()
   Date: Date;
 
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
+  @IsNotEmpty()
   startTime: Date;
 
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
+  @IsNotEmpty()
   endTime: Date;
+
+  @Column()
+  @IsNumber()
+  @IsNotEmpty()
+  price: number;
 
   @ManyToOne(
     () => FacilityEntity,
     (facility: FacilityEntity) => facility.availabilities,
-    {
-      eager: true,
-    },
   )
   @ValidateNested()
   @Type(() => FacilityEntity)
-  facility: FacilityEntity;
+  facility: Promise<FacilityEntity>;
 
   @OneToMany(
     () => BookingEntity,
     (booking: BookingEntity) => booking.availability,
     {
       cascade: true,
-      eager: true,
     },
   )
   @ValidateNested()
   @Type(() => BookingEntity)
-  bookings: BookingEntity[];
+  bookings: Promise<BookingEntity[]>;
 
-  // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
-  // @JoinColumn({ name: "userId"})
-  // provider: Provider;
+  @Exclude()
+  getName = () => "Availability";
 }

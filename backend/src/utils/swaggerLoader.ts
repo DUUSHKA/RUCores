@@ -1,15 +1,18 @@
 // Reference: https://github.com/w3tecch/express-typescript-boilerplate/blob/develop/src/loaders/swaggerLoader.ts
 
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
+import express from "express";
+import { SchemaObject } from "openapi3-ts/dist/model/OpenApi";
 import {
   getMetadataArgsStorage,
   RoutingControllersOptions,
 } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 import * as swaggerUi from "swagger-ui-express";
-import express from "express";
-import { SchemaObject } from "openapi3-ts/dist/model/OpenApi";
 import log from "./logger";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+// const { defaultMetadataStorage } = require("class-transformer/cjs/storage");
 
 export default (
   expressApp: express.Application,
@@ -20,6 +23,7 @@ export default (
 
     const schemas = validationMetadatasToSchemas({
       refPointerPrefix: "#/components/schemas/",
+      // classTransformerMetadataStorage: defaultMetadataStorage,
     });
 
     const swaggerFile = routingControllersToSpec(
@@ -39,7 +43,7 @@ export default (
 
     swaggerFile.servers = [
       {
-        url: `http://localhost:${process.env.APP_PORT}/api`,
+        url: `http://localhost:${process.env.APP_PORT}`,
       },
     ];
 
@@ -48,7 +52,13 @@ export default (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (_req: any, _res: any, next: () => any) => next(),
       swaggerUi.serve,
-      swaggerUi.setup(swaggerFile),
+      swaggerUi.setup(
+        swaggerFile,
+        {},
+        {
+          docExpansion: "full",
+        },
+      ),
     );
   }
 };

@@ -1,15 +1,20 @@
-import "dotenv/config";
-import path from "path";
 import cookieParser from "cookie-parser";
+import "dotenv/config";
 import logger from "morgan";
+import path from "path";
 
-import { Request, Response } from "express";
-import express from "express";
+import express, { Request, Response } from "express";
+import fs from "fs";
+import mysql from "mysql2";
+import { createExpressServer } from "routing-controllers";
+import AvailabilityController from "./controllers/AvailabilityController";
+import { BookingController } from "./controllers/BookingController";
+import FacilityController from "./controllers/FacilityController";
+import { UserController } from "./controllers/UserController";
 import AppDataSource from "./database/data-source";
 import { prepopulateDB } from "./database/prepopulateDB";
-import { createExpressServer } from "routing-controllers";
-import log from "./utils/logger";
 import { fetchUser, verifyUser } from "./middleware/UserAuth";
+import log from "./utils/logger";
 import swaggerLoader from "./utils/swaggerLoader";
 
 const routingControllersOptions = {
@@ -17,12 +22,17 @@ const routingControllersOptions = {
   classTransformer: true,
   authorizationChecker: verifyUser,
   currentUserChecker: fetchUser,
-  defaultErrorHandler: false,
+  defaultErrorHandler: (process.env.RESPONSE_STACKTRACE ?? "true") === "true",
   middlewares: [__dirname + "/middleware/*.ts"],
-  controllers: [__dirname + "/controllers/*.ts"],
+  controllers: [
+    UserController,
+    FacilityController,
+    BookingController,
+    AvailabilityController,
+  ],
 };
 
-const app = createExpressServer(routingControllersOptions);
+const app: express.Application = createExpressServer(routingControllersOptions);
 
 app.use(logger("dev"));
 app.use(cookieParser());
@@ -47,10 +57,46 @@ swaggerLoader(app, routingControllersOptions);
 
 module.exports = app;
 
+if (process.env.DB_TYPE === "mysql") {
+  const connection = mysql.createConnection({
+    host: process.env.MYSQL_HOST ?? "localhost",
+    port: parseInt(process.env.MYSQL_PORT ?? "3306"),
+    user: process.env.MYSQL_USERNAME ?? "root",
+    password: process.env.MYSQL_PASSWORD ?? "root",
+    database: process.env.MYSQL_DATABASE ?? "rucores",
+    multipleStatements: true,
+  });
+
+  connection.connect((err) => {
+    if (err) throw err;
+    console.log("Connected to the database.");
+
+    // Read the SQL script
+    let sql = fs.readFileSync("src/database/reset_db.sql", "utf8");
+    sql = sql.replace(/\r|\n/g, " ");
+    console.log("SQL script: {%s}", sql);
+
+    // Execute the SQL script
+    connection.query(sql, (err) => {
+      if (err) throw err;
+      console.log("SQL script executed successfully.");
+
+      // Close the connection
+      connection.end((err) => {
+        if (err) throw err;
+        console.log("Connection closed.");
+      });
+    });
+  });
+}
+
 AppDataSource.initialize()
   .then(async () => {
     log.debug("Data Source initialized");
-    await prepopulateDB().catch((err) => console.log(err));
+    if (process.env.PREPOPULATE_DB === "true") {
+      await prepopulateDB().catch((err) => console.log(err));
+      log.debug("Database prepopulated");
+    }
   })
   .catch((err) => {
     console.log("Data Source failed to initialize", err);
@@ -62,6 +108,13 @@ app.get("/api", (req: Request, res: Response) => {
 
 const port = process.env.APP_PORT ?? 3000;
 log.info(`Server starting on port ${port}`);
+log.info("Available routes:");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app._router.stack.forEach((r: any) => {
+  if (r.route && r.route.path) {
+    log.debug(r.route.path);
+  }
+});
 app.listen(port, () => {
   log.debug(`Server is running on port ${port}`);
 });

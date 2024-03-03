@@ -1,6 +1,6 @@
-import React from 'react';
-import './Facility.css';
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+import React from "react";
+import "./Facility.css";
 
 function FacilityInfo(prop) {
   const facilityDetails = {
@@ -14,14 +14,22 @@ function FacilityInfo(prop) {
   return (
     <div className="facilityInfo">
       <h1>{facilityDetails.name}</h1>
-      <p><strong>Description:</strong> {facilityDetails.description}</p>
-      <p><strong>Available Equipment:</strong> {facilityDetails.equipment}</p>
-      <p><strong>Operating Hours:</strong> {facilityDetails.operatingHours}</p>
-      <p className="cost"><strong>Cost:</strong> {facilityDetails.cost}</p>
+      <p>
+        <strong>Description:</strong> {facilityDetails.description}
+      </p>
+      <p>
+        <strong>Available Equipment:</strong> {facilityDetails.equipment}
+      </p>
+      <p>
+        <strong>Operating Hours:</strong> {facilityDetails.operatingHours}
+      </p>
+      <p className="cost">
+        <strong>Cost:</strong> {facilityDetails.cost}
+      </p>
     </div>
   );
 }
 FacilityInfo.propTypes = {
-  facilityDetails:PropTypes.object,
+  facilityDetails: PropTypes.object,
 };
 export default FacilityInfo;

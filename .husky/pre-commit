@@ -1,4 +1,8 @@
 echo "Running pre-commit hook"
+echo "Building backend"
+npm run build --prefix backend
+echo "Building frontend"
+npm run build --prefix frontend/rucores
 echo "Checking backend"
 npx lint-staged --cwd backend
 echo "Checking frontend"

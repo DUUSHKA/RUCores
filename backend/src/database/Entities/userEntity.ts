@@ -1,21 +1,20 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { FacilityEntity } from "./facilityEntity";
-import { BookingEntity } from "./bookingEntity";
-import { Type } from "class-transformer";
+import { Exclude, Type } from "class-transformer";
 import {
   IsBoolean,
-  IsDateString,
+  IsNotEmpty,
   IsNumber,
   IsString,
   ValidateNested,
+  ValidatePromise,
 } from "class-validator";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { BookingEntity } from "./bookingEntity";
+import { FacilityEntity } from "./facilityEntity";
+import GenericEntity from "./genericEntity";
+import { SessionEntity } from "./sessionEntity";
 
-@Entity()
-export class UserEntity {
-  @PrimaryGeneratedColumn()
-  @IsNumber()
-  id: number;
-
+@Entity({ name: "user", schema: "rucores" })
+export class UserEntity extends GenericEntity {
   @Column()
   @IsString()
   firstName: string;
@@ -24,29 +23,46 @@ export class UserEntity {
   @IsString()
   lastName: string;
 
+  @Column()
+  @IsString()
+  email: string;
+
+  @Column()
+  @IsString()
+  username: string;
+
+  @Column()
+  @IsString()
+  @Exclude()
+  hashedPassword: string;
+
+  // Send the salt to the client for hashing the password
   @Column({ nullable: true })
+  @IsString()
+  salt: string;
+
+  @Column("simple-array", { nullable: true })
+  @IsString({ each: true })
+  roles: string[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  balance: number;
+
+  @Column()
   @IsBoolean()
   isProvider: boolean;
 
-  @Column({ nullable: true })
-  @IsNumber()
-  apikey: number;
-
-  @Column({ nullable: true })
-  @IsDateString()
-  apiKeyExpiration: Date;
-
-  // @Column({nullable: true})
-  // managedFacilities: Facility[];
-
-  @OneToMany(() => FacilityEntity, (facility) => facility.provider, {
-    nullable: true,
-    onDelete: "SET NULL",
-    cascade: true,
-    eager: true,
+  @JoinTable({
+    joinColumn: { name: "userId" },
+    inverseJoinColumn: { name: "facilityId" },
   })
+  @ManyToMany(() => FacilityEntity, (facility) => facility.providers, {
+    cascade: true,
+  })
+  @ValidateNested()
   @Type(() => FacilityEntity)
-  managedFacilities: FacilityEntity[];
+  managedFacilities: Promise<FacilityEntity[]>;
 
   // @ManyToMany(() => Facility, facility => facility.users, {nullable: true, onDelete: 'SET NULL'})
   // @JoinTable()
@@ -60,8 +76,24 @@ export class UserEntity {
     nullable: true,
     onDelete: "CASCADE",
     cascade: true,
+    eager: true,
   })
   @ValidateNested()
+  @ValidatePromise()
   @Type(() => BookingEntity)
-  bookings: BookingEntity[];
+  bookings: Promise<BookingEntity[]>;
+
+  @OneToMany(() => SessionEntity, (session) => session.user, {
+    nullable: true,
+    onDelete: "CASCADE",
+    cascade: true,
+  })
+  @ValidateNested()
+  @ValidatePromise()
+  @Type(() => SessionEntity)
+  @Exclude()
+  sessions: Promise<SessionEntity[]>;
+
+  @Exclude()
+  getName = () => "User";
 }

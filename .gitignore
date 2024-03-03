@@ -133,3 +133,5 @@ dist
 
 
 .DS_Store
+*.sqlite3
+**/testFile.ts
