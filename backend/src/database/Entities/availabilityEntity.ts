@@ -1,10 +1,5 @@
 import { Exclude, Type } from "class-transformer";
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  ValidateNested,
-} from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
@@ -13,17 +8,20 @@ import GenericEntity from "./genericEntity";
 @Entity({ name: "availability", schema: "rucores" })
 export class AvailabilityEntity extends GenericEntity {
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @IsNotEmpty()
   Date: Date;
 
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @IsNotEmpty()
   startTime: Date;
 
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @IsNotEmpty()
   endTime: Date;
 

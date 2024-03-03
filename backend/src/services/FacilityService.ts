@@ -43,6 +43,7 @@ class FacilityService extends GenericService<FacilityEntity> {
 
   //get All genericService method will not work with array of providers, and the join clause does
   //not allow for conditional checks, so we use query builder
+  //This is an alternative way to get all facilities managed by a user, using query builder
   public async getAllManagedFacilities(
     user: UserEntity,
     filter: GetAllQuery,

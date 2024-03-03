@@ -83,6 +83,16 @@ export class BookingController {
   remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
     return this.service.deleteBooking(user, id);
   }
+
+  @Get("/availabilityID/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all bookings for an availability",
+  })
+  @ResponseSchema(BookingEntity, { isArray: true })
+  getBookingsByAvailability(@Param("id") id: number): Promise<BookingEntity[]> {
+    return this.service.getBookingsForAvailability(id);
+  }
 }
 
 export default BookingController;

@@ -10,14 +10,18 @@ export class AvailabilityModel {
   @IsNotEmpty()
   @IsDate()
   @Type(() => Date)
-  startTime: Date;
+  startDateTime: Date;
 
   @IsNotEmpty()
   @IsDate()
   @Type(() => Date)
-  endTime: Date;
+  endDateTime: Date;
 
   @IsNotEmpty()
   @IsNumber()
   facility_id: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: number;
 }
