@@ -32,7 +32,6 @@ class UserService extends GenericService<UserEntity> {
     newUser.isProvider = user.isProvider;
     return this.repository.save(newUser);
   }
-
   public async createProvider(provider: UserModel): Promise<UserEntity> {
     if (provider.isProvider === false) {
       throw new ForbiddenError("User is not a provider");
