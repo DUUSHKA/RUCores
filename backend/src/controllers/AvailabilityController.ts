@@ -68,6 +68,14 @@ export class AvailabilityController {
         return this.service.getAvailabilityByID(id);
       } */
 
+  @Get("/availabilityID/:id")
+  @HttpCode(200)
+  @ResponseSchema(AvailabilityEntity)
+  getOne(@Param("id") id: number) {
+    const avail = this.service.getOneByID(id);
+    return avail;
+  }
+
   @Post()
   @HttpCode(201)
   @OpenAPI({

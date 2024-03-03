@@ -212,10 +212,10 @@ class BookingService extends GenericService<BookingEntity> {
       //charge for the booking
     }
     const cost = await this.chargeForBooking(user, availability, booking);
-
     const newBooking = new BookingEntity();
     newBooking.startDateTime = booking.startDateTime;
     newBooking.endDateTime = booking.endDateTime;
+    //(await newBooking.user).id = user.id;
     newBooking.user = Promise.resolve(user);
     newBooking.cost = cost;
     if (!availability) {
@@ -233,11 +233,14 @@ class BookingService extends GenericService<BookingEntity> {
   ): Promise<BookingEntity> {
     const availability = await this.vailidateBooking(booking, user);
     const currentBooking = await this.getOneByID(booking_id);
+    // console.log(user.id, (await currentBooking.user).id);
+    if (user.id != (await currentBooking.user).id) {
+      throw new Error("This user cannot update this booking");
+    }
     if (!currentBooking) {
       throw new NotFoundError("Booking not found");
     }
     const existingBookings = await availability.bookings;
-
     //Check conflicts, but ignore if we are currently comparing the update to the old booking
     for (const currentBooking of existingBookings) {
       if (currentBooking.id === booking_id) continue;
@@ -252,6 +255,11 @@ class BookingService extends GenericService<BookingEntity> {
     currentBooking.startDateTime = booking.startDateTime;
     currentBooking.endDateTime = booking.endDateTime;
     currentBooking.availability = Promise.resolve(availability);
+    currentBooking.cost = await this.chargeForBooking(
+      user,
+      availability,
+      booking,
+    );
     return this.repository.save(currentBooking);
   }
 
