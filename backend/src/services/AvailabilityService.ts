@@ -15,14 +15,37 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
   public async validateAvailability(
     availability: AvailabilityModel,
   ): Promise<FacilityEntity> {
-    if (availability.startTime >= availability.endTime)
+    if (availability.startDateTime >= availability.endDateTime)
       throw new Error("Start time must be before end time");
 
+    //check the start time is in the future
+    if (availability.startDateTime.getTime() < Date.now()) {
+      throw new Error("Availability start time has already passed");
+    }
     //availability time span must be within the same day
-    if (availability.endTime.getDate() !== availability.Date.getDate())
+    if (
+      availability.endDateTime.getDate() !==
+      availability.startDateTime.getDate()
+    )
       throw new Error(
         "Availability start and end time must be on the same date",
       );
+
+    //check if the time is on the hour or half hour
+    if (
+      availability.startDateTime.getMinutes() !== 0 &&
+      availability.startDateTime.getMinutes() !== 30
+    ) {
+      throw new Error(
+        "Availability start time must be on the hour or half hour",
+      );
+    }
+    if (
+      availability.endDateTime.getMinutes() !== 0 &&
+      availability.endDateTime.getMinutes() !== 30
+    ) {
+      throw new Error("Availability end time must be on the hour or half hour");
+    }
 
     const facility = await new FacilityService().getOneByID(
       availability.facility_id,
@@ -50,10 +73,10 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
   ): Promise<boolean> {
     //check if the new availability start time or end time is within the range of the old availability
     if (
-      (proposedAvailability.startTime >= establishedAvailability.startTime &&
-        proposedAvailability.startTime <= establishedAvailability.endTime) ||
-      (proposedAvailability.endTime >= establishedAvailability.startTime &&
-        proposedAvailability.endTime <= establishedAvailability.endTime)
+      (proposedAvailability.startDateTime > establishedAvailability.startTime &&
+        proposedAvailability.startDateTime < establishedAvailability.endTime) ||
+      (proposedAvailability.endDateTime > establishedAvailability.startTime &&
+        proposedAvailability.endDateTime < establishedAvailability.endTime)
     )
       return true;
 
@@ -89,6 +112,7 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
           availability,
         )
       ) {
+        console.log(currentAvailability, availability);
         throw new Error(
           "New Availability Conflicts with existing availability",
         );
@@ -96,9 +120,10 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     }
     //Create a new availability
     const newAvailability = new AvailabilityEntity();
-    newAvailability.startTime = availability.startTime;
-    newAvailability.endTime = availability.endTime;
+    newAvailability.startTime = availability.startDateTime;
+    newAvailability.endTime = availability.endDateTime;
     newAvailability.Date = availability.Date;
+    newAvailability.price = availability.price;
     newAvailability.facility = Promise.resolve(facility);
     return this.repository.save(newAvailability);
   }
@@ -138,12 +163,20 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
       }
     }
     //Update the availability
-    existingAvailability.startTime = availability.startTime;
-    existingAvailability.endTime = availability.endTime;
+    existingAvailability.startTime = availability.startDateTime;
+    existingAvailability.endTime = availability.endDateTime;
     existingAvailability.Date = availability.Date;
     existingAvailability.facility = Promise.resolve(facility);
 
     return this.repository.save(existingAvailability);
+
+    //To return only certain fields, this is an example
+    //  const users = await userRepository
+    // .createQueryBuilder('user')
+    // .leftJoinAndSelect('user.posts', 'post')
+    // .select('user.id') // select only the id field of the user
+    // .addSelect(['post.title', 'post.content']) // select only the title and content fields of the post
+    // .getMany();
   }
 
   public async deleteAvailability(user: UserEntity, availability_id: number) {

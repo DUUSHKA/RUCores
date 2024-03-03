@@ -1,5 +1,5 @@
 import { Exclude, Type } from "class-transformer";
-import { IsDateString, IsNumber, ValidateNested } from "class-validator";
+import { IsDate, IsNumber, ValidateNested } from "class-validator";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
 import GenericEntity from "./genericEntity";
@@ -9,11 +9,13 @@ import { UserEntity } from "./userEntity";
 @Entity({ name: "booking", schema: "rucores" })
 export class BookingEntity extends GenericEntity {
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   startDateTime: Date;
 
   @Column()
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   endDateTime: Date;
 
   @Column()

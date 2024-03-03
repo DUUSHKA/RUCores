@@ -138,6 +138,17 @@ class UserService extends GenericService<UserEntity> {
     user.balance -= widthdrawal;
     return this.repository.save(user);
   }
+
+  //temporary function to add balance to a user
+  //Need to integrate with paypal API
+  public async addBalance(id: number, amount: number): Promise<UserEntity> {
+    const user = await this.repository.findOneBy({ id });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    user.balance += amount;
+    return this.repository.save(user);
+  }
 }
 
 export default UserService;
