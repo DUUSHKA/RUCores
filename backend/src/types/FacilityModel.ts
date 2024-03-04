@@ -14,6 +14,14 @@ export class FacilityModel {
   address: string;
 
   @IsOptional()
+  @IsNumber()
+  balance: number;
+
+  @IsOptional()
+  @IsString()
+  equipment: string;
+
+  @IsOptional()
   @IsNumber({}, { each: true })
   providers: number[];
   //Other wise use the logged in user to create the facility
