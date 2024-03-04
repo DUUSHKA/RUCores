@@ -22,6 +22,8 @@ class FacilityService extends GenericService<FacilityEntity> {
     facilityEntity.description = facility.description;
     const users = new UserService().getAllByID(facility.providers);
     facilityEntity.providers = users;
+    facilityEntity.balance = facility.balance;
+    facilityEntity.equipment = facility.equipment;
     return this.repository.save(facilityEntity);
   }
 
@@ -88,6 +90,9 @@ class FacilityService extends GenericService<FacilityEntity> {
     facilityToUpdate.address = facility.address ?? facilityToUpdate.address;
     facilityToUpdate.description =
       facility.description ?? facilityToUpdate.description;
+    facilityToUpdate.balance = facility.balance ?? facilityToUpdate.balance;
+    facilityToUpdate.equipment =
+      facility.equipment ?? facilityToUpdate.equipment;
 
     //check if all providers suggested are actually providers
     if (facility.providers !== undefined && facility.providers.length > 0) {
