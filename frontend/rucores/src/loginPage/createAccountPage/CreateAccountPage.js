@@ -1,12 +1,22 @@
-import React from "react";
-import "./CreateAccountPage.css";
-import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from "react";
+import Button from "react-bootstrap/Button";
+import "./CreateAccountPage.css";
 // import InputGroup from 'react-bootstrap/InputGroup';
 import Form from "react-bootstrap/Form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function CreateAccountPage() {
+  const navigate = useNavigate();
+  const [userDetails, setUserDetails] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+    isProvider: false,
+  });
+
   // /**
   //  * set background color to red for login button
   //  */
@@ -20,50 +30,103 @@ function CreateAccountPage() {
   // // eslint-disable-next-line no-undef
   // const RULogo = require('../assets/Logo-Rutgers-University.jpg');
 
-  return (
-    <>
-      <div className="loginCard">
-        <Form>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>First Name</Form.Label>
-            <Form.Control type="FirstName" placeholder="First Name" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control type="LastName" placeholder="Last Name" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Username/NetID</Form.Label>
-            <Form.Control type="Username/NetID" placeholder="Username/NetID" />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" />
-            <Form.Text className="text-muted">
-              We will never share your email with anyone else.
-            </Form.Text>
-          </Form.Group>
+  const handleChange = (e) => {
+    const { name, value, checked, type } = e.target;
+    setUserDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="pass" placeholder="Password" />
-          </Form.Group>
-          <Form.Check // prettier-ignore
-            type="switch"
-            id="custom-switch"
-            label="Are you a provider?"
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:3001/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userDetails),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json();
+        console.error("Error details:", errorBody.errors);
+        throw new Error(errorBody.message || "Failed to create account");
+      }
+
+      const result = await response.json();
+      console.log("User created successfully:", result);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error creating user:", error);
+      //setError(error.message);
+    }
+  };
+  return (
+    <div className="loginCard">
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>First Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="First Name"
+            name="firstName"
+            onChange={handleChange}
           />
-          <Link to="/">
-            <Button variant="primary" type="submit">
-              Create Account
-            </Button>
-          </Link>
-          <Link to="/">
-            <Button variant="link">Back To Login</Button>
-          </Link>
-        </Form>
-      </div>
-    </>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Last Name"
+            name="lastName"
+            onChange={handleChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Username/NetID</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Username/NetID"
+            name="username"
+            onChange={handleChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            name="email"
+            onChange={handleChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            name="password"
+            onChange={handleChange}
+          />
+        </Form.Group>
+        <Form.Check
+          type="switch"
+          id="custom-switch"
+          label="Are you a provider?"
+          name="isProvider"
+          onChange={handleChange}
+        />
+        <Button variant="primary" type="submit">
+          Create Account
+        </Button>
+        <Link to="/" className="btn btn-link">
+          Back To Login
+        </Link>
+      </Form>
+    </div>
   );
 }
 
