@@ -3,6 +3,7 @@ import "dotenv/config";
 import logger from "morgan";
 import path from "path";
 
+import cors from "cors";
 import express, { Request, Response } from "express";
 import fs from "fs";
 import mysql from "mysql2";
@@ -37,6 +38,12 @@ const app: express.Application = createExpressServer(routingControllersOptions);
 app.use(logger("dev"));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 swaggerLoader(app, routingControllersOptions);
 
 // // catch 404 and forward to error handler
