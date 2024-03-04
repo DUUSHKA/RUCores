@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_green.css"; // Import the Flatpickr styles
-import FacilityInfo from '../schedule_facilities/FacilityCards/Facility';
+import FacilityInfo from "../schedule_facilities/FacilityCards/Facility";
 
 function AddFacility() {
   const [title, setTitle] = useState("");
