@@ -39,8 +39,8 @@ function FacilityInfo(prop) {
           throw new Error("Failed to fetch availability data");
         }
 
+        // eslint-disable-next-line no-unused-vars
         const data = await response.json();
-        console.log("Availability data:", data);
         handleShow();
       } catch (error) {
         console.error("Error:", error);
@@ -54,7 +54,6 @@ function FacilityInfo(prop) {
   return (
     <>
       <div className="facilityInfo">
-        <div>{JSON.stringify(prop.facilityDetails)}</div>
         <h1>{facilityDetails.name}</h1>
         <p>
           <strong>Description:</strong> {facilityDetails.description}
@@ -69,9 +68,14 @@ function FacilityInfo(prop) {
           <Button onClick={getFacilityInfo}>Schedule a Booking</Button>
         </p>
       </div>
-      <Modal show={show} onHide={handleClose} keyboard={false}>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        keyboard={false}
+        dialogClassName="enlargeModal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Modal title</Modal.Title>
+          <Modal.Title>Create Booking for {facilityDetails.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Booking facilityID={facilityDetails.id} />

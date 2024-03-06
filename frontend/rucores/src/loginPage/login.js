@@ -42,7 +42,6 @@ function Login() {
       }
 
       const result = await response.json();
-      console.log("Post created successfully:", result);
       reroute(result);
     } catch (error) {
       console.error("Error:", error);

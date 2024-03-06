@@ -27,8 +27,6 @@ function ScheduleFacility() {
 
         const data = await response.json();
         setFacilityData(data);
-        console.log("Fetched data:", data);
-        console.log(facilityData);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -37,9 +35,7 @@ function ScheduleFacility() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("Updated facilityData:", facilityData);
-  }, [facilityData]);
+  useEffect(() => {}, [facilityData]);
 
   const facilityDetails = {
     name: "Lab A - Chemistry",
