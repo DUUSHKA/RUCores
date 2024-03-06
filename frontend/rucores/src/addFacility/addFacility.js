@@ -74,7 +74,7 @@ function AddFacility() {
         startDateTime: startTime,
         endDateTime: endTime,
         user_id: parseInt(window.sessionStorage.getItem("id")),
-        facility_id: 1,
+        facility_id: facilityResponse.id,
         price: parseInt(cost),
       };
       const availabilityResponse =
