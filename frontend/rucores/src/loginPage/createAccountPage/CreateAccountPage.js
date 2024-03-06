@@ -56,8 +56,8 @@ function CreateAccountPage() {
         throw new Error(errorBody.message || "Failed to create account");
       }
 
+      // eslint-disable-next-line no-unused-vars
       const result = await response.json();
-      console.log("User created successfully:", result);
       navigate("/login");
     } catch (error) {
       console.error("Error creating user:", error);

@@ -38,3 +38,8 @@ strong {
   color: #555;
   font-weight: bold;
 }
+
+
+.enlargeModal{
+  max-width: 1200px; /* Adjust the max-width as needed */
+}
