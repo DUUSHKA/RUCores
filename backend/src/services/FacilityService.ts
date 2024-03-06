@@ -20,8 +20,8 @@ class FacilityService extends GenericService<FacilityEntity> {
     facilityEntity.name = facility.name;
     facilityEntity.address = facility.address;
     facilityEntity.description = facility.description;
-    const users = new UserService().getAllByID(facility.providers);
-    facilityEntity.providers = users;
+    const users = await new UserService().getAllByID(facility.providers);
+    facilityEntity.providers = Promise.resolve(users);
     facilityEntity.balance = facility.balance;
     facilityEntity.equipment = facility.equipment;
     return this.repository.save(facilityEntity);
