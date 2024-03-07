@@ -1,0 +1,13 @@
+
+.makeBooking{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.rightSideofCalandar{
+
+}
+
+.calandar{
+    width:320px;
+}

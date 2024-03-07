@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import logo from "../logo.svg";
 
 function NavBar() {
+  const isProvider = window.sessionStorage.getItem("isProvider") === "true";
   return (
     <div className="App">
       <nav className="App-nav">
@@ -13,15 +14,11 @@ function NavBar() {
             <Link to="/login"></Link>
           </li>
           <li>
-            <Link to="/home">Home</Link>
-          </li>{" "}
-          {}
-          <li>
             <Link to="/dashboard">Dashboard</Link>
           </li>{" "}
           {}
           <li>
-            <Link to="/schedule">Schedule</Link>
+            <Link to="/schedule">Scheduled</Link>
           </li>
           <li>
             <Link to="/wallet">Wallet</Link>
@@ -33,11 +30,13 @@ function NavBar() {
             <Link to="/faq">FAQ</Link>
           </li>
           <li>
-            <Link to="/FacilityInfo">FacilityInfo</Link>
+            <Link to="/FacilityInfo">Schedule Facilities</Link>
           </li>
-          <li>
-            <Link to="/AddFacility">Add Facility</Link>
-          </li>
+          {isProvider && (
+            <li>
+              <Link to="/AddFacility">Add Facility</Link>
+            </li>
+          )}
           <li>
             <Link to="/">Log Out</Link>
           </li>

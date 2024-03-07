@@ -74,6 +74,7 @@ export const prepopulateDB = async () => {
   const date1 = new Date(2024, 2, 4, 12, 0, 0);
   const date2 = new Date(2024, 1, 26, 12, 0, 0);
   const date3 = new Date(2024, 3, 15, 12, 0, 0);
+
   // booking.bookingId = i;
   // facility.id = i;
   // availability.availabilityId = i;
