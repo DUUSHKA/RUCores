@@ -21,10 +21,10 @@ class BookingService extends GenericService<BookingEntity> {
   ): Promise<boolean> {
     //check if the new booking start time or end time is within the range of the old booking
     if (
-      (proposedBooking.startDateTime >= establishedBooking.startDateTime &&
-        proposedBooking.startDateTime <= establishedBooking.endDateTime) ||
-      (proposedBooking.endDateTime >= establishedBooking.startDateTime &&
-        proposedBooking.endDateTime <= establishedBooking.endDateTime)
+      (proposedBooking.startDateTime > establishedBooking.startDateTime &&
+        proposedBooking.startDateTime < establishedBooking.endDateTime) ||
+      (proposedBooking.endDateTime > establishedBooking.startDateTime &&
+        proposedBooking.endDateTime < establishedBooking.endDateTime)
     )
       return true;
     return false;

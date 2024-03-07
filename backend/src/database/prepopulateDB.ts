@@ -1,10 +1,10 @@
 import crypto from "crypto";
-import AppDataSource from "./data-source";
 import { AvailabilityEntity } from "./Entities/availabilityEntity";
 import { BookingEntity } from "./Entities/bookingEntity";
 import { FacilityEntity } from "./Entities/facilityEntity";
 import { SessionEntity } from "./Entities/sessionEntity";
 import { UserEntity } from "./Entities/userEntity";
+import AppDataSource from "./data-source";
 
 /**
  * Adds time to a date. Modelled after MySQL DATE_ADD function.

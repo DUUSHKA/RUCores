@@ -8,9 +8,16 @@ import {
   ValidatePromise,
 } from "class-validator";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import LogType from "../../types/LogType";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
+import {
+  AvailabilityEvent,
+  BookingEvent,
+  LogEntity,
+  ModificationEvent,
+} from "./logEntity";
 import { SessionEntity } from "./sessionEntity";
 
 @Entity({ name: "user", schema: "rucores" })
@@ -95,5 +102,40 @@ export class UserEntity extends GenericEntity {
   sessions: Promise<SessionEntity[]>;
 
   @Exclude()
+  @ValidateNested()
+  @OneToMany(() => LogEntity, (log) => log.user)
+  @Type(() => LogEntity, {
+    discriminator: {
+      property: "LogType",
+      subTypes: [
+        { value: BookingEvent, name: LogType.BookingEvent },
+        { value: AvailabilityEvent, name: LogType.AvailabilityEvent },
+        { value: ModificationEvent, name: LogType.ModificationEvent },
+      ],
+    },
+    keepDiscriminatorProperty: true,
+  })
+  logs: (BookingEvent | AvailabilityEvent | ModificationEvent)[];
+  // @Transform((value) => {
+  //   if (!Array.isArray(value)) throw new Error('Invalid type');
+
+  //   return value.map((item: LogEntity) => {
+  //     switch (item.LogType) {
+  //       case LogType.BookingEvent:
+  //         return Object.assign(new BookingEvent(), item);
+  //       case LogType.AvailabilityEvent:
+  //         return Object.assign(new AvailabilityEvent(), item);
+  //       case LogType.ModificationEvent:
+  //         return Object.assign(new ModificationEvent(), item);
+  //       default:
+  //         throw new Error('Invalid type');
+  //     }
+  //   });
+  // })
+  //log: (BookingEvent | AvailabilityEvent | ModificationEvent)[];
+
+  @Exclude()
   getName = () => "User";
+
+  //Need to create an after load function in order to cast the logs to the correct type
 }
