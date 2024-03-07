@@ -42,6 +42,17 @@ export class FacilityController {
     return this.service.getAll(query);
   }
 
+  @Get("/facilityID/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get facility by ID",
+  })
+  @ResponseSchema(FacilityEntity)
+  getOne(@Param("id") id: number) {
+    const facility = this.service.getOneByID(id);
+    return facility;
+  }
+
   @Get("/managed")
   @HttpCode(200)
   @Authorized(["provider"])

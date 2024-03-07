@@ -2,6 +2,7 @@ import { Exclude, Type } from "class-transformer";
 import {
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from "class-validator";
@@ -25,7 +26,7 @@ export class FacilityEntity extends GenericEntity {
 
   @Column()
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   balance: number;
 
   @Column()

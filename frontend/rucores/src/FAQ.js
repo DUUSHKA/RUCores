@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./FAQ.css";
 
 const faqs = [
@@ -20,13 +20,23 @@ const faqs = [
 ];
 
 function FAQ() {
+  const [activeIndex, setActiveIndex] = useState(null);
+
+  const toggleFAQ = (index) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
+
   return (
     <div className="faqContainer">
       <h1>Frequently Asked Questions</h1>
       {faqs.map((faq, index) => (
-        <div key={index} className="faqItem">
+        <div
+          key={index}
+          className={`faqItem ${activeIndex === index ? "active" : ""}`}
+          onClick={() => toggleFAQ(index)}
+        >
           <h2>{faq.question}</h2>
-          <p>{faq.answer}</p>
+          {activeIndex === index && <p>{faq.answer}</p>}
         </div>
       ))}
     </div>

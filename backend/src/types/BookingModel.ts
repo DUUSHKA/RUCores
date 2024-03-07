@@ -1,15 +1,19 @@
-import { IsDate, IsNotEmpty, IsNumber } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDate, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 export class BookingModel {
   @IsNotEmpty()
+  @Type(() => Date)
   @IsDate()
   startDateTime: Date;
 
   @IsNotEmpty()
   @IsDate()
+  @Type(() => Date)
   endDateTime: Date;
 
-  @IsNotEmpty()
+  @IsOptional()
+  //@IsNotEmpty()
   @IsNumber()
   user_id: number;
 

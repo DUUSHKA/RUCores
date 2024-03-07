@@ -28,10 +28,10 @@ class UserService extends GenericService<UserEntity> {
     newUser.email = user.email;
     newUser.salt = crypto.randomBytes(16).toString("hex");
     newUser.hashedPassword = this.hashPassword(user.password, newUser.salt);
-    newUser.roles = ["user"];
+    newUser.roles = user.roles;
+    newUser.isProvider = user.isProvider;
     return this.repository.save(newUser);
   }
-
   public async createProvider(provider: UserModel): Promise<UserEntity> {
     if (provider.isProvider === false) {
       throw new ForbiddenError("User is not a provider");
@@ -136,6 +136,17 @@ class UserService extends GenericService<UserEntity> {
       throw new Error("Insufficient balance");
     }
     user.balance -= widthdrawal;
+    return this.repository.save(user);
+  }
+
+  //temporary function to add balance to a user
+  //Need to integrate with paypal API
+  public async addBalance(id: number, amount: number): Promise<UserEntity> {
+    const user = await this.repository.findOneBy({ id });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    user.balance += amount;
     return this.repository.save(user);
   }
 }
