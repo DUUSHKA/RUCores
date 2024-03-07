@@ -116,7 +116,6 @@ function CreateBooking(props) {
   const handlePostRequest = async () => {
     const userId = parseInt(window.sessionStorage.getItem("id"));
     const id = props.currentAvail.id;
-
     try {
       const postData = {
         startDateTime: formatToISOString(bookingStart),
@@ -151,10 +150,12 @@ function CreateBooking(props) {
       <div className="current-booking-container">
         <h2>Current Booking Details</h2>
         <p>
-          <strong>Start Time:</strong> {formatTime(currentAvail.startTime)}
+          <strong>Availability Start Time:</strong>{" "}
+          {formatTime(currentAvail.startTime)}
         </p>
         <p>
-          <strong>End Time:</strong> {formatTime(currentAvail.endTime)}
+          <strong>Availability End Time:</strong>{" "}
+          {formatTime(currentAvail.endTime)}
         </p>
         <p>
           <strong>Invalid Bookings:</strong> {invalidTimes}

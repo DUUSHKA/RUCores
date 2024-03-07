@@ -82,38 +82,40 @@ function Booking(props) {
   return (
     <>
       <div className="makeBooking">
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          {dates && (
-            <DateCalendar
-              loading={isLoading}
-              renderLoading={() => <DayCalendarSkeleton />}
-              slots={{
-                day: (props) => {
-                  const { day, outsideCurrentMonth, ...other } = props;
-                  const isSelected =
-                    !outsideCurrentMonth &&
-                    dates.includes(day.format("YYYY-MM-DD"));
+        <div className="calandar">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            {dates && (
+              <DateCalendar
+                loading={isLoading}
+                renderLoading={() => <DayCalendarSkeleton />}
+                slots={{
+                  day: (props) => {
+                    const { day, outsideCurrentMonth, ...other } = props;
+                    const isSelected =
+                      !outsideCurrentMonth &&
+                      dates.includes(day.format("YYYY-MM-DD"));
 
-                  return (
-                    <Badge
-                      key={day.toString()}
-                      overlap="circular"
-                      badgeContent={isSelected ? "✔️" : undefined}
-                      onClick={() => handleDayClick(day)}
-                    >
-                      <PickersDay
-                        {...other}
-                        outsideCurrentMonth={outsideCurrentMonth}
-                        day={day}
-                      />
-                    </Badge>
-                  );
-                },
-              }}
-            />
-          )}
-        </LocalizationProvider>
-        <div>
+                    return (
+                      <Badge
+                        key={day.toString()}
+                        overlap="circular"
+                        badgeContent={isSelected ? "✔️" : undefined}
+                        onClick={() => handleDayClick(day)}
+                      >
+                        <PickersDay
+                          {...other}
+                          outsideCurrentMonth={outsideCurrentMonth}
+                          day={day}
+                        />
+                      </Badge>
+                    );
+                  },
+                }}
+              />
+            )}
+          </LocalizationProvider>
+        </div>
+        <div className="rightSideofCalandar">
           {currentAvails && (
             <div>
               <CurrentBooking
