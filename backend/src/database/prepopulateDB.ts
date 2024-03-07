@@ -1,10 +1,10 @@
 import crypto from "crypto";
-import AppDataSource from "./data-source";
 import { AvailabilityEntity } from "./Entities/availabilityEntity";
 import { BookingEntity } from "./Entities/bookingEntity";
 import { FacilityEntity } from "./Entities/facilityEntity";
 import { SessionEntity } from "./Entities/sessionEntity";
 import { UserEntity } from "./Entities/userEntity";
+import AppDataSource from "./data-source";
 
 /**
  * Adds time to a date. Modelled after MySQL DATE_ADD function.
@@ -71,12 +71,10 @@ export const prepopulateDB = async () => {
   const chemBooking4 = new BookingEntity();
   //const physBooking = new BookingEntity();
   const session = new SessionEntity();
-  const date1Original = new Date(2024, 2, 4, 12, 0, 0);
-  const date2Original = new Date(2024, 1, 26, 12, 0, 0);
-  const date3Original = new Date(2024, 3, 15, 12, 0, 0);
-  const date1 = new Date(date1Original.getTime() + -5 * 60 * 60 * 1000);
-  const date2 = new Date(date2Original.getTime() + -5 * 60 * 60 * 1000);
-  const date3 = new Date(date3Original.getTime() + -5 * 60 * 60 * 1000);
+  const date1 = new Date(2024, 2, 4, 12, 0, 0);
+  const date2 = new Date(2024, 1, 26, 12, 0, 0);
+  const date3 = new Date(2024, 3, 15, 12, 0, 0);
+
   // booking.bookingId = i;
   // facility.id = i;
   // availability.availabilityId = i;

@@ -8,30 +8,20 @@ import CreateBooking from "./createBooking/createBooking";
 import "./currentBooking.css";
 function CurrentBooking(props) {
   const formatTime = (timeString) => {
-    const formattedTime = new Date(timeString).toLocaleTimeString([], {
+    const formattedTime = new Date(timeString).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "America/New_York",
     });
     return formattedTime;
   };
-
-  // eslint-disable-next-line no-unused-vars
-  function roundToNearestMinutes(date, nearestTo, isEndTime) {
-    const roundedMinutes = isEndTime
-      ? Math.round(date.getMinutes() / nearestTo) * nearestTo - 30
-      : Math.round(date.getMinutes() / nearestTo) * nearestTo;
-    date.setMinutes(roundedMinutes);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date;
-  }
 
   return (
     <>
       <div className="makeBooking">
         <Tab.Container id="list-group-tabs-example" defaultActiveKey="#link1">
           <Row>
-            <Col sm={4}>
+            <Col>
               <ListGroup>
                 {props.currentBooking.map((item, index) => (
                   <ListGroup.Item key={index} action href={"#link" + index}>

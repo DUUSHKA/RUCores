@@ -21,6 +21,7 @@ function CreateBooking(props) {
 
   const [elapsedTime, setElapsedTime] = React.useState();
   const [cost, setCost] = React.useState();
+  const [availId, setAvailId] = React.useState();
 
   const currentAvail = props.currentAvail;
   const formatTime = (timeString) => {
@@ -30,6 +31,11 @@ function CreateBooking(props) {
     });
     return formattedTime;
   };
+
+  useEffect(() => {
+    setBookingStart(dayjs(props.currentAvail.startTime));
+    setBookingEnd(dayjs(props.currentAvail.endTime));
+  }, [props.currentAvail.startTime, props.currentAvail.endTime]);
 
   const determineaAvialibleBookingTimes = () => {
     if (alreadySetBookings) {
@@ -109,14 +115,17 @@ function CreateBooking(props) {
     determineaAvialibleBookingTimes(alreadySetBookings);
   }, [alreadySetBookings]);
 
+  useEffect(() => {
+    setAvailId(props.currentAvail.id);
+  }, [props.currentAvail.id]);
+
   const formatToISOString = (date) => {
     return date.toISOString().slice(0, 19) + ".000Z";
   };
 
   const handlePostRequest = async () => {
     const userId = parseInt(window.sessionStorage.getItem("id"));
-    const id = props.currentAvail.id;
-
+    const id = availId;
     try {
       const postData = {
         startDateTime: formatToISOString(bookingStart),
@@ -151,10 +160,12 @@ function CreateBooking(props) {
       <div className="current-booking-container">
         <h2>Current Booking Details</h2>
         <p>
-          <strong>Start Time:</strong> {formatTime(currentAvail.startTime)}
+          <strong>Availability Start Time:</strong>{" "}
+          {formatTime(currentAvail.startTime)}
         </p>
         <p>
-          <strong>End Time:</strong> {formatTime(currentAvail.endTime)}
+          <strong>Availability End Time:</strong>{" "}
+          {formatTime(currentAvail.endTime)}
         </p>
         <p>
           <strong>Invalid Bookings:</strong> {invalidTimes}
