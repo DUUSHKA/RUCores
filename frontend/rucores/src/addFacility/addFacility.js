@@ -1,8 +1,11 @@
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import dayjs from "dayjs";
 import "flatpickr/dist/themes/material_green.css"; // Import the Flatpickr styles
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import Flatpickr from "react-flatpickr";
 import FacilityInfo from "../schedule_facilities/FacilityCards/Facility";
 import "./addFacility.css";
 
@@ -45,8 +48,8 @@ function AddFacility() {
   const [address, setAddress] = useState("");
   const [equipment, setEquipment] = useState("");
   const [cost, setCost] = useState("");
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [startTime, setStartTime] = useState(dayjs());
+  const [endTime, setEndTime] = useState(dayjs());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,11 +92,7 @@ function AddFacility() {
   };
 
   const formatTime = (date) => {
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+    return dayjs(date).format("hh:mm A"); // Formatting to AM/PM format
   };
 
   return (
@@ -142,44 +141,40 @@ function AddFacility() {
               </InputGroup>
               <div className="mb-3">
                 <strong>Operating Hours:</strong>
-                <div className="d-flex align-items-center">
-                  <Flatpickr
-                    className="form-control"
-                    data-enable-time
-                    value={startTime}
-                    onChange={([selectedDate]) => {
-                      setStartTime(selectedDate);
-                    }}
-                    options={{
-                      noCalendar: true,
-                      dateFormat: "H:i",
-                      time_24hr: true,
-                    }}
-                  />
+                <div className="d-flex align-items-center operating-hours-container">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <TimePicker
+                      label="Start Time"
+                      value={startTime}
+                      onChange={(newValue) => {
+                        setStartTime(newValue);
+                      }}
+                      renderInput={(params) => <Form.Control {...params} />}
+                    />
 
-                  <span className="mx-2">to</span>
-                  <Flatpickr
-                    className="form-control"
-                    data-enable-time
-                    value={endTime}
-                    onChange={([selectedDate]) => {
-                      setEndTime(selectedDate);
-                    }}
-                    options={{
-                      noCalendar: true,
-                      dateFormat: "H:i",
-                      time_24hr: true,
-                    }}
-                  />
+                    <span className="mx-2">to</span>
+
+                    <TimePicker
+                      label="End Time"
+                      value={endTime}
+                      onChange={(newValue) => {
+                        setEndTime(newValue);
+                      }}
+                      renderInput={(params) => <Form.Control {...params} />}
+                    />
+                  </LocalizationProvider>
                 </div>
               </div>
+
               <InputGroup className="mb-3">
                 <InputGroup.Text>Cost</InputGroup.Text>
                 <Form.Control
                   placeholder="Cost"
                   aria-label="Cost"
                   value={cost}
-                  onChange={(e) => setCost(e.target.value)}
+                  onChange={(e) =>
+                    setCost(e.target.value ? parseInt(e.target.value) : "")
+                  }
                 />
               </InputGroup>
             </div>
