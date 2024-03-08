@@ -1,5 +1,10 @@
 import { Exclude, Type } from "class-transformer";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import {
   ChildEntity,
   Column,
@@ -11,8 +16,22 @@ import {
 import LogType from "../../types/LogType";
 import { AvailabilityEntity } from "./availabilityEntity";
 import { BookingEntity } from "./bookingEntity";
+import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
 import { UserEntity } from "./userEntity";
+
+export enum modificatonType {
+  create = "create",
+  update = "update",
+  delete = "delete",
+}
+
+export enum modificationEntity {
+  user = "user",
+  facility = "facility",
+  booking = "booking",
+  availability = "availability",
+}
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -36,6 +55,13 @@ export abstract class LogEntity extends GenericEntity {
   @IsString()
   @IsOptional()
   userJSON?: string; //Using the instanceToPlain decorator, we can preserve current state
+
+  @ValidateNested()
+  @Type(() => FacilityEntity)
+  @ManyToOne(() => FacilityEntity, (facility) => facility.id, {
+    nullable: true,
+  })
+  facility?: FacilityEntity;
 }
 
 @ChildEntity()
@@ -43,20 +69,14 @@ export class BookingEvent extends LogEntity {
   @IsNumber()
   @ManyToOne(() => BookingEntity, (booking) => booking.id, { nullable: true })
   @JoinColumn()
-  booking: BookingEntity | null;
-
-  //   @ValidateNested()
-  //   @Type(() => FacilityEntity)
-  //   @ManyToOne(() => FacilityEntity, (facility) => facility.id,  {nullable: true})
-  //   facility: FacilityEntity | null;
+  booking?: BookingEntity;
 
   @Column()
   @IsNumber()
   balance: number;
 
-  //   @Exclude()
+  @Exclude()
   getName = () => "BookingEvent";
-  //   log: Promise<FacilityEntity>;
 }
 
 @ChildEntity()
@@ -65,55 +85,14 @@ export class AvailabilityEvent extends LogEntity {
   @ManyToOne(() => AvailabilityEntity, (availability) => availability.id, {
     nullable: true,
   })
-  availability: AvailabilityEntity | null;
-
-  //   @IsNumber()
-  //   @ManyToOne(() => FacilityEntity, (facility) => facility.id,  {nullable: true})
-  //   facility: FacilityEntity | null;
+  availability?: AvailabilityEntity;
 
   @Exclude()
   getName = () => "AvailabilityEvent";
 }
 
-export enum modificatonType {
-  create = "create",
-  update = "update",
-  delete = "delete",
-}
-
-export enum modificationEntity {
-  user = "user",
-  facility = "facility",
-  booking = "booking",
-  availability = "availability",
-}
-
 @ChildEntity()
 export class ModificationEvent extends LogEntity {
-  @IsOptional()
-  //@ValidateNested()
-  //@Type(() => FacilityEntity)
-  //@ManyToOne(() => FacilityEntity, (facility) => facility.id, {nullable: true})
-  @Column()
-  @IsString()
-  facility?: string;
-
-  @IsOptional()
-  //@ValidateNested()
-  //@Type(() => BookingEntity)
-  //@ManyToOne(() => BookingEntity, (booking) => booking.id)
-  @Column()
-  @IsString()
-  booking?: string;
-
-  @IsOptional()
-  //@ValidateNested()
-  //@Type(() => AvailabilityEntity)
-  //@ManyToOne(() => AvailabilityEntity, (availability) => availability.id)
-  @Column()
-  @IsString()
-  availability?: string;
-
   @Column({
     enum: modificatonType,
   })

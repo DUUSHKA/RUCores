@@ -90,7 +90,6 @@ export class FacilityEntity extends GenericEntity {
   async CreateLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
-    log.facility = this.name;
     log.message = "Facility Created";
     log.modificationEntity = modificationEntity.facility;
     log.modificationType = modificatonType.create;
@@ -107,7 +106,6 @@ export class FacilityEntity extends GenericEntity {
   async UpdateLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
-    log.facility = this.name;
     log.message = "Facility Updated";
     log.modificationEntity = modificationEntity.facility;
     log.modificationType = modificatonType.update;
@@ -123,7 +121,6 @@ export class FacilityEntity extends GenericEntity {
   async DeleteLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
-    log.facility = this.name;
     log.message = "Facility Deleted";
     log.modificationEntity = modificationEntity.facility;
     log.modificationType = modificatonType.delete;
