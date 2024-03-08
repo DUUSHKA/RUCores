@@ -7,7 +7,14 @@ import {
   ValidateNested,
   ValidatePromise,
 } from "class-validator";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  Unique,
+} from "typeorm";
 import LogType from "../../types/LogType";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
@@ -21,6 +28,7 @@ import {
 import { SessionEntity } from "./sessionEntity";
 
 @Entity({ name: "user", schema: "rucores" })
+@Unique(["username"])
 export class UserEntity extends GenericEntity {
   @Column()
   @IsString()
@@ -34,7 +42,7 @@ export class UserEntity extends GenericEntity {
   @IsString()
   email: string;
 
-  @Column()
+  @Column({ name: "username" })
   @IsString()
   username: string;
 

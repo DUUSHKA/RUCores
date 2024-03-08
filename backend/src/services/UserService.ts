@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { ForbiddenError, UnauthorizedError } from "routing-controllers";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
-import { GetAllQuery } from "../types/GenericUtilTypes";
+import { GetAllQuery, QueryError } from "../types/GenericUtilTypes";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
 import BookingService from "./BookingService";
@@ -30,7 +30,16 @@ class UserService extends GenericService<UserEntity> {
     newUser.hashedPassword = this.hashPassword(user.password, newUser.salt);
     newUser.roles = user.roles;
     newUser.isProvider = user.isProvider;
-    return this.repository.save(newUser);
+    try {
+      return await this.repository.save(newUser);
+    } catch (error) {
+      const queryError = error as QueryError;
+      if (queryError.errno === 19) {
+        // SQLite error code for UNIQUE constraint failed
+        throw new ForbiddenError("Username already exists");
+      }
+      throw error;
+    }
   }
   public async createProvider(provider: UserModel): Promise<UserEntity> {
     if (provider.isProvider === false) {
