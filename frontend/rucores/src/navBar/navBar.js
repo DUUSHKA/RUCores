@@ -1,7 +1,7 @@
 import React from "react";
-import "./navBar.css";
 import { Link } from "react-router-dom";
 import logo from "../logo.svg";
+import "./navBar.css";
 
 function NavBar() {
   const isProvider = window.sessionStorage.getItem("isProvider") === "true";
@@ -35,6 +35,11 @@ function NavBar() {
           {isProvider && (
             <li>
               <Link to="/AddFacility">Add Facility</Link>
+            </li>
+          )}
+          {isProvider && (
+            <li>
+              <Link to="/editFacility">Edit Facility</Link>
             </li>
           )}
           <li>

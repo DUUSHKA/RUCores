@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import "./Facility.css";
 import PropTypes from "prop-types";
-import Button from "react-bootstrap/esm/Button";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/esm/Button";
+import "./Facility.css";
 import Booking from "./booking/booking";
 function FacilityInfo(prop) {
   const [show, setShow] = useState(false);
