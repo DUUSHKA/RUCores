@@ -49,13 +49,15 @@ export abstract class LogEntity extends GenericEntity {
   @Type(() => UserEntity)
   @ManyToOne(() => UserEntity, (user) => user.id, { nullable: true })
   @IsOptional()
-  user?: UserEntity | null; //This is just a foreign key reference, it will update as user changes
+  user?: UserEntity; //This is just a foreign key reference, it will update as user changes
 
-  @Column({ nullable: true })
-  @IsString()
-  @IsOptional()
-  userJSON?: string; //Using the instanceToPlain decorator, we can preserve current state
+  //   @Column({ nullable: true })
+  //   @IsString()
+  //   @IsOptional()
+  //   userJSON?: string; //Using the instanceToPlain decorator, we can preserve current state
 
+  //Do not need to use IsOptional() because it is for class validator, not typeORM. The database
+  //rules and the nullable true + syncronization will handle the null value
   @ValidateNested()
   @Type(() => FacilityEntity)
   @ManyToOne(() => FacilityEntity, (facility) => facility.id, {

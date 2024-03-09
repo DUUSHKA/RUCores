@@ -1,9 +1,9 @@
 import { Exclude, Expose, Type, instanceToPlain } from "class-transformer";
 import { IsDate, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
 import {
-  BeforeInsert,
-  BeforeRemove,
-  BeforeUpdate,
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
   Column,
   Entity,
   ManyToOne,
@@ -15,6 +15,7 @@ import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
 import {
+  AvailabilityEvent,
   ModificationEvent,
   modificationEntity,
   modificatonType,
@@ -71,34 +72,31 @@ export class AvailabilityEntity extends GenericEntity {
   @Exclude()
   getName = () => "Availability";
 
-  @BeforeInsert()
+  @AfterInsert()
   async CreateLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
     log.message = "Availability Created";
     log.modificationType = modificatonType.create;
     log.modificationEntity = modificationEntity.availability;
-    const res = instanceToPlain(this, { strategy: "excludeAll" });
-    console.log(res);
     log.modificationEntityJSON = JSON.stringify(
       instanceToPlain(this, { strategy: "excludeAll" }),
     );
     const logRepository = AppDataSource.getRepository(ModificationEvent);
     await logRepository.save(log);
 
-    // //Now create a avaialbility event for the availability
-    // const availabilityLog = new AvailabilityEvent();
-    // availabilityLog.LogType = LogType.AvailabilityEvent;
-    // availabilityLog.message = "Availability Created";
-    // availabilityLog.user = (await (await this.facility).providers)[0];
-    // availabilityLog.userJSON = JSON.stringify(instanceToPlain(availabilityLog.user, { strategy: "excludeAll" }));
-    // availabilityLog.availability = this;
-    // availabilityLog.facility = await this.facility;
-    // const availabilityLogRepository = AppDataSource.getRepository(AvailabilityEvent);
-    // await availabilityLogRepository.save(availabilityLog);
+    //Now create a avaialbility event for the availability
+    const availabilityLog = new AvailabilityEvent();
+    availabilityLog.LogType = LogType.AvailabilityEvent;
+    availabilityLog.message = "Availability Created";
+    availabilityLog.availability = this;
+    availabilityLog.facility = await this.facility;
+    const availabilityLogRepository =
+      AppDataSource.getRepository(AvailabilityEvent);
+    await availabilityLogRepository.save(availabilityLog);
   }
 
-  @BeforeUpdate()
+  @AfterUpdate()
   async UpdateLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
@@ -110,19 +108,19 @@ export class AvailabilityEntity extends GenericEntity {
     );
     const logRepository = AppDataSource.getRepository(ModificationEvent);
     await logRepository.save(log);
-    // //Now create a avaialbility event for the availability
-    // const availabilityLog = new AvailabilityEvent();
-    // availabilityLog.LogType = LogType.AvailabilityEvent;
-    // availabilityLog.user = (await (await this.facility).providers)[0];
-    // availabilityLog.userJSON = JSON.stringify(instanceToPlain(availabilityLog.user, { strategy: "excludeAll" }));
-    // availabilityLog.message = "Availability Updated";
-    // availabilityLog.availability = this;
-    // availabilityLog.facility = await this.facility;
-    // const availabilityLogRepository = AppDataSource.getRepository(AvailabilityEvent);
-    // await availabilityLogRepository.save(availabilityLog);
+    //Now create a avaialbility event for the availability
+    const availabilityLog = new AvailabilityEvent();
+    availabilityLog.LogType = LogType.AvailabilityEvent;
+    availabilityLog.user = (await (await this.facility).providers)[0];
+    availabilityLog.message = "Availability Updated";
+    availabilityLog.availability = this;
+    availabilityLog.facility = await this.facility;
+    const availabilityLogRepository =
+      AppDataSource.getRepository(AvailabilityEvent);
+    await availabilityLogRepository.save(availabilityLog);
   }
 
-  @BeforeRemove()
+  @AfterRemove()
   async DeleteLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
@@ -132,15 +130,15 @@ export class AvailabilityEntity extends GenericEntity {
     log.modificationEntityJSON = JSON.stringify(instanceToPlain(this));
     const logRepository = AppDataSource.getRepository(ModificationEvent);
     await logRepository.save(log);
-    // //Now create a avaialbility event for the availability
-    // const availabilityLog = new AvailabilityEvent();
-    // availabilityLog.LogType = LogType.AvailabilityEvent;
-    // availabilityLog.user = (await (await this.facility).providers)[0];
-    // availabilityLog.userJSON = JSON.stringify(instanceToPlain(availabilityLog.user, { strategy: "excludeAll" }));
-    // availabilityLog.message = "Availability Deleted";
-    // availabilityLog.availability = this;
-    // availabilityLog.facility = await this.facility;
-    // const availabilityLogRepository = AppDataSource.getRepository(AvailabilityEvent);
-    // await availabilityLogRepository.save(availabilityLog);
+    //Now create a avaialbility event for the availability
+    const availabilityLog = new AvailabilityEvent();
+    availabilityLog.LogType = LogType.AvailabilityEvent;
+    availabilityLog.user = (await (await this.facility).providers)[0];
+    availabilityLog.message = "Availability Deleted";
+    availabilityLog.availability = this;
+    availabilityLog.facility = await this.facility;
+    const availabilityLogRepository =
+      AppDataSource.getRepository(AvailabilityEvent);
+    await availabilityLogRepository.save(availabilityLog);
   }
 }

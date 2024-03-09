@@ -7,9 +7,9 @@ import {
   ValidateNested,
 } from "class-validator";
 import {
-  BeforeInsert,
-  BeforeRemove,
-  BeforeUpdate,
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
   Column,
   Entity,
   ManyToMany,
@@ -86,7 +86,7 @@ export class FacilityEntity extends GenericEntity {
   @Exclude()
   getName = () => "Facility";
 
-  @BeforeInsert()
+  @AfterInsert()
   async CreateLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
@@ -98,11 +98,10 @@ export class FacilityEntity extends GenericEntity {
     );
     //save the booking event by getting the repository and saving the log
     const logRepository = AppDataSource.getRepository(ModificationEvent);
-    console.log(log);
     await logRepository.save(log);
   }
 
-  @BeforeUpdate()
+  @AfterUpdate()
   async UpdateLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;
@@ -117,7 +116,7 @@ export class FacilityEntity extends GenericEntity {
     await logRepository.save(log);
   }
 
-  @BeforeRemove()
+  @AfterRemove()
   async DeleteLog() {
     const log = new ModificationEvent();
     log.LogType = LogType.ModificationEvent;

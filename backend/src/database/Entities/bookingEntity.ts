@@ -1,9 +1,9 @@
 import { Exclude, Expose, Type, instanceToPlain } from "class-transformer";
 import { IsDate, IsNumber, ValidateNested } from "class-validator";
 import {
-  BeforeInsert,
-  BeforeRemove,
-  BeforeUpdate,
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -14,6 +14,7 @@ import AppDataSource from "../data-source";
 import { AvailabilityEntity } from "./availabilityEntity";
 import GenericEntity from "./genericEntity";
 import {
+  BookingEvent,
   ModificationEvent,
   modificationEntity,
   modificatonType,
@@ -63,19 +64,18 @@ export class BookingEntity extends GenericEntity {
   getName = () => "Booking";
 
   //Need to make a log that we are creating, updating, or deleting a booking
-  @BeforeInsert()
+  @AfterInsert()
   async CreateLog() {
-    // const log = new BookingEvent();
-    // log.LogType = LogType.BookingEvent;
-    // log.booking = this;
-    // log.message = "Booking Created";
-    // log.balance = this.cost;
-    // log.user = await this.user;
-    // log.userJSON = JSON.stringify(instanceToPlain(log.user, { strategy: "excludeAll" }));
-    // log.facility = (await (await this.availability).facility);
-    // //save the booking event by getting the repository and saving the log
-    // const logRepository = AppDataSource.getRepository(BookingEvent);
-    // await logRepository.save(log);
+    const log = new BookingEvent();
+    log.LogType = LogType.BookingEvent;
+    log.booking = this;
+    log.message = "Booking Created";
+    log.balance = this.cost;
+    log.user = await this.user;
+    log.facility = await (await this.availability).facility;
+    //save the booking event by getting the repository and saving the log
+    const logRepository = AppDataSource.getRepository(BookingEvent);
+    await logRepository.save(log);
 
     //Now create a modification event for the booking
     const modLog = new ModificationEvent();
@@ -90,23 +90,23 @@ export class BookingEntity extends GenericEntity {
     await modLogRepository.save(modLog);
   }
 
-  @BeforeUpdate()
+  @AfterUpdate()
   async UpdateLog() {
-    // const log = new BookingEvent();
-    // log.LogType = LogType.BookingEvent;
-    // log.booking = this;
-    // log.message = "Booking Updated";
-    // log.balance = this.cost;
-    // log.user = await this.user;
-    // log.userJSON = JSON.stringify(instanceToPlain(log.user, { strategy: "excludeAll" }));
-    // log.facility = (await (await this.availability).facility);
-    // //save the booking event by getting the repository and saving the log
-    // const logRepository = AppDataSource.getRepository(BookingEvent);
-    // await logRepository.save(log);
+    const log = new BookingEvent();
+    log.LogType = LogType.BookingEvent;
+    log.booking = this;
+    log.message = "Booking Updated";
+    log.balance = this.cost;
+    log.user = await this.user;
+    log.facility = await (await this.availability).facility;
+    //save the booking event by getting the repository and saving the log
+    const logRepository = AppDataSource.getRepository(BookingEvent);
+    await logRepository.save(log);
 
     //Now create a modification event for the booking
     const modLog = new ModificationEvent();
     modLog.LogType = LogType.ModificationEvent;
+    modLog.user = await this.user;
     modLog.message = "Booking Updated";
     modLog.modificationEntity = modificationEntity.booking;
     modLog.modificationType = modificatonType.update;
@@ -117,23 +117,23 @@ export class BookingEntity extends GenericEntity {
     await modLogRepository.save(modLog);
   }
 
-  @BeforeRemove()
+  @AfterRemove()
   async DeleteLog() {
-    // const log = new BookingEvent();
-    // log.LogType = LogType.BookingEvent;
-    // log.booking = this;
-    // log.message = "Booking Deleted";
-    // log.balance = this.cost;
-    // log.user = await this.user;
-    // log.userJSON = JSON.stringify(instanceToPlain(log.user, { strategy: "excludeAll" }));
-    // log.facility = (await (await this.availability).facility);
-    // //save the booking event by getting the repository and saving the log
-    // const logRepository = AppDataSource.getRepository(BookingEvent);
-    // await logRepository.save(log);
+    const log = new BookingEvent();
+    log.LogType = LogType.BookingEvent;
+    log.booking = this;
+    log.message = "Booking Deleted";
+    log.balance = this.cost;
+    log.user = await this.user;
+    log.facility = await (await this.availability).facility;
+    //save the booking event by getting the repository and saving the log
+    const logRepository = AppDataSource.getRepository(BookingEvent);
+    await logRepository.save(log);
 
     //Now create a modification event for the booking
     const modLog = new ModificationEvent();
     modLog.message = "Booking Deleted";
+    modLog.user = await this.user;
     modLog.modificationEntity = modificationEntity.booking;
     modLog.modificationType = modificatonType.delete;
     modLog.modificationEntityJSON = JSON.stringify(
