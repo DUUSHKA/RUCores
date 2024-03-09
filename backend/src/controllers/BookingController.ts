@@ -50,7 +50,8 @@ export class BookingController {
   @ResponseSchema(BookingEntity)
   async getOne(@Param("id") id: number) {
     const booking = await this.service.getOneByID(id);
-    await booking.availability;
+    const availability = await booking.availability;
+    await availability.facility;
     return booking;
   }
 

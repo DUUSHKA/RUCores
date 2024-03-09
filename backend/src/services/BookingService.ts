@@ -273,7 +273,9 @@ class BookingService extends GenericService<BookingEntity> {
     });
     return Promise.all(
       bookings.map(async (booking) => {
-        await booking.availability;
+        await (
+          await booking.availability
+        ).facility;
         return booking;
       }),
     );
