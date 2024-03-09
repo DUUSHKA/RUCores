@@ -264,13 +264,19 @@ class BookingService extends GenericService<BookingEntity> {
   }
 
   public async getBookings(user: UserEntity, filter: GetAllQuery) {
-    return await this.getAll(filter, {
+    const bookings = await this.getAll(filter, {
       where: {
         user: {
           id: user.id,
         },
       },
     });
+    return Promise.all(
+      bookings.map(async (booking) => {
+        await booking.availability;
+        return booking;
+      }),
+    );
   }
 
   public async deleteBooking(user: UserEntity, booking_id: number) {
