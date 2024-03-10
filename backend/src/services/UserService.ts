@@ -21,6 +21,7 @@ type monthlyData = {
   year: number;
   spending: number;
   time: number; //total time spent in a facility that month
+  coinsSpent: coinsByFacility[];
 };
 
 type coinsByFacility = {
@@ -286,11 +287,30 @@ class UserService extends GenericService<UserEntity> {
       if (currDate.getMonth() < i) {
         mYear -= 1;
       }
+      const facilityGroups = this.groupByAndSum(
+        months,
+        (t) => t.facility?.id!,
+        "amountChanged",
+      );
+      const facilityMonthCost = [];
+      for (const key in facilityGroups) {
+        if (Object.prototype.hasOwnProperty.call(facilityGroups, key)) {
+          const group = facilityGroups[key];
+          const sum = -1 * group.sum;
+          const data: coinsByFacility = {
+            facility: (await new FacilityService().getOneByID(Number(key)))
+              .name,
+            coins: sum,
+          };
+          const x = facilityMonthCost.push(data);
+        }
+      }
       const data: monthlyData = {
         month: monthNames[i],
         year: mYear,
         spending: ttl,
         time: ttlTime,
+        coinsSpent: facilityMonthCost,
       };
       const x = monthDataArr.push(data);
     }
@@ -299,9 +319,9 @@ class UserService extends GenericService<UserEntity> {
       (t) => t.facility?.id!,
       "amountChanged",
     );
-    const facilityCostArr = [];
     const facilityTimeArr = [];
     const facilityTimeSpentArr = [];
+    const facilityCostArr = [];
     for (const key in facilityGroups) {
       if (Object.prototype.hasOwnProperty.call(facilityGroups, key)) {
         const group = facilityGroups[key];

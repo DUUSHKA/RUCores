@@ -67,6 +67,7 @@ class BookingService extends GenericService<BookingEntity> {
   ): Promise<number> {
     //check if the user is authorized to do a refund. It can be any provider role, or the user
     // who made the booking
+    const transact = await new TransactionService();
     if (
       !user.roles.some((role) => role === "provider") &&
       user.id !== (await booking.user).id
@@ -87,6 +88,23 @@ class BookingService extends GenericService<BookingEntity> {
     facility.balance -= totalCost;
     AppDataSource.getRepository(UserEntity).save(user);
     AppDataSource.getRepository(FacilityEntity).save(facility);
+    const id = booking.id;
+    //post refund transaction
+    const transaction: TransactionModel = {
+      amountChanged: totalCost,
+      eventDescription:
+        "service cancellation for " +
+        (await (await booking.availability).facility).name,
+      date: new Date(),
+      user_id: user.id,
+      booking_id: id,
+      facility_id: (await (await booking.availability).facility).id,
+      transactionType: TransactionType.Refund,
+      duration:
+        -(booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
+        60000, //duration in minutes
+    };
+    transact.createTransaction(transaction);
     return totalCost;
   }
 
@@ -227,8 +245,6 @@ class BookingService extends GenericService<BookingEntity> {
     }
     newBooking.availability = Promise.resolve(availability);
     const resp = await this.repository.save(newBooking);
-    console.log(resp);
-    console.log(resp.id);
     const transaction: TransactionModel = {
       amountChanged: -1 * cost,
       eventDescription:
@@ -252,6 +268,7 @@ class BookingService extends GenericService<BookingEntity> {
     booking_id: number,
     booking: BookingModel,
   ): Promise<BookingEntity> {
+    const transact = await new TransactionService();
     const availability = await this.vailidateBooking(booking, user);
     const currentBooking = await this.getOneByID(booking_id);
     // console.log(user.id, (await currentBooking.user).id);
@@ -281,7 +298,23 @@ class BookingService extends GenericService<BookingEntity> {
       availability,
       booking,
     );
-    return this.repository.save(currentBooking);
+    const resp = await this.repository.save(currentBooking);
+    const transaction: TransactionModel = {
+      amountChanged: -1 * currentBooking.cost,
+      eventDescription:
+        "service rental for " + (await availability.facility).name,
+      date: new Date(),
+      user_id: user.id,
+      booking_id: resp.id,
+      facility_id: (await availability.facility).id,
+      transactionType: TransactionType.Transfer,
+      duration:
+        (currentBooking.endDateTime.getTime() -
+          currentBooking.startDateTime.getTime()) /
+        60000, //duration in minutes
+    };
+    transact.createTransaction(transaction);
+    return currentBooking;
   }
 
   public async getBookings(user: UserEntity, filter: GetAllQuery) {
@@ -295,7 +328,6 @@ class BookingService extends GenericService<BookingEntity> {
   }
 
   public async deleteBooking(user: UserEntity, booking_id: number) {
-    const transact = await new TransactionService();
     const booking = await this.getOneByID(booking_id, {
       user: {
         id: user.id,
@@ -306,23 +338,6 @@ class BookingService extends GenericService<BookingEntity> {
     }
     //refund the booking
     await this.refundBooking(user, await booking.availability, booking);
-    const id = booking.id;
-    //post refund transaction
-    const transaction: TransactionModel = {
-      amountChanged: booking.cost,
-      eventDescription:
-        "service cancellation for " +
-        (await (await booking.availability).facility).name,
-      date: new Date(),
-      user_id: user.id,
-      booking_id: id,
-      facility_id: (await (await booking.availability).facility).id,
-      transactionType: TransactionType.Refund,
-      duration:
-        -(booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
-        60000, //duration in minutes
-    };
-    transact.createTransaction(transaction);
     return this.delete(booking_id);
   }
 }
