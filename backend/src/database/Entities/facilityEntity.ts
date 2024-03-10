@@ -1,4 +1,4 @@
-import { Exclude, Type } from "class-transformer";
+import { Exclude, Expose, Type, instanceToPlain } from "class-transformer";
 import {
   IsNotEmpty,
   IsNumber,
@@ -6,9 +6,24 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
+import {
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+} from "typeorm";
+import LogType from "../../types/LogType";
+import AppDataSource from "../data-source";
 import { AvailabilityEntity } from "./availabilityEntity";
 import GenericEntity from "./genericEntity";
+import {
+  ModificationEvent,
+  modificationEntity,
+  modificatonType,
+} from "./logEntity";
 import { UserEntity } from "./userEntity";
 
 @Entity({ name: "facility", schema: "rucores" })
@@ -16,27 +31,33 @@ export class FacilityEntity extends GenericEntity {
   @Column()
   @IsString()
   @IsNotEmpty()
+  @Expose()
   name: string;
 
   @Column()
   @IsString()
   @IsNotEmpty()
+  @Expose()
   description: string;
 
   @Column()
   @IsNumber()
   @IsOptional()
+  @Expose()
   balance: number;
 
   @Column()
   @IsString()
   @IsNotEmpty()
+  @Expose()
   equipment: string;
 
   @Column()
   @IsString()
+  @Expose()
   address: string;
 
+  @Expose()
   @ManyToMany(
     () => UserEntity,
     (provider: UserEntity) => provider.managedFacilities,
@@ -64,4 +85,49 @@ export class FacilityEntity extends GenericEntity {
 
   @Exclude()
   getName = () => "Facility";
+
+  @AfterInsert()
+  async CreateLog() {
+    const log = new ModificationEvent();
+    log.LogType = LogType.ModificationEvent;
+    log.message = "Facility Created";
+    log.modificationEntity = modificationEntity.facility;
+    log.modificationType = modificatonType.create;
+    log.modificationEntityJSON = JSON.stringify(
+      instanceToPlain(this, { strategy: "excludeAll" }),
+    );
+    //save the booking event by getting the repository and saving the log
+    const logRepository = AppDataSource.getRepository(ModificationEvent);
+    await logRepository.save(log);
+  }
+
+  @AfterUpdate()
+  async UpdateLog() {
+    const log = new ModificationEvent();
+    log.LogType = LogType.ModificationEvent;
+    log.message = "Facility Updated";
+    log.modificationEntity = modificationEntity.facility;
+    log.modificationType = modificatonType.update;
+    log.modificationEntityJSON = JSON.stringify(
+      instanceToPlain(this, { strategy: "excludeAll" }),
+    );
+    //save the booking event by getting the repository and saving the log
+    const logRepository = AppDataSource.getRepository(ModificationEvent);
+    await logRepository.save(log);
+  }
+
+  @AfterRemove()
+  async DeleteLog() {
+    const log = new ModificationEvent();
+    log.LogType = LogType.ModificationEvent;
+    log.message = "Facility Deleted";
+    log.modificationEntity = modificationEntity.facility;
+    log.modificationType = modificatonType.delete;
+    log.modificationEntityJSON = JSON.stringify(
+      instanceToPlain(this, { strategy: "excludeAll" }),
+    );
+    //save the booking event by getting the repository and saving the log
+    const logRepository = AppDataSource.getRepository(ModificationEvent);
+    await logRepository.save(log);
+  }
 }
