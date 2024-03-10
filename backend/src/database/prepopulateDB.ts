@@ -181,7 +181,7 @@ export const prepopulateDB = async () => {
   chemAvailability.startTime = dateAdd(chemAvailability.Date, "hour", 3);
   chemAvailability.endTime = dateAdd(chemAvailability.startTime, "hour", 3);
   chemAvailability.facility = Promise.resolve(facility);
-  chemAvailability.bookings = Promise.resolve([booking]);
+  //chemAvailability.bookings = Promise.resolve([booking]);
   chemAvailability.price = 20;
 
   const chemAvailability1 = new AvailabilityEntity();
@@ -232,7 +232,7 @@ export const prepopulateDB = async () => {
 
   booking.startDateTime = chemAvailability.startTime;
   booking.endDateTime = chemAvailability.endTime;
-  booking.user = Promise.resolve(user);
+  //booking.user = Promise.resolve(user);
   booking.availability = Promise.resolve(chemAvailability);
   booking.cost = 20;
 
