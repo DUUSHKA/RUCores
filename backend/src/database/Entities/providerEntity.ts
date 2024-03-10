@@ -16,6 +16,9 @@
 //     @OneToMany(() => Facility, facility => facility.providers)
 //     facilities: Facility[];
 
+//     @DeleteDateColumn()
+//     deletedAt?: Date;
+
 //     @OneToMany(() => Booking, booking => booking.user)
 //     bookings: Booking[];
 // }

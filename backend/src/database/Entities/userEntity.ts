@@ -7,7 +7,14 @@ import {
   ValidateNested,
   ValidatePromise,
 } from "class-validator";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from "typeorm";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
@@ -93,6 +100,9 @@ export class UserEntity extends GenericEntity {
   @Type(() => SessionEntity)
   @Exclude()
   sessions: Promise<SessionEntity[]>;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 
   @Exclude()
   getName = () => "User";

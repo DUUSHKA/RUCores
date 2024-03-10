@@ -42,6 +42,30 @@ export class FacilityController {
     return this.service.getAll(query);
   }
 
+  @Get()
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all facilities including deleted facilities",
+  })
+  @ResponseSchema(FacilityEntity, { isArray: true })
+  async getAllWithDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<FacilityEntity[]> {
+    return this.service.getAllWithDeleted(query);
+  }
+
+  @Get()
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all deleted facilities",
+  })
+  @ResponseSchema(FacilityEntity, { isArray: true })
+  async getDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<FacilityEntity[]> {
+    return this.service.getDeleted(query);
+  }
+
   @Get("/facilityID/:id")
   @HttpCode(200)
   @OpenAPI({
@@ -50,6 +74,17 @@ export class FacilityController {
   @ResponseSchema(FacilityEntity)
   getOne(@Param("id") id: number) {
     const facility = this.service.getOneByID(id);
+    return facility;
+  }
+
+  @Get("/deleted/facilityID/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get deleted facilities by ID",
+  })
+  @ResponseSchema(FacilityEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const facility = this.service.getDeletedByID(id);
     return facility;
   }
 

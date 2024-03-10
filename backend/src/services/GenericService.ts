@@ -5,8 +5,8 @@ import {
   FindOptionsWhere,
   Repository,
 } from "typeorm";
-import GenericEntity from "../database/Entities/genericEntity";
 import AppDataSource from "../database/data-source";
+import GenericEntity from "../database/Entities/genericEntity";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 
 class GenericService<T extends GenericEntity> {
@@ -61,7 +61,66 @@ class GenericService<T extends GenericEntity> {
     if (!entity) {
       throw new NotFoundError(`${this.name} not found`);
     }
-    await this.repository.remove(entity);
+    await this.repository.softRemove(entity);
+  }
+
+  public async getAllWithDeleted(
+    filter?: GetAllQuery,
+    extraOptions?: FindManyOptions<T>,
+  ): Promise<T[]> {
+    filter = filter ?? {
+      limit: 50,
+      offset: 0,
+    };
+    const options: FindManyOptions<T> = {
+      order: {
+        [filter.orderBy ?? "id"]: filter.order ?? "ASC",
+      },
+      skip: filter.offset,
+      take: filter.limit,
+      ...extraOptions,
+    } as FindManyOptions<T>;
+    delete options.where;
+    return this.repository.find(options);
+  }
+
+  public async getDeleted(
+    filter?: GetAllQuery,
+    extraOptions?: FindManyOptions<T>,
+  ): Promise<T[]> {
+    filter = filter ?? {
+      limit: 50,
+      offset: 0,
+    };
+    const options: FindManyOptions<T> = {
+      order: {
+        [filter.orderBy ?? "id"]: filter.order ?? "ASC",
+      },
+      skip: filter.offset,
+      take: filter.limit,
+      where: {
+        removed: true,
+      },
+      ...extraOptions,
+    } as FindManyOptions<T>;
+    return this.repository.find(options);
+  }
+
+  public async getDeletedByID(
+    id: number,
+    extraOptionsWhere?: FindOptionsWhere<T>,
+  ): Promise<T> {
+    const entity = await this.repository.findOne({
+      where: {
+        id: id,
+        removed: true,
+        ...extraOptionsWhere,
+      },
+    } as FindOneOptions<T>);
+    if (!entity) {
+      throw new NotFoundError(`${this.name} not found`);
+    }
+    return entity;
   }
 }
 

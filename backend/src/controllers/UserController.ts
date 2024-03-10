@@ -42,6 +42,29 @@ export class UserController {
     log.debug("All users: ", allUsers);
     return allUsers;
   }
+  @Get("/getAllWithDeleted")
+  @HttpCode(200)
+  @Authorized(["admin"])
+  @ResponseSchema(UserEntity, { isArray: true })
+  async getAllWithDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<UserEntity[]> {
+    const allUsers = this.service.getAllWithDeleted(query);
+    log.debug("All users: ", allUsers);
+    return allUsers;
+  }
+
+  @Get("/getAllDeleted")
+  @HttpCode(200)
+  @Authorized(["admin"])
+  @ResponseSchema(UserEntity, { isArray: true })
+  async getAllDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<UserEntity[]> {
+    const allUsers = this.service.getDeleted(query);
+    log.debug("All users: ", allUsers);
+    return allUsers;
+  }
 
   @Get()
   @HttpCode(200)
@@ -56,6 +79,15 @@ export class UserController {
   @ResponseSchema(UserEntity)
   getOne(@Param("id") id: number) {
     const user = this.service.getOneByID(id);
+    log.debug(" user found by ID: ", user);
+    return user;
+  }
+
+  @Get("/deleted/userID/:id")
+  @HttpCode(200)
+  @ResponseSchema(UserEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const user = this.service.getDeletedByID(id);
     log.debug(" user found by ID: ", user);
     return user;
   }
