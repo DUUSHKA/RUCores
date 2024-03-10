@@ -6,13 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  ManyToMany,
-  OneToMany,
-} from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
 import GenericEntity from "./genericEntity";
 import { UserEntity } from "./userEntity";
@@ -67,9 +61,6 @@ export class FacilityEntity extends GenericEntity {
   @ValidateNested()
   @Type(() => AvailabilityEntity)
   availabilities: Promise<AvailabilityEntity[]>;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
 
   @Exclude()
   getName = () => "Facility";

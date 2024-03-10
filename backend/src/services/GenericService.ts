@@ -3,10 +3,12 @@ import {
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
+  IsNull,
+  Not,
   Repository,
 } from "typeorm";
-import AppDataSource from "../database/data-source";
 import GenericEntity from "../database/Entities/genericEntity";
+import AppDataSource from "../database/data-source";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 
 class GenericService<T extends GenericEntity> {
@@ -78,15 +80,17 @@ class GenericService<T extends GenericEntity> {
       },
       skip: filter.offset,
       take: filter.limit,
+      withDeleted: true,
       ...extraOptions,
     } as FindManyOptions<T>;
-    delete options.where;
+    //delete options.where;
     return this.repository.find(options);
   }
 
   public async getDeleted(
     filter?: GetAllQuery,
     extraOptions?: FindManyOptions<T>,
+    extraOptionsWhere?: FindOptionsWhere<T>,
   ): Promise<T[]> {
     filter = filter ?? {
       limit: 50,
@@ -99,7 +103,8 @@ class GenericService<T extends GenericEntity> {
       skip: filter.offset,
       take: filter.limit,
       where: {
-        removed: true,
+        deletedAt: Not(IsNull()),
+        ...extraOptionsWhere,
       },
       ...extraOptions,
     } as FindManyOptions<T>;
@@ -113,7 +118,7 @@ class GenericService<T extends GenericEntity> {
     const entity = await this.repository.findOne({
       where: {
         id: id,
-        removed: true,
+        deletedAt: Not(IsNull()),
         ...extraOptionsWhere,
       },
     } as FindOneOptions<T>);

@@ -1,12 +1,6 @@
 import { Exclude, Type } from "class-transformer";
 import { IsDate, IsNumber, ValidateNested } from "class-validator";
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { AvailabilityEntity } from "./availabilityEntity";
 import GenericEntity from "./genericEntity";
 import { UserEntity } from "./userEntity";
@@ -46,9 +40,6 @@ export class BookingEntity extends GenericEntity {
   // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
   // @JoinColumn({ name: "userId"})
   // provider: Provider;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
 
   @Exclude()
   getName = () => "Booking";

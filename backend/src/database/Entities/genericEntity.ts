@@ -1,6 +1,7 @@
 import { IsNumber } from "class-validator";
 import {
   CreateDateColumn,
+  DeleteDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -15,6 +16,9 @@ abstract class GenericEntity {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   abstract getName(): string;
 }

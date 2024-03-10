@@ -1,12 +1,6 @@
 import { Exclude, Type } from "class-transformer";
 import { IsDate, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-} from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
@@ -54,9 +48,6 @@ export class AvailabilityEntity extends GenericEntity {
   @ValidateNested()
   @Type(() => BookingEntity)
   bookings: Promise<BookingEntity[]>;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
 
   @Exclude()
   getName = () => "Availability";
