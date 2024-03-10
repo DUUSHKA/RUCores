@@ -1,12 +1,7 @@
 import { Exclude, Type } from "class-transformer";
-import { IsDate, IsNumber, IsString } from "class-validator";
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
 import { UserEntity } from "./userEntity";
@@ -16,11 +11,10 @@ export enum TransactionType {
   Refill = "Refill",
 }
 
-@Entity({ name: "transaction" })
+@Entity({ name: "transaction", schema: "rucores" })
 export class TransactionEntity extends GenericEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+  // @PrimaryGeneratedColumn()
+  // id: number;
   @Column()
   @IsString()
   eventDesription: string;
@@ -33,6 +27,11 @@ export class TransactionEntity extends GenericEntity {
   @Column()
   @IsNumber()
   amountChanged: number;
+
+  @Column({ nullable: true })
+  @IsNumber()
+  @IsOptional()
+  duration?: number;
 
   @Column({
     type: "simple-enum",
@@ -48,10 +47,18 @@ export class TransactionEntity extends GenericEntity {
   user: UserEntity;
 
   @ManyToOne(() => FacilityEntity, (facility) => facility.transactions, {
+    nullable: true,
     eager: true,
   })
   @JoinColumn()
-  facility: FacilityEntity;
+  facility?: FacilityEntity;
+
+  @ManyToOne(() => BookingEntity, (booking) => booking.transactions, {
+    nullable: true,
+    eager: true,
+  })
+  @JoinColumn()
+  booking?: BookingEntity;
 
   @Exclude()
   getName = () => "Transaction";

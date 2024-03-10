@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   CurrentUser,
+  Delete,
   Get,
   HttpCode,
   JsonController,
+  Param,
   Post,
   QueryParams,
 } from "routing-controllers";
@@ -36,7 +39,33 @@ export class TransactionController {
     return this.service.getAllTransaction(user, query);
   }
 
-  @Post("/createTransaction")
+  @Get("/transactionID/:id")
+  @HttpCode(200)
+  @ResponseSchema(TransactionEntity)
+  getOne(@Param("id") id: number) {
+    const avail = this.service.getOneByID(id);
+    return avail;
+  }
+
+  @Get("/facility/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all availabilities scheduled for the facility",
+  })
+  @ResponseSchema(TransactionEntity, { isArray: true })
+  get(
+    @CurrentUser() user: UserEntity,
+    @Param("id") id: number,
+    @Body({
+      validate: { forbidUnknownValues: true, skipMissingProperties: true },
+    })
+    transaction: TransactionModel,
+  ) {
+    //: Promise<TransactionEntity[]>
+    //return this.service.getTransactionByFacilityID(id);
+  }
+
+  @Post("/create")
   @HttpCode(200)
   @ResponseSchema(TransactionEntity, { isArray: true })
   async makeTransaction(
@@ -45,12 +74,19 @@ export class TransactionController {
     return this.service.createTransaction(transaction);
   }
 
-  @Post("/balance")
+  @Post("/refillBalance")
   @HttpCode(200)
   @ResponseSchema(TransactionEntity, { isArray: true })
   async changeBalance(
     @Body() transaction: TransactionModel,
   ): Promise<TransactionEntity> {
+    const create = this.service.createTransaction(transaction);
     return this.service.changeBalance(transaction);
+  }
+
+  @Delete("/:id")
+  remove(@Param("id") id: number) {
+    const deletedUTransaction = this.service.deleteTransaction(id);
+    return "Removed transaction successfully.";
   }
 }

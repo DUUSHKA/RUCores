@@ -3,12 +3,15 @@ import { LessThan, MoreThan } from "typeorm";
 import { AvailabilityEntity } from "../database/Entities/availabilityEntity";
 import { BookingEntity } from "../database/Entities/bookingEntity";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
+import { TransactionType } from "../database/Entities/transactionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import AppDataSource from "../database/data-source";
 import { BookingModel } from "../types/BookingModel";
 import { GetAllQuery } from "../types/GenericUtilTypes";
+import { TransactionModel } from "../types/TransactionModel";
 import AvailabilityService from "./AvailabilityService";
 import GenericService from "./GenericService";
+import TransactionService from "./TransactionService";
 
 class BookingService extends GenericService<BookingEntity> {
   constructor() {
@@ -202,6 +205,7 @@ class BookingService extends GenericService<BookingEntity> {
     user: UserEntity,
     booking: BookingModel,
   ): Promise<BookingEntity> {
+    const transact = await new TransactionService();
     const availability = await this.vailidateBooking(booking, user);
     const existingBookings = await availability.bookings;
     //Go through the list of bookings in the availability and check if the new booking starttime or end time conflicts with any of the existing bookings
@@ -222,7 +226,24 @@ class BookingService extends GenericService<BookingEntity> {
       throw new NotFoundError("Availability not found");
     }
     newBooking.availability = Promise.resolve(availability);
-    return this.repository.save(newBooking);
+    const resp = await this.repository.save(newBooking);
+    console.log(resp);
+    console.log(resp.id);
+    const transaction: TransactionModel = {
+      amountChanged: -1 * cost,
+      eventDescription:
+        "service rental for " + (await availability.facility).name,
+      date: new Date(),
+      user_id: user.id,
+      booking_id: resp.id,
+      facility_id: (await availability.facility).id,
+      transactionType: TransactionType.Transfer,
+      duration:
+        (booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
+        60000, //duration in minutes
+    };
+    transact.createTransaction(transaction);
+    return newBooking;
   }
 
   //Should work in the case of updating within the same availablity, or a new availability
@@ -274,6 +295,7 @@ class BookingService extends GenericService<BookingEntity> {
   }
 
   public async deleteBooking(user: UserEntity, booking_id: number) {
+    const transact = await new TransactionService();
     const booking = await this.getOneByID(booking_id, {
       user: {
         id: user.id,
@@ -284,6 +306,23 @@ class BookingService extends GenericService<BookingEntity> {
     }
     //refund the booking
     await this.refundBooking(user, await booking.availability, booking);
+    const id = booking.id;
+    //post refund transaction
+    const transaction: TransactionModel = {
+      amountChanged: booking.cost,
+      eventDescription:
+        "service cancellation for " +
+        (await (await booking.availability).facility).name,
+      date: new Date(),
+      user_id: user.id,
+      booking_id: id,
+      facility_id: (await (await booking.availability).facility).id,
+      transactionType: TransactionType.Refund,
+      duration:
+        -(booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
+        60000, //duration in minutes
+    };
+    transact.createTransaction(transaction);
     return this.delete(booking_id);
   }
 }

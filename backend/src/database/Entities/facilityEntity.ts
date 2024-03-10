@@ -63,7 +63,9 @@ export class FacilityEntity extends GenericEntity {
   @Type(() => AvailabilityEntity)
   availabilities: Promise<AvailabilityEntity[]>;
 
-  @OneToMany(() => TransactionEntity, (transactions) => transactions.facility)
+  @OneToMany(() => TransactionEntity, (transactions) => transactions.facility, {
+    nullable: true,
+  })
   transactions: TransactionEntity[];
 
   @Exclude()

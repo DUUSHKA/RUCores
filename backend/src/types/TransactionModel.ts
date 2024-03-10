@@ -1,5 +1,17 @@
 import { Type } from "class-transformer";
-import { IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
+export enum TransactionType {
+  Transfer = "Transfer",
+  Refund = "Refund",
+  Refill = "Refill",
+}
 
 export class TransactionModel {
   @IsNotEmpty()
@@ -16,14 +28,26 @@ export class TransactionModel {
   date: Date;
 
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   user_id: number;
 
-  @IsNotEmpty()
-  @IsString()
-  facility_id: number;
+  @IsOptional()
+  @IsNumber()
+  booking_id?: number;
+
+  @IsOptional()
+  @IsNumber()
+  facility_id?: number;
+
+  @IsOptional()
+  @IsNumber()
+  duration?: number;
 
   @IsNotEmpty()
-  @IsNumber()
-  booking_id: number;
+  @IsEnum({
+    type: "simple-enum",
+    enum: TransactionType,
+    default: "Transfer",
+  })
+  transactionType: TransactionType;
 }
