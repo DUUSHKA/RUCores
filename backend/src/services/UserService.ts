@@ -16,7 +16,7 @@ import {
   providerStats,
   userStats,
 } from "../types/AnalyticsTypes";
-import { GetAllQuery } from "../types/GenericUtilTypes";
+import { GetAllQuery, QueryError } from "../types/GenericUtilTypes";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { TransactionModel, TransactionType } from "../types/TransactionModel";
 import { UserModel } from "../types/UserModel";
@@ -68,7 +68,16 @@ class UserService extends GenericService<UserEntity> {
     newUser.roles = user.roles;
     newUser.isProvider = user.isProvider;
     newUser.balance = 0;
-    return this.repository.save(newUser);
+    try {
+      return await this.repository.save(newUser);
+    } catch (error) {
+      const queryError = error as QueryError;
+      if (queryError.errno === 19) {
+        // SQLite error code for UNIQUE constraint failed
+        throw new ForbiddenError("Username already exists");
+      }
+      throw error;
+    }
   }
 
   public async createProvider(provider: UserModel): Promise<UserEntity> {

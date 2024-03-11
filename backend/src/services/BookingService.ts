@@ -25,8 +25,8 @@ class BookingService extends GenericService<BookingEntity> {
     //check if the new booking start time or end time is within the range of the old booking
     if (
       (proposedBooking.startDateTime >= establishedBooking.startDateTime &&
-        proposedBooking.startDateTime <= establishedBooking.endDateTime) ||
-      (proposedBooking.endDateTime >= establishedBooking.startDateTime &&
+        proposedBooking.startDateTime < establishedBooking.endDateTime) ||
+      (proposedBooking.endDateTime > establishedBooking.startDateTime &&
         proposedBooking.endDateTime <= establishedBooking.endDateTime)
     )
       return true;
@@ -37,7 +37,10 @@ class BookingService extends GenericService<BookingEntity> {
     user: UserEntity,
     availability: AvailabilityEntity,
     booking: BookingModel,
-  ): Promise<number> {
+    refundTotal?: number,
+  ): Promise<number | null> {
+    refundTotal = refundTotal ?? 0; //Need this to exclude from the pending balance
+
     //get the number of 30 minute intervals in the booking
     const bookingIntervals =
       (booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
@@ -45,12 +48,13 @@ class BookingService extends GenericService<BookingEntity> {
     const totalCost = availability.price * bookingIntervals;
     //get all future bookings for the user, and calculate the total cost of all the bookings
     const futureBookings = await this.getAllFutureUserBookings(user);
-    const pendingBalance = futureBookings.reduce((acc, booking) => {
+    let pendingBalance = futureBookings.reduce((acc, booking) => {
       return acc + booking.cost;
     }, 0);
+    pendingBalance -= refundTotal;
     //check if the user can afford the booking
     if (totalCost > user.balance - pendingBalance) {
-      return 0;
+      return null;
     }
     user.balance -= totalCost;
     const facility = await availability.facility;
@@ -82,16 +86,16 @@ class BookingService extends GenericService<BookingEntity> {
     const bookingIntervals =
       (booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
       1800000;
-    const totalCost = availability.price * bookingIntervals;
-    user.balance += totalCost;
+    const refundTotal = availability.price * bookingIntervals;
+    user.balance += refundTotal;
     const facility = await availability.facility;
-    facility.balance -= totalCost;
+    facility.balance -= refundTotal;
     AppDataSource.getRepository(UserEntity).save(user);
     AppDataSource.getRepository(FacilityEntity).save(facility);
     const id = booking.id;
     //post refund transaction
     const transaction: TransactionModel = {
-      amountChanged: totalCost,
+      amountChanged: refundTotal,
       eventDescription:
         "service cancellation for " +
         (await (await booking.availability).facility).name,
@@ -105,7 +109,7 @@ class BookingService extends GenericService<BookingEntity> {
         60000, //duration in minutes
     };
     transact.createTransaction(transaction);
-    return totalCost;
+    return refundTotal;
   }
 
   public async vailidateBooking(
@@ -234,6 +238,9 @@ class BookingService extends GenericService<BookingEntity> {
       //charge for the booking
     }
     const cost = await this.chargeForBooking(user, availability, booking);
+    if (cost === null) {
+      throw new Error("User cannot afford booking");
+    }
     const newBooking = new BookingEntity();
     newBooking.startDateTime = booking.startDateTime;
     newBooking.endDateTime = booking.endDateTime;
@@ -290,14 +297,26 @@ class BookingService extends GenericService<BookingEntity> {
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
+    const refundTotal = await this.refundBooking(
+      user,
+      availability,
+      currentBooking,
+    );
     currentBooking.startDateTime = booking.startDateTime;
     currentBooking.endDateTime = booking.endDateTime;
     currentBooking.availability = Promise.resolve(availability);
-    currentBooking.cost = await this.chargeForBooking(
+    const cost = await this.chargeForBooking(
       user,
       availability,
       booking,
+      refundTotal,
     );
+    if (cost === null) {
+      throw new Error(
+        "User cannot afford booking. The Booking has been refunded but not updated",
+      );
+    }
+    currentBooking.cost = cost;
     const resp = await this.repository.save(currentBooking);
     const transaction: TransactionModel = {
       amountChanged: -1 * currentBooking.cost,
@@ -318,13 +337,19 @@ class BookingService extends GenericService<BookingEntity> {
   }
 
   public async getBookings(user: UserEntity, filter: GetAllQuery) {
-    return await this.getAll(filter, {
+    const bookings = await this.getAll(filter, {
       where: {
         user: {
           id: user.id,
         },
       },
     });
+    return Promise.all(
+      bookings.map(async (booking) => {
+        await booking.availability;
+        return booking;
+      }),
+    );
   }
 
   public async deleteBooking(user: UserEntity, booking_id: number) {

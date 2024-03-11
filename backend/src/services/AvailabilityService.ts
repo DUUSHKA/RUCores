@@ -73,10 +73,11 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
   ): Promise<boolean> {
     //check if the new availability start time or end time is within the range of the old availability
     if (
-      (proposedAvailability.startDateTime > establishedAvailability.startTime &&
+      (proposedAvailability.startDateTime >=
+        establishedAvailability.startTime &&
         proposedAvailability.startDateTime < establishedAvailability.endTime) ||
       (proposedAvailability.endDateTime > establishedAvailability.startTime &&
-        proposedAvailability.endDateTime < establishedAvailability.endTime)
+        proposedAvailability.endDateTime <= establishedAvailability.endTime)
     )
       return true;
 

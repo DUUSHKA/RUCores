@@ -70,7 +70,11 @@ body {
     color: #555;
     font-weight: bold;
   }
-  
+
+.operating-hours-container {
+  padding: 10px;
+}
+
   .mb-2 {
     margin-bottom: 0.5rem;
   }

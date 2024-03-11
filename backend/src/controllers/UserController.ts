@@ -159,7 +159,7 @@ export class UserController {
     return this.service.addBalance(id, refill);
   }
 
-  @Put("/:id")
+  @Put("userID/:id")
   async put(@Param("id") id: number, @Body() user: UserModel) {
     //Update a user
     const updateUser = await this.service.updateUser(id, user);
@@ -167,7 +167,7 @@ export class UserController {
     return "Updated user successfully.";
   }
 
-  @Delete("/:id")
+  @Delete("userID/:id")
   remove(@Param("id") id: number) {
     const deletedUser = this.service.deleteUser(id);
     return "Removed user successfully.";
