@@ -7,8 +7,8 @@ import {
   Not,
   Repository,
 } from "typeorm";
-import GenericEntity from "../database/Entities/genericEntity";
 import AppDataSource from "../database/data-source";
+import GenericEntity from "../database/Entities/genericEntity";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 
 class GenericService<T extends GenericEntity> {
@@ -83,7 +83,6 @@ class GenericService<T extends GenericEntity> {
       withDeleted: true,
       ...extraOptions,
     } as FindManyOptions<T>;
-    //delete options.where;
     return this.repository.find(options);
   }
 
@@ -106,6 +105,7 @@ class GenericService<T extends GenericEntity> {
         deletedAt: Not(IsNull()),
         ...extraOptionsWhere,
       },
+      withDeleted: true,
       ...extraOptions,
     } as FindManyOptions<T>;
     return this.repository.find(options);
@@ -121,6 +121,7 @@ class GenericService<T extends GenericEntity> {
         deletedAt: Not(IsNull()),
         ...extraOptionsWhere,
       },
+      withDeleted: true,
     } as FindOneOptions<T>);
     if (!entity) {
       throw new NotFoundError(`${this.name} not found`);

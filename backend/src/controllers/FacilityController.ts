@@ -32,7 +32,7 @@ export class FacilityController {
     this.service = new FacilityService();
   }
 
-  @Get()
+  @Get("/getAll")
   @HttpCode(200)
   @OpenAPI({
     summary: "Get all facilities",
@@ -42,7 +42,7 @@ export class FacilityController {
     return this.service.getAll(query);
   }
 
-  @Get()
+  @Get("/getAllWithDeleted")
   @HttpCode(200)
   @OpenAPI({
     summary: "Get all facilities including deleted facilities",
@@ -54,7 +54,7 @@ export class FacilityController {
     return this.service.getAllWithDeleted(query);
   }
 
-  @Get()
+  @Get("/getDeleted")
   @HttpCode(200)
   @OpenAPI({
     summary: "Get all deleted facilities",
