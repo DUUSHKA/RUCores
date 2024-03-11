@@ -54,7 +54,7 @@ export class UserController {
   @Get("/analytics")
   @HttpCode(200)
   async getUserStats(@CurrentUser() user: UserEntity) {
-    return this.service.userAnalytics(user.id);
+    return this.service.userAnalytics(user);
   }
 
   @Get("/providerAnalytics/:id")

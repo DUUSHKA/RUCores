@@ -97,7 +97,6 @@ export class UserEntity extends GenericEntity {
 
   @Exclude()
   getName = () => "User";
-
   @OneToMany(() => TransactionEntity, (transactions) => transactions.user)
-  transactions: TransactionEntity[];
+  transactions: Promise<TransactionEntity[]>;
 }

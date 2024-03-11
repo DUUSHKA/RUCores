@@ -5,6 +5,17 @@ import crypto from "crypto";
 import { ForbiddenError, UnauthorizedError } from "routing-controllers";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
+import {
+  groupByAndSum,
+  pushCostData,
+  pushTimeData,
+} from "../types/AnalyticsHelpers";
+import {
+  monthlyData,
+  monthlyProviderData,
+  providerStats,
+  userStats,
+} from "../types/AnalyticsTypes";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { TransactionModel, TransactionType } from "../types/TransactionModel";
@@ -15,79 +26,31 @@ import FacilityService from "./FacilityService";
 import GenericService from "./GenericService";
 import SessionService from "./SessionService";
 import TransactionService from "./TransactionService";
-
-type monthlyData = {
-  month: string;
-  year: number;
-  spending: number;
-  time: number; //total time spent in a facility that month
-  coinsSpent: coinsByFacility[];
-};
-
-type coinsByFacility = {
-  facility: string;
-  coins: number;
-};
-
-type timeByFacility = {
-  facility: string;
-  time: number; //In minutes
-};
-
-type userStats = {
-  monthlySummary: {
-    total: number;
-    average: number;
-    totalTime: number; //total time spent in facilities
-    averageTime: number; //average time spent in facilities each month
-  };
-  monthlyData: monthlyData[];
-  coinsSpent: coinsByFacility[]; //total coins spent per facility in the past 12 months
-  timeSscheduled: timeByFacility[]; //total time scheduled within the last 12 months
-  //timeSpent: timeByFacility[]
-};
-
-type monthlyProviderData = {
-  month: string;
-  year: number;
-  earnings: number;
-  totalUnbooked: number;
-  totalBooked: number;
-};
-
-type providerStats = {
-  monthlySummary: {
-    name: string;
-    totalEarning: number;
-    averageEarning: number;
-    totalUnbooked: number;
-    totalBooked: number;
-  };
-  monthlyData: monthlyProviderData[];
-};
-
-type GroupedWithSum<T> = Record<number, { items: T[]; sum: number }>;
-
 class UserService extends GenericService<UserEntity> {
   constructor() {
     super(UserEntity);
   }
 
-  public groupByAndSum<T>(
-    array: T[],
-    keyGetter: (item: T) => number,
-    sumProperty: keyof T,
-  ): GroupedWithSum<T> {
-    return array.reduce((result: GroupedWithSum<T>, item: T) => {
-      const key = keyGetter(item);
-      if (!result[key]) {
-        result[key] = { items: [], sum: 0 };
-      }
-      result[key].items.push(item);
-      result[key].sum += item[sumProperty] as number;
-      return result;
-    }, {});
-  }
+  query: GetAllQuery = {
+    limit: 10000,
+    offset: 0,
+  };
+  currDate = new Date();
+  year = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+  monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   private hashPassword(password: string, salt: string): string {
     const hmac = crypto.createHmac("sha256", salt);
@@ -235,46 +198,29 @@ class UserService extends GenericService<UserEntity> {
     return this.repository.save(user);
   }
 
-  public async userAnalytics(id: number) {
-    const query: GetAllQuery = {
-      limit: 10000,
-      offset: 0,
-    };
-    const currDate = new Date();
-    const year = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    const user = await this.getOneByID(id);
-    const book = (await new BookingService().getBookings(user, query)).filter(
-      (y) => y.startDateTime > year && y.startDateTime < currDate,
+  public async userAnalytics(user: UserEntity) {
+    const book = (
+      await new BookingService().getBookings(user, this.query)
+    ).filter(
+      (y) => y.startDateTime > this.year && y.startDateTime < this.currDate,
     );
     const transactions = (
-      await new TransactionService().getAllTransaction(user, query)
+      await new TransactionService().getAllTransaction(user, this.query)
     )
       .filter((t) => t.transactionType !== "Refill")
-      .filter((y) => y.date > year);
+      .filter((y) => y.date > this.year);
     const totalSpend =
       -1 * transactions.reduce((sum, el) => (sum += el.amountChanged), 0); //total amount spent --> takes refunds into consideration
     const averageSpend = parseFloat((totalSpend / 12).toFixed(2)); //average monthly spending
     const totalSpendTime = transactions
-      .filter((y) => y.date < currDate)
+      .filter((y) => y.date < this.currDate)
       .reduce((sum, el) => (sum += el.duration!), 0); //total amount spent --> takes refunds into consideration
     const averageSpendTime = parseFloat((totalSpendTime / 12).toFixed(2)); //average monthly spending
     const monthDataArr = [];
+    let facilityTimeArr = [];
+    let facilityCostArr = [];
     for (let i = 0; i < 12; i++) {
-      let mYear = currDate.getFullYear();
+      let mYear = this.currDate.getFullYear();
       const months = transactions.filter((d) => d.date.getMonth() == i);
       const monthTime = book.filter((d) => d.startDateTime.getMonth() == i);
       const ttl = -1 * months.reduce((sum, el) => (sum += el.amountChanged), 0);
@@ -284,71 +230,53 @@ class UserService extends GenericService<UserEntity> {
             (el.endDateTime.getTime() - el.startDateTime.getTime()) / 60000),
         0,
       );
-      if (currDate.getMonth() < i) {
+      if (this.currDate.getMonth() < i) {
         mYear -= 1;
       }
-      const facilityGroups = this.groupByAndSum(
+      const facilityGroups = groupByAndSum(
         months,
         (t) => t.facility?.id!,
         "amountChanged",
       );
-      const facilityMonthCost = [];
-      for (const key in facilityGroups) {
-        if (Object.prototype.hasOwnProperty.call(facilityGroups, key)) {
-          const group = facilityGroups[key];
-          const sum = -1 * group.sum;
-          const data: coinsByFacility = {
-            facility: (await new FacilityService().getOneByID(Number(key)))
-              .name,
-            coins: sum,
-          };
-          const x = facilityMonthCost.push(data);
+      /* const mappedBooking = monthTime.map(e => {
+        const match = transactions.find(i => i.booking?.id == e.id)
+        if(match){
+          return{
+            facility: match.facility?.id,
+            duration: match.duration
+          }
         }
-      }
+        
+      }); */
+      const facilityMonthCost = await pushCostData(facilityGroups);
+      /* const newFacilityGroups = groupByAndSum(
+        mappedBooking,
+        (t) => t?.facility!,
+        "duration",
+      ); */
+      //const facilityTimeCost = await pushTimeData(newFacilityGroups);
       const data: monthlyData = {
-        month: monthNames[i],
+        month: this.monthNames[i],
         year: mYear,
         spending: ttl,
         time: ttlTime,
         coinsSpent: facilityMonthCost,
+        //timeSpent: facilityTimeCost,
       };
       const x = monthDataArr.push(data);
     }
-    let facilityGroups = this.groupByAndSum(
+    let facilityGroups = groupByAndSum(
       transactions,
       (t) => t.facility?.id!,
       "amountChanged",
     );
-    const facilityTimeArr = [];
-    const facilityTimeSpentArr = [];
-    const facilityCostArr = [];
-    for (const key in facilityGroups) {
-      if (Object.prototype.hasOwnProperty.call(facilityGroups, key)) {
-        const group = facilityGroups[key];
-        const sum = -1 * group.sum;
-        const data: coinsByFacility = {
-          facility: (await new FacilityService().getOneByID(Number(key))).name,
-          coins: sum,
-        };
-        const x = facilityCostArr.push(data);
-      }
-    }
-    facilityGroups = this.groupByAndSum(
+    facilityCostArr = await pushCostData(facilityGroups);
+    facilityGroups = groupByAndSum(
       transactions.filter((y) => y.date),
       (t) => t.facility?.id!,
       "duration",
     );
-    for (const key in facilityGroups) {
-      if (Object.prototype.hasOwnProperty.call(facilityGroups, key)) {
-        const group = facilityGroups[key];
-        const sum = group.sum;
-        const data: timeByFacility = {
-          facility: (await new FacilityService().getOneByID(Number(key))).name,
-          time: sum,
-        };
-        const x = facilityTimeArr.push(data);
-      }
-    }
+    facilityTimeArr = await pushTimeData(facilityGroups);
     //facilityGroups = book.filter()
 
     const analytics: userStats = {
@@ -360,42 +288,21 @@ class UserService extends GenericService<UserEntity> {
       },
       monthlyData: monthDataArr,
       coinsSpent: facilityCostArr,
-      timeSscheduled: facilityTimeArr,
+      timeScheduled: facilityTimeArr,
       //timeSpent:
     };
     return analytics;
   }
 
   public async providerAnalytics(id: number) {
-    const query: GetAllQuery = {
-      limit: 10000,
-      offset: 0,
-    };
-    const currDate = new Date();
-    const year = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    const transactions = (
-      await new TransactionService().getTransactionByFacilityID(id, query)
-    )
-      .filter((t) => t.transactionType !== "Refill")
-      .filter((y) => y.date > year);
-    console.log("after filters");
     const availabilities = (
       await new AvailabilityService().getAvailabilityByFacilityID(id)
-    ).filter((y) => y.startTime > year);
+    ).filter((y) => y.startTime > this.year);
+    const transactions = (
+      await new TransactionService().getTransactionByFacilityID(id, this.query)
+    )
+      .filter((t) => t.transactionType !== "Refill")
+      .filter((y) => y.date > this.year);
     const totalEarned =
       -1 * transactions.reduce((sum, el) => (sum += el.amountChanged), 0); //total amount spent --> takes refunds into consideration
     const averageEarned = parseFloat((totalEarned / 12).toFixed(2)); //average monthly spending
@@ -406,9 +313,8 @@ class UserService extends GenericService<UserEntity> {
       0,
     );
     const monthDataArr = [];
-    console.log("before for");
     for (let i = 0; i < 12; i++) {
-      let mYear = currDate.getFullYear();
+      let mYear = this.currDate.getFullYear();
       const months = transactions.filter((d) => d.date.getMonth() == i);
       const monthAvail = availabilities.filter(
         (d) => d.startTime.getMonth() == i,
@@ -420,12 +326,11 @@ class UserService extends GenericService<UserEntity> {
           (sum += (el.endTime.getTime() - el.startTime.getTime()) / 60000),
         0,
       );
-      if (currDate.getMonth() < i) {
+      if (this.currDate.getMonth() < i) {
         mYear -= 1;
       }
-      console.log("before setting JSON");
       const data: monthlyProviderData = {
-        month: monthNames[i],
+        month: this.monthNames[i],
         year: mYear,
         totalBooked: ttlBooked,
         totalUnbooked: ttlUnbooked,

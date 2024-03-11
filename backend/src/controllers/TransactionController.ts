@@ -47,7 +47,7 @@ export class TransactionController {
     return avail;
   }
 
-  @Get("/facility/:id")
+  /*   @Get("/facility/:id")
   @HttpCode(200)
   @OpenAPI({
     summary: "Get all availabilities scheduled for the facility",
@@ -63,8 +63,9 @@ export class TransactionController {
   ) {
     //: Promise<TransactionEntity[]>
     //return this.service.getTransactionByFacilityID(id);
-  }
+  } */
 
+  //endpoint should not be called EVER only here for testing purposes
   @Post("/create")
   @HttpCode(200)
   @ResponseSchema(TransactionEntity, { isArray: true })
@@ -74,7 +75,7 @@ export class TransactionController {
     return this.service.createTransaction(transaction);
   }
 
-  @Post("/refillBalance")
+  /*   @Post("/refillBalance")
   @HttpCode(200)
   @ResponseSchema(TransactionEntity, { isArray: true })
   async changeBalance(
@@ -82,8 +83,9 @@ export class TransactionController {
   ): Promise<TransactionEntity> {
     const create = this.service.createTransaction(transaction);
     return this.service.changeBalance(transaction);
-  }
+  } */
 
+  //endpoint should not be called EVER only here for testing purposes
   @Delete("/:id")
   remove(@Param("id") id: number) {
     const deletedUTransaction = this.service.deleteTransaction(id);
