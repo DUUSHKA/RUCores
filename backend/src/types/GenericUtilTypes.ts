@@ -1,4 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString, Max } from "class-validator";
+import { QueryFailedError } from "typeorm";
 
 enum Order {
   ASC = "ASC",
@@ -22,4 +23,8 @@ class GetAllQuery {
   order?: Order;
 }
 
-export { GetAllQuery };
+class QueryError extends QueryFailedError {
+  public errno: number;
+}
+
+export { GetAllQuery, Order, QueryError };

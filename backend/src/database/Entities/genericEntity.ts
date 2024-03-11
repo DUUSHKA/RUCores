@@ -1,3 +1,4 @@
+import { Expose } from "class-transformer";
 import { IsNumber } from "class-validator";
 import {
   CreateDateColumn,
@@ -9,6 +10,7 @@ import {
 abstract class GenericEntity {
   @PrimaryGeneratedColumn()
   @IsNumber()
+  @Expose()
   id: number;
 
   @CreateDateColumn()

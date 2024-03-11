@@ -48,8 +48,9 @@ export class BookingController {
   @Get("/bookingID/:id")
   @HttpCode(200)
   @ResponseSchema(BookingEntity)
-  getOne(@Param("id") id: number) {
-    const booking = this.service.getOneByID(id);
+  async getOne(@Param("id") id: number) {
+    const booking = await this.service.getOneByID(id);
+    await booking.availability;
     return booking;
   }
 
