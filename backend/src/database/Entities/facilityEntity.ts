@@ -24,6 +24,7 @@ import {
   modificationEntity,
   modificatonType,
 } from "./logEntity";
+import { TransactionEntity } from "./transactionEntity";
 import { UserEntity } from "./userEntity";
 
 @Entity({ name: "facility", schema: "rucores" })
@@ -82,6 +83,11 @@ export class FacilityEntity extends GenericEntity {
   @ValidateNested()
   @Type(() => AvailabilityEntity)
   availabilities: Promise<AvailabilityEntity[]>;
+
+  @OneToMany(() => TransactionEntity, (transactions) => transactions.facility, {
+    nullable: true,
+  })
+  transactions: TransactionEntity[];
 
   @Exclude()
   getName = () => "Facility";

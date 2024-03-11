@@ -150,6 +150,21 @@ export const prepopulateDB = async () => {
   user3.bookings = Promise.resolve([chemBooking3]);
   //user3.managedFacilities = Promise.resolve([facility2]);
 
+  // transaction.amountChanged = Math.floor(Math.random() * 1001) - 500;
+  // transaction.date = new Date();
+  // transaction.eventDesription = "Transaction " + i;
+  // if (i % 3 == 0) transaction.transactionType = TransactionType.Refund;
+  // else if (i % 3 == 1) transaction.transactionType = TransactionType.Refill;
+  // else transaction.transactionType = TransactionType.Transfer;
+  // transaction.user = user;
+  // transaction.facility = facility;
+
+  // await AppDataSource.manager.save(user);
+  //await AppDataSource.manager.save(session).catch((err) => console.log(err));
+  // await AppDataSource.manager.save(booking).catch((err) => console.log(err));
+  // await AppDataSource.manager.save(facility).catch((err) => console.log(err));
+  // await AppDataSource.manager.save(availability).catch((err) => console.log(err));
+  //}
   //console.log("user: ", user);
   //console.log("facility: ", facility);
   //user1.managedFacilities = Promise.resolve([facility]);
