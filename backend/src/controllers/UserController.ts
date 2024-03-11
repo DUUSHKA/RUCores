@@ -17,6 +17,7 @@ import {
   Res,
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
+import log from "src/utils/logger";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
