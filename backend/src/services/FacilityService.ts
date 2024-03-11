@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NotFoundError } from "routing-controllers";
-import { GetAllQuery } from "src/types/GenericUtilTypes";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { FacilityModel } from "../types/FacilityModel";
+import { GetAllQuery } from "../types/GenericUtilTypes";
 import BookingService from "./BookingService";
 import GenericService from "./GenericService";
 import UserService from "./UserService";
