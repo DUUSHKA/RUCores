@@ -33,6 +33,7 @@ import {
   modificatonType,
 } from "./logEntity";
 import { SessionEntity } from "./sessionEntity";
+import { TransactionEntity } from "./transactionEntity";
 
 @Entity({ name: "user", schema: "rucores" })
 @Unique(["username"])
@@ -123,6 +124,9 @@ export class UserEntity extends GenericEntity {
   @Type(() => SessionEntity)
   @Exclude()
   sessions: Promise<SessionEntity[]>;
+
+  @OneToMany(() => TransactionEntity, (transactions) => transactions.user)
+  transactions: Promise<TransactionEntity[]>;
 
   @ValidateNested()
   @OneToMany(() => LogEntity, (log) => log.user, {

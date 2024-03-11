@@ -8,6 +8,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from "typeorm";
 import LogType from "../../types/LogType";
 import AppDataSource from "../data-source";
@@ -19,6 +20,7 @@ import {
   modificationEntity,
   modificatonType,
 } from "./logEntity";
+import { TransactionEntity } from "./transactionEntity";
 import { UserEntity } from "./userEntity";
 //import { Provider } from './Provider';
 
@@ -59,6 +61,11 @@ export class BookingEntity extends GenericEntity {
   // @ManyToOne(() => Provider, (provider: Provider) => provider.bookings)
   // @JoinColumn({ name: "userId"})
   // provider: Provider;
+
+  @OneToMany(() => TransactionEntity, (transactions) => transactions.booking, {
+    nullable: true,
+  })
+  transactions: TransactionEntity[];
 
   @Exclude()
   getName = () => "Booking";
