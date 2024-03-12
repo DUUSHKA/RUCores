@@ -215,7 +215,9 @@ class UserService extends GenericService<UserEntity> {
       await new TransactionService().getAllTransaction(user, this.query)
     )
       .filter((t) => t.transactionType !== "Refill")
-      .filter((y) => y.date > this.year) as TransactionNotRefill[];
+      .filter((y) => y.date > this.year) as TransactionNotRefill[]; // transaction service return TransactionEntity[]. After filter it stil thinks
+    //its this type but we need TransactionNotRefill[], so we cast it with as and it will just believe we are correct with the resulting type
+
     const totalSpend =
       -1 * transactions.reduce((sum, el) => (sum += el.amountChanged), 0); //total amount spent --> takes refunds into consideration
     const averageSpend = parseFloat((totalSpend / 12).toFixed(2)); //average monthly spending
