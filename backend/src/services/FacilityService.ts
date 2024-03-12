@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NotFoundError } from "routing-controllers";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
@@ -48,7 +47,6 @@ class FacilityService extends GenericService<FacilityEntity> {
   //This is an alternative way to get all facilities managed by a user, using query builder
   public async getAllManagedFacilities(
     user: UserEntity,
-    filter: GetAllQuery,
   ): Promise<FacilityEntity[]> {
     //verify user is a provider
     if (!user.isProvider) {

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import crypto from "crypto";
 import { ForbiddenError, UnauthorizedError } from "routing-controllers";
 import { SessionEntity } from "../database/Entities/sessionEntity";
@@ -11,6 +8,7 @@ import {
   pushTimeData,
 } from "../types/AnalyticsHelpers";
 import {
+  TransactionNotRefill,
   monthlyData,
   monthlyProviderData,
   providerStats,
@@ -203,7 +201,7 @@ class UserService extends GenericService<UserEntity> {
       user_id: id,
       transactionType: TransactionType.Refill,
     };
-    transact.createTransaction(transaction);
+    await transact.createTransaction(transaction);
     return this.repository.save(user);
   }
 
@@ -217,7 +215,7 @@ class UserService extends GenericService<UserEntity> {
       await new TransactionService().getAllTransaction(user, this.query)
     )
       .filter((t) => t.transactionType !== "Refill")
-      .filter((y) => y.date > this.year);
+      .filter((y) => y.date > this.year) as TransactionNotRefill[];
     const totalSpend =
       -1 * transactions.reduce((sum, el) => (sum += el.amountChanged), 0); //total amount spent --> takes refunds into consideration
     const averageSpend = parseFloat((totalSpend / 12).toFixed(2)); //average monthly spending
@@ -244,49 +242,31 @@ class UserService extends GenericService<UserEntity> {
       }
       const facilityGroups = groupByAndSum(
         months,
-        (t) => t.facility?.id!,
+        (t) => t.facility.id,
         "amountChanged",
       );
-      /* const mappedBooking = monthTime.map(e => {
-        const match = transactions.find(i => i.booking?.id == e.id)
-        if(match){
-          return{
-            facility: match.facility?.id,
-            duration: match.duration
-          }
-        }
-        
-      }); */
       const facilityMonthCost = await pushCostData(facilityGroups);
-      /* const newFacilityGroups = groupByAndSum(
-        mappedBooking,
-        (t) => t?.facility!,
-        "duration",
-      ); */
-      //const facilityTimeCost = await pushTimeData(newFacilityGroups);
       const data: monthlyData = {
         month: this.monthNames[i],
         year: mYear,
         spending: ttl,
         time: ttlTime,
         coinsSpent: facilityMonthCost,
-        //timeSpent: facilityTimeCost,
       };
-      const x = monthDataArr.push(data);
+      monthDataArr.push(data);
     }
     let facilityGroups = groupByAndSum(
       transactions,
-      (t) => t.facility?.id!,
+      (t) => t.facility.id,
       "amountChanged",
     );
     facilityCostArr = await pushCostData(facilityGroups);
     facilityGroups = groupByAndSum(
       transactions.filter((y) => y.date),
-      (t) => t.facility?.id!,
+      (t) => t.facility.id,
       "duration",
     );
     facilityTimeArr = await pushTimeData(facilityGroups);
-    //facilityGroups = book.filter()
 
     const analytics: userStats = {
       monthlySummary: {
@@ -345,7 +325,7 @@ class UserService extends GenericService<UserEntity> {
         totalUnbooked: ttlUnbooked,
         earnings: ttl,
       };
-      const x = monthDataArr.push(data);
+      monthDataArr.push(data);
     }
     const facilityName = (await new FacilityService().getOneByID(id)).name;
     const analytics: providerStats = {

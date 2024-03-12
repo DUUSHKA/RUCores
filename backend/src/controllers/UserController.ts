@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Response } from "express";
 import {
   Authorized,
@@ -71,7 +70,6 @@ export class UserController {
   @HttpCode(200)
   @ResponseSchema(UserEntity)
   async getCurrent(@CurrentUser() user: UserEntity): Promise<UserEntity> {
-    //log.debug("Current user: ", user);
     return user;
   }
 
@@ -178,8 +176,6 @@ export class UserController {
     const userService = new UserService();
     const session = await userService.login(username, password);
     response.cookie("session", session.token);
-    //log.debug(`Logged in as ${username}`);
-    //log.silly(`Session token: ${session.token}`);
     return session.user;
   }
 
@@ -195,14 +191,11 @@ export class UserController {
   @Put("userID/:id")
   async put(@Param("id") id: number, @Body() user: UserModel) {
     //Update a user
-    const updateUser = await this.service.updateUser(id, user);
-    //log.debug("User updated: ", updateUser);
-    return "Updated user successfully.";
+    return this.service.updateUser(id, user);
   }
 
   @Delete("userID/:id")
   remove(@Param("id") id: number) {
-    const deletedUser = this.service.deleteUser(id);
-    return "Removed user successfully.";
+    return this.service.deleteUser(id);
   }
 }
