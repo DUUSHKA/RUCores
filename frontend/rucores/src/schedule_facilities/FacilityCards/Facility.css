@@ -41,5 +41,5 @@ strong {
 
 
 .enlargeModal{
-  max-width: 1200px; /* Adjust the max-width as needed */
+  min-width: 1200px; /* Adjust the max-width as needed */
 }

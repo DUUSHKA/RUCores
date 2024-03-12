@@ -1,14 +1,15 @@
 import React from "react";
+import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import FAQ from "./FAQ";
+import AddFacility from "./addFacility/addFacility";
+import Dashboard from "./dashBoard/Dashboard";
+import CreateAccountPage from "./loginPage/createAccountPage/CreateAccountPage";
 import Login from "./loginPage/login";
 import NavBar from "./navBar/navBar";
-import FAQ from "./FAQ";
-import Dashboard from "./dashBoard/Dashboard";
-import Wallet from "./wallet/wallet";
-import AddFacility from "./addFacility/addFacility";
-import CreateAccountPage from "./loginPage/createAccountPage/CreateAccountPage";
 import ScheduleFacility from "./schedule_facilities/schedule_facility";
+import Wallet from "./wallet/wallet";
+import ScheduledBookings from "./scheduledBookings/scheduledBookings";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
           element={
             <>
               <NavBar />
+              <ScheduledBookings />
             </>
           }
         />
