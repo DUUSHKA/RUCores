@@ -38,15 +38,6 @@ function ScheduleFacility() {
 
   useEffect(() => {}, [facilityData]);
 
-  const facilityDetails = {
-    name: "Lab A - Chemistry",
-    equipment: ["Microscopes", "Bunsen Burners", "Chemical Reactors"],
-    operatingHours: "9 AM - 5 PM",
-    cost: "50 RU Coins per hour",
-    description:
-      "Lab A specializes in chemistry research and offers a wide range of equipment for various experiments.",
-  };
-
   return (
     <>
       <div className="scheduleFacilityView">
@@ -57,10 +48,6 @@ function ScheduleFacility() {
         ) : (
           <p>Loading...</p>
         )}
-        <FacilityInfo facilityDetails={facilityDetails} />
-        <FacilityInfo facilityDetails={facilityDetails} />
-        <FacilityInfo facilityDetails={facilityDetails} />
-        <FacilityInfo facilityDetails={facilityDetails} />
       </div>
     </>
   );
