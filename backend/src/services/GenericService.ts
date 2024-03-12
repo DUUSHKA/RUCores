@@ -7,8 +7,8 @@ import {
   Not,
   Repository,
 } from "typeorm";
-import AppDataSource from "../database/data-source";
 import GenericEntity from "../database/Entities/genericEntity";
+import AppDataSource from "../database/data-source";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 
 class GenericService<T extends GenericEntity> {

@@ -108,7 +108,7 @@ class BookingService extends GenericService<BookingEntity> {
         -(booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
         60000, //duration in minutes
     };
-    transact.createTransaction(transaction);
+    await transact.createTransaction(transaction);
     return refundTotal;
   }
 
@@ -265,7 +265,7 @@ class BookingService extends GenericService<BookingEntity> {
         (booking.endDateTime.getTime() - booking.startDateTime.getTime()) /
         60000, //duration in minutes
     };
-    transact.createTransaction(transaction);
+    await transact.createTransaction(transaction);
     return newBooking;
   }
 
@@ -332,7 +332,7 @@ class BookingService extends GenericService<BookingEntity> {
           currentBooking.startDateTime.getTime()) /
         60000, //duration in minutes
     };
-    transact.createTransaction(transaction);
+    await transact.createTransaction(transaction);
     return currentBooking;
   }
 
