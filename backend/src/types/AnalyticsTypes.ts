@@ -1,3 +1,6 @@
+import { FacilityEntity } from "../database/Entities/facilityEntity";
+import { TransactionEntity } from "../database/Entities/transactionEntity";
+
 export class monthlyData {
   month: string;
   year: number;
@@ -47,4 +50,8 @@ export class providerStats {
     totalBooked: number;
   };
   monthlyData: monthlyProviderData[];
+}
+
+export class TransactionNotRefill extends TransactionEntity {
+  facility: FacilityEntity;
 }

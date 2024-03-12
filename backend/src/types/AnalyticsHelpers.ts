@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import FacilityService from "../services/FacilityService";
 import { coinsByFacility, timeByFacility } from "./AnalyticsTypes";
 
@@ -22,6 +19,7 @@ export function groupByAndSum<T>(
   }, {});
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function pushTimeData(facilityGroups: GroupedWithSum<any>) {
   const facilityTimeArr = [];
   for (const key in facilityGroups) {
@@ -32,12 +30,13 @@ export async function pushTimeData(facilityGroups: GroupedWithSum<any>) {
         facility: (await new FacilityService().getOneByID(Number(key))).name,
         time: sum,
       };
-      const x = facilityTimeArr.push(data);
+      facilityTimeArr.push(data);
     }
   }
   return facilityTimeArr;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function pushCostData(facilityGroups: GroupedWithSum<any>) {
   const facilityCostArr = [];
   for (const key in facilityGroups) {
@@ -48,7 +47,7 @@ export async function pushCostData(facilityGroups: GroupedWithSum<any>) {
         facility: (await new FacilityService().getOneByID(Number(key))).name,
         coins: sum,
       };
-      const x = facilityCostArr.push(data);
+      facilityCostArr.push(data);
     }
   }
   return facilityCostArr;
