@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
  *        'danger',
  *        'warning',
  * and alertText, and show to say if it should be shown
+ * also add an onclose function to handle what happens on close
  * @returns
  */
 function SuccessFailureAlert(props) {

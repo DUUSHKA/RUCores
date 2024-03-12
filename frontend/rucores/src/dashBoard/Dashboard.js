@@ -6,10 +6,11 @@ import "./Dashboard.css";
 import WeeklyCard from "./weeklyCard/weeklyCard";
 // import WeeklyCard from './weeklyCard/weeklyCard';
 import BookingCalls from "../BookingCalls";
+import User from "../UserCalls";
 
 function Dashboard() {
   const [weeklyObject, setWeeklyObject] = useState();
-
+  const [currentBalance, setCurrentBalance] = useState();
   /**
    * finds the date of monday of the current week
    */
@@ -102,6 +103,13 @@ function Dashboard() {
         setWeeklyObject(updatedWeekBookingObject);
       }
     });
+
+    const UserCall = new User();
+    UserCall.getUserByID(
+      parseInt(window.sessionStorage.getItem("id"), 10),
+    ).then((resp) => {
+      setCurrentBalance(resp.balance);
+    });
   }, []);
 
   /**
@@ -140,7 +148,12 @@ function Dashboard() {
         <div className="dashboard-sections">
           <section className="balance">
             <h2 className="dashBoardH2">RU Coin Balance</h2>
-            <p>1000 RU Coins</p> {/* Placeholder value */}
+            {currentBalance ? (
+              <p>{currentBalance} RU Coins</p>
+            ) : (
+              <p>Loading...</p>
+            )}{" "}
+            {/* Placeholder value */}
             <Link to="/wallet">
               <Button variant="link">View Wallet</Button>
             </Link>
