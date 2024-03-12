@@ -55,6 +55,14 @@ export class BookingController {
     return booking;
   }
 
+  @Get("/deleted/bookingID/:id")
+  @HttpCode(200)
+  @ResponseSchema(BookingEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const booking = this.service.getDeletedByID(id);
+    return booking;
+  }
+
   @Post()
   @HttpCode(201)
   @OpenAPI({

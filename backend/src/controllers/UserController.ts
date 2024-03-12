@@ -17,13 +17,14 @@ import {
   Res,
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
+import log from "src/utils/logger";
+import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
 import UserService from "../services/UserService";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
 import { UserModel } from "../types/UserModel";
-import log from "../utils/logger";
 
 @JsonController("/users")
 @OpenAPI(auth_errors)
@@ -39,6 +40,29 @@ export class UserController {
   @ResponseSchema(UserEntity, { isArray: true })
   async getAll(@QueryParams() query: GetAllQuery): Promise<UserEntity[]> {
     const allUsers = this.service.getAll(query);
+    //log.debug("All users: ", allUsers);
+    return allUsers;
+  }
+  @Get("/getAllWithDeleted")
+  @HttpCode(200)
+  @Authorized(["admin"])
+  @ResponseSchema(UserEntity, { isArray: true })
+  async getAllWithDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<UserEntity[]> {
+    const allUsers = this.service.getAllWithDeleted(query);
+    log.debug("All users: ", allUsers);
+    return allUsers;
+  }
+
+  @Get("/getAllDeleted")
+  @HttpCode(200)
+  @Authorized(["admin"])
+  @ResponseSchema(UserEntity, { isArray: true })
+  async getAllDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<UserEntity[]> {
+    const allUsers = this.service.getDeleted(query);
     log.debug("All users: ", allUsers);
     return allUsers;
   }
@@ -47,8 +71,30 @@ export class UserController {
   @HttpCode(200)
   @ResponseSchema(UserEntity)
   async getCurrent(@CurrentUser() user: UserEntity): Promise<UserEntity> {
-    log.debug("Current user: ", user);
+    //log.debug("Current user: ", user);
     return user;
+  }
+
+  @Get("/analytics")
+  @HttpCode(200)
+  async getUserStats(@CurrentUser() user: UserEntity) {
+    return this.service.userAnalytics(user);
+  }
+
+  @Get("/providerAnalytics/:id")
+  @Authorized(["provider"])
+  @HttpCode(200)
+  async getProviderStats(
+    @CurrentUser() user: UserEntity,
+    @Param("id") id: number,
+  ) {
+    const managedFacilityIDs = (await user.managedFacilities).map(
+      (facility: FacilityEntity) => facility.id,
+    );
+    if (managedFacilityIDs.includes(id) && user.roles.includes("provider")) {
+      return this.service.providerAnalytics(id);
+    }
+    throw new ForbiddenError("Not a provider for this facility");
   }
 
   @Get("/userID/:id")
@@ -56,6 +102,15 @@ export class UserController {
   @ResponseSchema(UserEntity)
   getOne(@Param("id") id: number) {
     const user = this.service.getOneByID(id);
+    //log.debug(" user found by ID: ", user);
+    return user;
+  }
+
+  @Get("/deleted/userID/:id")
+  @HttpCode(200)
+  @ResponseSchema(UserEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const user = this.service.getDeletedByID(id);
     log.debug(" user found by ID: ", user);
     return user;
   }
@@ -71,7 +126,7 @@ export class UserController {
       throw new ForbiddenError("User is not a provider");
     }
     const providers = this.service.getAllProviderIDs();
-    log.debug("All providers: ", providers);
+    //log.debug("All providers: ", providers);
     return providers;
   }
 
@@ -80,7 +135,7 @@ export class UserController {
   @ResponseSchema(UserEntity)
   post(@Body() user: UserModel) {
     const newUser = this.service.createUser(user);
-    log.debug("New user created: ", newUser);
+    //log.debug("New user created: ", newUser);
     return newUser;
   }
 
@@ -123,20 +178,29 @@ export class UserController {
     const userService = new UserService();
     const session = await userService.login(username, password);
     response.cookie("session", session.token);
-    log.debug(`Logged in as ${username}`);
-    log.silly(`Session token: ${session.token}`);
+    //log.debug(`Logged in as ${username}`);
+    //log.silly(`Session token: ${session.token}`);
     return session.user;
   }
 
-  @Put("/:id")
+  @Post("/refillBalance/:id")
+  @HttpCode(200)
+  async changeBalance(
+    @Param("id") id: number,
+    @BodyParam("refill", { required: true }) refill: number,
+  ) {
+    return this.service.addBalance(id, refill);
+  }
+
+  @Put("userID/:id")
   async put(@Param("id") id: number, @Body() user: UserModel) {
     //Update a user
     const updateUser = await this.service.updateUser(id, user);
-    log.debug("User updated: ", updateUser);
+    //log.debug("User updated: ", updateUser);
     return "Updated user successfully.";
   }
 
-  @Delete("/:id")
+  @Delete("userID/:id")
   remove(@Param("id") id: number) {
     const deletedUser = this.service.deleteUser(id);
     return "Removed user successfully.";

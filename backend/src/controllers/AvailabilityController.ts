@@ -76,6 +76,14 @@ export class AvailabilityController {
     return avail;
   }
 
+  @Get("/deleted/availabilityID/:id")
+  @HttpCode(200)
+  @ResponseSchema(AvailabilityEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const avail = this.service.getDeletedByID(id);
+    return avail;
+  }
+
   @Post()
   @HttpCode(201)
   @OpenAPI({
