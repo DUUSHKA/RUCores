@@ -23,7 +23,7 @@ function PurchaseCoins() {
     const UserID = parseInt(window.sessionStorage.getItem("id"), 10);
     console.log(parseInt(numOfCoins));
     const userAPI = new User();
-    if (parseInt(numOfCoins)) {
+    if (parseInt(numOfCoins) && parseInt(numOfCoins) > 0) {
       userAPI.addFundsToCurrUser(UserID, numOfCoins).then((resp) => {
         if (resp.id) {
           setShowSuccess(true);
