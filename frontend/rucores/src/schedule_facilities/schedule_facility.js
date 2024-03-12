@@ -11,7 +11,7 @@ function ScheduleFacility() {
         const limit = 30;
         const offset = 0;
 
-        const url = `http://localhost:3001/api/facility/?limit=${limit}&offset=${offset}`;
+        const url = `http://localhost:3001/api/facility/getAll?limit=${limit}&offset=${offset}`;
 
         const response = await fetch(url, {
           method: "GET",
@@ -26,6 +26,7 @@ function ScheduleFacility() {
         }
 
         const data = await response.json();
+        console.log(data);
         setFacilityData(data);
       } catch (error) {
         console.error("Error:", error);
