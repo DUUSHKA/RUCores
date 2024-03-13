@@ -10,6 +10,7 @@ import NavBar from "./navBar/navBar";
 import EditFacility from "./schedule_facilities/edit_facilities/editFacility";
 import ScheduleFacility from "./schedule_facilities/schedule_facility";
 import Wallet from "./wallet/wallet";
+import ScheduledBookings from "./scheduledBookings/scheduledBookings";
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
           element={
             <>
               <NavBar />
+              <ScheduledBookings />
             </>
           }
         />

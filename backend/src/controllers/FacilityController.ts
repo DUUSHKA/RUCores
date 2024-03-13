@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Authorized,
   Body,
@@ -32,7 +31,7 @@ export class FacilityController {
     this.service = new FacilityService();
   }
 
-  @Get()
+  @Get("/getAll")
   @HttpCode(200)
   @OpenAPI({
     summary: "Get all facilities",
@@ -40,6 +39,30 @@ export class FacilityController {
   @ResponseSchema(FacilityEntity, { isArray: true })
   async getAll(@QueryParams() query: GetAllQuery): Promise<FacilityEntity[]> {
     return this.service.getAll(query);
+  }
+
+  @Get("/getAllWithDeleted")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all facilities including deleted facilities",
+  })
+  @ResponseSchema(FacilityEntity, { isArray: true })
+  async getAllWithDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<FacilityEntity[]> {
+    return this.service.getAllWithDeleted(query);
+  }
+
+  @Get("/getDeleted")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all deleted facilities",
+  })
+  @ResponseSchema(FacilityEntity, { isArray: true })
+  async getDeleted(
+    @QueryParams() query: GetAllQuery,
+  ): Promise<FacilityEntity[]> {
+    return this.service.getDeleted(query);
   }
 
   @Get("/facilityID/:id")
@@ -50,6 +73,17 @@ export class FacilityController {
   @ResponseSchema(FacilityEntity)
   getOne(@Param("id") id: number) {
     const facility = this.service.getOneByID(id);
+    return facility;
+  }
+
+  @Get("/deleted/facilityID/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get deleted facilities by ID",
+  })
+  @ResponseSchema(FacilityEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const facility = this.service.getDeletedByID(id);
     return facility;
   }
 

@@ -1,4 +1,4 @@
-import { Exclude, Type } from "class-transformer";
+import { Exclude, Expose, Type, instanceToPlain } from "class-transformer";
 import {
   IsBoolean,
   IsNotEmpty,
@@ -7,8 +7,20 @@ import {
   ValidateNested,
   ValidatePromise,
 } from "class-validator";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import {
+  AfterInsert,
+  AfterLoad,
+  AfterRemove,
+  AfterUpdate,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  Unique,
+} from "typeorm";
 import LogType from "../../types/LogType";
+import AppDataSource from "../data-source";
 import { BookingEntity } from "./bookingEntity";
 import { FacilityEntity } from "./facilityEntity";
 import GenericEntity from "./genericEntity";
@@ -17,25 +29,33 @@ import {
   BookingEvent,
   LogEntity,
   ModificationEvent,
+  modificationEntity,
+  modificatonType,
 } from "./logEntity";
 import { SessionEntity } from "./sessionEntity";
+import { TransactionEntity } from "./transactionEntity";
 
 @Entity({ name: "user", schema: "rucores" })
+@Unique(["username"])
 export class UserEntity extends GenericEntity {
   @Column()
   @IsString()
+  @Expose()
   firstName: string;
 
   @Column()
   @IsString()
+  @Expose()
   lastName: string;
 
   @Column()
   @IsString()
+  @Expose()
   email: string;
 
-  @Column()
+  @Column({ name: "username" })
   @IsString()
+  @Expose()
   username: string;
 
   @Column()
@@ -50,14 +70,18 @@ export class UserEntity extends GenericEntity {
 
   @Column("simple-array", { nullable: true })
   @IsString({ each: true })
+  @Expose()
   roles: string[];
 
+  @Column()
   @IsNumber()
   @IsNotEmpty()
+  @Expose()
   balance: number;
 
   @Column()
   @IsBoolean()
+  @Expose()
   isProvider: boolean;
 
   @JoinTable({
@@ -101,10 +125,16 @@ export class UserEntity extends GenericEntity {
   @Exclude()
   sessions: Promise<SessionEntity[]>;
 
-  @Exclude()
+  @OneToMany(() => TransactionEntity, (transactions) => transactions.user)
+  transactions: Promise<TransactionEntity[]>;
+
   @ValidateNested()
-  @OneToMany(() => LogEntity, (log) => log.user)
+  @OneToMany(() => LogEntity, (log) => log.user, {
+    nullable: true,
+    cascade: true,
+  })
   @Type(() => LogEntity, {
+    //when sending the logs to the client in a JSON, we need to cast them to the correct type
     discriminator: {
       property: "LogType",
       subTypes: [
@@ -116,6 +146,28 @@ export class UserEntity extends GenericEntity {
     keepDiscriminatorProperty: true,
   })
   logs: (BookingEvent | AvailabilityEvent | ModificationEvent)[];
+
+  //Need to create an after load function in order to cast the logs to the correct type
+
+  @AfterLoad()
+  logTypeCasting() {
+    // Cast the logs to the correct type becuase TypeORM reads the logs as LogEntity
+    if (!this.logs) return;
+
+    this.logs = this.logs.map((item: LogEntity) => {
+      switch (item.LogType) {
+        case LogType.BookingEvent:
+          return Object.assign(new BookingEvent(), item);
+        case LogType.AvailabilityEvent:
+          return Object.assign(new AvailabilityEvent(), item);
+        case LogType.ModificationEvent:
+          return Object.assign(new ModificationEvent(), item);
+        default:
+          throw new Error("Invalid type");
+      }
+    });
+  }
+
   // @Transform((value) => {
   //   if (!Array.isArray(value)) throw new Error('Invalid type');
 
@@ -137,5 +189,53 @@ export class UserEntity extends GenericEntity {
   @Exclude()
   getName = () => "User";
 
-  //Need to create an after load function in order to cast the logs to the correct type
+  //Make a modification even log after creating a user
+  @AfterInsert()
+  async logCreation() {
+    const log = new ModificationEvent();
+    log.LogType = LogType.ModificationEvent;
+    log.message = "User created";
+    log.modificationType = modificatonType.create;
+    log.modificationEntity = modificationEntity.user;
+    log.modificationEntityJSON = JSON.stringify(
+      instanceToPlain(this, { strategy: "excludeAll" }),
+    );
+    //Because relations are really just a shortcut way to do join operations,
+    //Saving the user on the logEntity table will populate user.logs
+    //user.logs is just looking in the logEntity table for foreign keys that point to the user
+    log.user = this;
+    const logRepository = AppDataSource.getRepository(ModificationEvent);
+    await logRepository.save(log);
+  }
+
+  //Make a modification even log before updating a user
+  @AfterUpdate()
+  async logUpdate() {
+    const log = new ModificationEvent();
+    log.LogType = LogType.ModificationEvent;
+    log.message = "User updated";
+    log.modificationType = modificatonType.update;
+    log.modificationEntity = modificationEntity.user;
+    log.modificationEntityJSON = JSON.stringify(
+      instanceToPlain(this, { strategy: "excludeAll" }),
+    );
+    log.user = this;
+    const logRepository = AppDataSource.getRepository(ModificationEvent);
+    await logRepository.save(log);
+  }
+
+  @AfterRemove()
+  async logDelete() {
+    const log = new ModificationEvent();
+    log.LogType = LogType.ModificationEvent;
+    log.message = "User deleted";
+    log.modificationType = modificatonType.delete;
+    log.modificationEntity = modificationEntity.user;
+    log.modificationEntityJSON = JSON.stringify(
+      instanceToPlain(this, { strategy: "excludeAll" }),
+    );
+    //save log
+    const logRepository = AppDataSource.getRepository(ModificationEvent);
+    await logRepository.save(log);
+  }
 }

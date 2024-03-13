@@ -11,7 +11,7 @@ function ScheduleFacility() {
         const limit = 30;
         const offset = 0;
 
-        const url = `http://localhost:3001/api/facility/?limit=${limit}&offset=${offset}`;
+        const url = `http://localhost:3001/api/facility/getAll?limit=${limit}&offset=${offset}`;
 
         const response = await fetch(url, {
           method: "GET",
@@ -26,6 +26,7 @@ function ScheduleFacility() {
         }
 
         const data = await response.json();
+        console.log(data);
         setFacilityData(data);
       } catch (error) {
         console.error("Error:", error);
@@ -37,15 +38,6 @@ function ScheduleFacility() {
 
   useEffect(() => {}, [facilityData]);
 
-  const facilityDetails = {
-    name: "Lab A - Chemistry",
-    equipment: ["Microscopes", "Bunsen Burners", "Chemical Reactors"],
-    operatingHours: "9 AM - 5 PM",
-    cost: "50 RU Coins per hour",
-    description:
-      "Lab A specializes in chemistry research and offers a wide range of equipment for various experiments.",
-  };
-
   return (
     <>
       <div className="scheduleFacilityView">
@@ -56,10 +48,6 @@ function ScheduleFacility() {
         ) : (
           <p>Loading...</p>
         )}
-        <FacilityInfo facilityDetails={facilityDetails} />
-        <FacilityInfo facilityDetails={facilityDetails} />
-        <FacilityInfo facilityDetails={facilityDetails} />
-        <FacilityInfo facilityDetails={facilityDetails} />
       </div>
     </>
   );

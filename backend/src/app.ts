@@ -10,6 +10,7 @@ import { createExpressServer } from "routing-controllers";
 import AvailabilityController from "./controllers/AvailabilityController";
 import { BookingController } from "./controllers/BookingController";
 import FacilityController from "./controllers/FacilityController";
+import { TransactionController } from "./controllers/TransactionController";
 import { UserController } from "./controllers/UserController";
 import AppDataSource from "./database/data-source";
 import { prepopulateDB } from "./database/prepopulateDB";
@@ -34,6 +35,7 @@ const routingControllersOptions = {
     FacilityController,
     BookingController,
     AvailabilityController,
+    TransactionController,
   ],
 };
 const app: express.Application = createExpressServer(routingControllersOptions);

@@ -189,7 +189,7 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     if (!(await this.verifyOwnership(user, facility))) {
       throw new NotFoundError("User does not have access to this facility");
     }
-    return this.repository.delete(availability_id);
+    return this.repository.softRemove(availability);
   }
 }
 

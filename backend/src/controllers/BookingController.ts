@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Authorized,
   Body,
@@ -48,8 +47,18 @@ export class BookingController {
   @Get("/bookingID/:id")
   @HttpCode(200)
   @ResponseSchema(BookingEntity)
-  getOne(@Param("id") id: number) {
-    const booking = this.service.getOneByID(id);
+  async getOne(@Param("id") id: number) {
+    const booking = await this.service.getOneByID(id);
+    const availability = await booking.availability;
+    await availability.facility;
+    return booking;
+  }
+
+  @Get("/deleted/bookingID/:id")
+  @HttpCode(200)
+  @ResponseSchema(BookingEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const booking = this.service.getDeletedByID(id);
     return booking;
   }
 
