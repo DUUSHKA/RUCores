@@ -83,8 +83,12 @@ function ScheduledBookings() {
             bookings.length > 0 &&
             bookings.map((item, index) => (
               <ListGroup.Item key={index}>
-                {item.__availability__.__facility__.name}
-                {item.__availability__.__facility__.address}
+                {item.__availability__.__facility__
+                  ? item.__availability__.__facility__.name
+                  : "Deleted"}
+                {item.__availability__.__facility__
+                  ? item.__availability__.__facility__.address
+                  : "Deleted"}
                 {formatDate(item.startDateTime) +
                   " - " +
                   formatDate(item.endDateTime)}
@@ -94,7 +98,9 @@ function ScheduledBookings() {
                 <Modal show={showModals[index]} onHide={handleClose}>
                   <Modal.Header closeButton>
                     <Modal.Title>
-                      {item.__availability__.__facility__.name}
+                      {item.__availability__.__facility__
+                        ? item.__availability__.__facility__.name
+                        : "Deleted"}
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
@@ -117,19 +123,19 @@ function ScheduledBookings() {
                       <h2>Facility Details</h2>
                       <p>
                         <strong>Facility Address:</strong>{" "}
-                        {item
+                        {item.__availability__.__facility__
                           ? item.__availability__.__facility__.address
                           : "Loading"}
                       </p>
                       <p>
                         <strong>Facility Description:</strong>{" "}
-                        {item
+                        {item.__availability__.__facility__
                           ? item.__availability__.__facility__.description
                           : "Loading"}
                       </p>
                       <p>
                         <strong>Facility Equipment:</strong>{" "}
-                        {item
+                        {item.__availability__.__facility__
                           ? item.__availability__.__facility__.equipment
                           : "Loading"}
                       </p>

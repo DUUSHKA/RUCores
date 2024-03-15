@@ -1,14 +1,21 @@
-import React, { useState } from "react";
-import "./Facility.css";
 import PropTypes from "prop-types";
-import Button from "react-bootstrap/esm/Button";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/esm/Button";
+import "./Facility.css";
 import Booking from "./booking/booking";
+import { useNavigate } from "react-router-dom";
+import FacilityCalls from "../../FacilityCalls";
+import SuccessFailureAlert from "../../SuccessFailureAlerts";
 function FacilityInfo(prop) {
   const [show, setShow] = useState(false);
-
+  const isProvider = window.sessionStorage.getItem("isProvider") === "true";
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [showErrorDeleteFacility, setShowErrorDeleteFacility] = useState(false);
+
+  const [showSuccessDeleteFacility, setShowSuccessDeleteFacility] =
+    useState(false);
 
   const facilityDetails = {
     name: prop.facilityDetails.name,
@@ -17,12 +24,12 @@ function FacilityInfo(prop) {
     description: prop.facilityDetails.description,
     id: prop.facilityDetails.id,
   };
+  const navigate = useNavigate();
 
-  // eslint-disable-next-line no-unused-vars
   const getFacilityInfo = () => {
     const fetchAvailabilityData = async () => {
       try {
-        const facilityId = facilityDetails.id; // Replace with the actual facility ID you want to retrieve
+        const facilityId = facilityDetails.id;
 
         const url = `http://localhost:3001/api/availability/facility/${facilityId}`;
 
@@ -30,25 +37,50 @@ function FacilityInfo(prop) {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            // Add any additional headers if needed
           },
-          credentials: "include", // Include this line if you need to send cookies or credentials
+          credentials: "include",
         });
 
         if (!response.ok) {
           throw new Error("Failed to fetch availability data");
         }
 
-        // eslint-disable-next-line no-unused-vars
-        const data = await response.json();
+        await response.json();
         handleShow();
       } catch (error) {
         console.error("Error:", error);
       }
     };
 
-    // Call the fetchAvailabilityData function
     fetchAvailabilityData();
+  };
+
+  const editFacility = () => {
+    navigate(`/editFacility/${prop.facilityDetails.id}`);
+  };
+  const closeAlertDeleteFacility = () => {
+    setShowErrorDeleteFacility(false);
+    setShowSuccessDeleteFacility(false);
+    prop.fetchData[1](!prop.fetchData[0]);
+  };
+
+  const handleDeleteFacility = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this facility? This action cannot be undone.",
+      )
+    ) {
+      const facilityAPI = new FacilityCalls();
+      facilityAPI
+        .deleteFacility(parseInt(prop.facilityDetails.id))
+        .then((resp) => {
+          if (resp) {
+            setShowSuccessDeleteFacility(true);
+          } else {
+            showErrorDeleteFacility(true);
+          }
+        });
+    }
   };
 
   return (
@@ -64,9 +96,25 @@ function FacilityInfo(prop) {
         <p>
           <strong>Address:</strong> {facilityDetails.address}
         </p>
-        <p className="cost">
+        <div className="cost">
+          {isProvider && <Button onClick={editFacility}>Edit Facility</Button>}
           <Button onClick={getFacilityInfo}>Schedule a Booking</Button>
-        </p>
+          {isProvider && (
+            <Button onClick={handleDeleteFacility}>Delete Facility</Button>
+          )}
+          <SuccessFailureAlert
+            variant={"danger"}
+            show={showErrorDeleteFacility}
+            alertText={"Failed to Delete Facility!"}
+            onClose={closeAlertDeleteFacility}
+          ></SuccessFailureAlert>
+          <SuccessFailureAlert
+            variant={"success"}
+            show={showSuccessDeleteFacility}
+            alertText={"Deleted Facility!"}
+            onClose={closeAlertDeleteFacility}
+          ></SuccessFailureAlert>
+        </div>
       </div>
       <Modal
         show={show}
@@ -91,5 +139,6 @@ function FacilityInfo(prop) {
 }
 FacilityInfo.propTypes = {
   facilityDetails: PropTypes.object,
+  fetchData: PropTypes.array,
 };
 export default FacilityInfo;

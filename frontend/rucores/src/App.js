@@ -7,6 +7,7 @@ import Dashboard from "./dashBoard/Dashboard";
 import CreateAccountPage from "./loginPage/createAccountPage/CreateAccountPage";
 import Login from "./loginPage/login";
 import NavBar from "./navBar/navBar";
+import EditFacility from "./schedule_facilities/edit_facilities/editFacility";
 import ScheduleFacility from "./schedule_facilities/schedule_facility";
 import Wallet from "./wallet/wallet";
 import ScheduledBookings from "./scheduledBookings/scheduledBookings";
@@ -58,6 +59,15 @@ function App() {
             <>
               <NavBar />
               <ScheduleFacility />
+            </>
+          }
+        />
+        <Route
+          path="/editFacility/:facilityID"
+          element={
+            <>
+              <NavBar />
+              <EditFacility />
             </>
           }
         />

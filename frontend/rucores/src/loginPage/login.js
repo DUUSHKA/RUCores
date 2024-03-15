@@ -92,8 +92,6 @@ function Login() {
         </Button>
         <Link to="/dashboard"></Link>
       </div>
-      {username}
-      {password}
     </>
   );
 }

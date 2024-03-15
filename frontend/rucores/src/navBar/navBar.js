@@ -1,10 +1,16 @@
 import React from "react";
-import "./navBar.css";
 import { Link } from "react-router-dom";
 import logo from "../logo.svg";
-
+import "./navBar.css";
+import Cookies from "js-cookie";
 function NavBar() {
   const isProvider = window.sessionStorage.getItem("isProvider") === "true";
+
+  const logout = () => {
+    window.sessionStorage.clear();
+    Cookies.remove("session");
+  };
+
   return (
     <div className="App">
       <nav className="App-nav">
@@ -37,8 +43,8 @@ function NavBar() {
               <Link to="/AddFacility">Add Facility</Link>
             </li>
           )}
-          <li>
-            <Link to="/">Log Out</Link>
+          <li onClick={logout}>
+            <Link to="/">Log Out </Link>
           </li>
         </ul>
       </nav>

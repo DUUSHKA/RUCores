@@ -53,3 +53,23 @@
     padding-top: 20px;
   }
   
+
+.edit-facility-page{
+  display:flex;
+  justify-content: center;
+}
+.EDITLEFTSIDE{
+  width:400px;
+  padding:20px;
+  margin:20px;
+}
+.EDITMIDDLE{
+  width:400px;
+  padding:20px;
+  margin:20px;
+}
+.editRight{
+  width:400px;
+  padding:20px;
+  margin:20px;
+}
