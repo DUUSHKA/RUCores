@@ -63,7 +63,7 @@ function App() {
           }
         />
         <Route
-          path="/editFacility"
+          path="/editFacility/:facilityID"
           element={
             <>
               <NavBar />

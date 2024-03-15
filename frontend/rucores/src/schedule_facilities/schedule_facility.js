@@ -4,7 +4,7 @@ import "./schedule_facility.css";
 
 function ScheduleFacility() {
   const [facilityData, setFacilityData] = useState();
-
+  const [reloadData, setReloadData] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,7 +34,7 @@ function ScheduleFacility() {
     };
 
     fetchData();
-  }, []);
+  }, [reloadData]);
 
   useEffect(() => {}, [facilityData]);
 
@@ -43,7 +43,11 @@ function ScheduleFacility() {
       <div className="scheduleFacilityView">
         {facilityData && facilityData.length > 0 ? (
           facilityData.map((item, index) => (
-            <FacilityInfo key={index} facilityDetails={item} />
+            <FacilityInfo
+              key={index}
+              facilityDetails={item}
+              fetchData={[reloadData, setReloadData]}
+            />
           ))
         ) : (
           <p>Loading...</p>
