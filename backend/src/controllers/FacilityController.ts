@@ -38,7 +38,7 @@ export class FacilityController {
   })
   @ResponseSchema(FacilityEntity, { isArray: true })
   async getAll(@QueryParams() query: GetAllQuery): Promise<FacilityEntity[]> {
-    return this.service.getAll(query);
+    return this.service.getAllFacilities(query);
   }
 
   @Get("/getAllWithDeleted")
@@ -72,8 +72,7 @@ export class FacilityController {
   })
   @ResponseSchema(FacilityEntity)
   getOne(@Param("id") id: number) {
-    const facility = this.service.getOneByID(id);
-    return facility;
+    return this.service.getFacilityByID(id);
   }
 
   @Get("/deleted/facilityID/:id")
@@ -95,7 +94,13 @@ export class FacilityController {
   })
   @ResponseSchema(FacilityEntity, { isArray: true })
   async getManaged(@CurrentUser() user: UserEntity): Promise<FacilityEntity[]> {
-    return user.managedFacilities;
+    const managedFaclities = await user.managedFacilities;
+    return Promise.all(
+      managedFaclities.map(async (facility) => {
+        await facility.providers;
+        return facility;
+      }),
+    );
   }
 
   @Post()
