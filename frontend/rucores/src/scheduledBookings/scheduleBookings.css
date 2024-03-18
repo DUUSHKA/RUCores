@@ -1,0 +1,73 @@
+.centerBookingsList{
+    width: 100%;
+    height: calc(100vh - 50px);
+    padding: 0;
+    margin-top: -50px; 
+}
+
+.rbc-calendar {
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 100%; 
+    width: 100%; 
+}
+
+    
+  .rbc-header {
+    background-color: #f7f7f7;
+    color: #333;
+    padding: 5px 10px;
+    font-weight: bold;
+  }
+  
+  .rbc-btn {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: .375rem .75rem;
+    border-radius: .25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+  }
+  
+  .rbc-btn:hover {
+    color: #fff;
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+  
+
+  .rbc-event {
+    background-color: #3174ad;
+    border-radius: 5px;
+    padding: 2px 5px;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .rbc-event:hover {
+    background-color: #265d88;
+  }
+  
+
+  .rbc-day-bg.rbc-selected {
+    background-color: #eaf6ff;
+  }
+  
+  .rbc-agenda-view {
+    border-top: 1px solid #ddd;
+  }
+  
+  .rbc-toolbar button.rbc-active {
+    background-color: #e7e7e7;
+  }
+  
+  .modal-content {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    max-width: none;
+    width: 90%; 
+  }
+  

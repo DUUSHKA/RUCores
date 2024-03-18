@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Authorized,
   Body,
@@ -35,44 +34,23 @@ export class AvailabilityController {
     summary: "Get all availabilities scheduled for the facility",
   })
   @ResponseSchema(AvailabilityEntity, { isArray: true })
-  get(
-    @CurrentUser() user: UserEntity,
-    @Param("id") id: number,
-    @Body({
-      validate: { forbidUnknownValues: true, skipMissingProperties: true },
-    })
-    availability: AvailabilityModel,
-  ): Promise<AvailabilityEntity[]> {
+  get(@Param("id") id: number): Promise<AvailabilityEntity[]> {
     return this.service.getAvailabilityByFacilityID(id);
   }
-  // async getManaged(@CurrentUser() user: UserEntity): Promise<AvailabilityEntity[]> {
-  //     @Param("id") id: number,
-  //   return this.service.
-  // }
-
-  // Not sure how to implement this --> giving me errors on duplicate function
-  /*     @Get("/:id")
-    @HttpCode(200)
-    @OpenAPI({
-      summary: "Get availability by id",
-    })
-    @ResponseSchema(AvailabilityEntity, { isArray: true })
-    get(
-        @CurrentUser() user: UserEntity,
-        @Param("id") id: number,
-        @Body({
-          validate: { forbidUnknownValues: true, skipMissingProperties: true },
-        })
-        availability: AvailabilityModel,
-      ): Promise<AvailabilityEntity> {
-        return this.service.getAvailabilityByID(id);
-      } */
 
   @Get("/availabilityID/:id")
   @HttpCode(200)
   @ResponseSchema(AvailabilityEntity)
   getOne(@Param("id") id: number) {
     const avail = this.service.getOneByID(id);
+    return avail;
+  }
+
+  @Get("/deleted/availabilityID/:id")
+  @HttpCode(200)
+  @ResponseSchema(AvailabilityEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const avail = this.service.getDeletedByID(id);
     return avail;
   }
 

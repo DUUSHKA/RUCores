@@ -1,24 +1,18 @@
 import React from "react";
 import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
-import Dashboard from "./Dashboard";
 import FAQ from "./FAQ";
-import FacilityInfo from "./Facility";
 import AddFacility from "./addFacility/addFacility";
+import Dashboard from "./dashBoard/Dashboard";
+import CreateAccountPage from "./loginPage/createAccountPage/CreateAccountPage";
 import Login from "./loginPage/login";
 import NavBar from "./navBar/navBar";
+import EditFacility from "./schedule_facilities/edit_facilities/editFacility";
+import ScheduleFacility from "./schedule_facilities/schedule_facility";
 import Wallet from "./wallet/wallet";
+import ScheduledBookings from "./scheduledBookings/scheduledBookings";
 
 function App() {
-  const facilityDetails = {
-    name: "Lab A - Chemistry",
-    equipment: ["Microscopes", "Bunsen Burners", "Chemical Reactors"],
-    operatingHours: "9 AM - 5 PM",
-    cost: "50 RU Coins per hour",
-    description:
-      "Lab A specializes in chemistry research and offers a wide range of equipment for various experiments.",
-  };
-
   return (
     <Router>
       <Link to="/"></Link>
@@ -33,17 +27,11 @@ function App() {
           }
         />
         <Route
-          path="/home"
+          path="/dashboard"
           element={
             <>
               <NavBar />
-              <>
-                <h1>Welcome to RU Cores Wallet</h1>
-                <p>
-                  Manage your core facilities bookings and RU Coin transactions
-                  with ease.
-                </p>
-              </>
+              <Dashboard />
             </>
           }
         />
@@ -66,20 +54,20 @@ function App() {
           }
         />
         <Route
-          path="/dashboard"
-          element={
-            <>
-              <NavBar />
-              <Dashboard />
-            </>
-          }
-        />
-        <Route
           path="/FacilityInfo"
           element={
             <>
               <NavBar />
-              <FacilityInfo facilityDetails={facilityDetails} />
+              <ScheduleFacility />
+            </>
+          }
+        />
+        <Route
+          path="/editFacility/:facilityID"
+          element={
+            <>
+              <NavBar />
+              <EditFacility />
             </>
           }
         />
@@ -88,6 +76,7 @@ function App() {
           element={
             <>
               <NavBar />
+              <ScheduledBookings />
             </>
           }
         />
@@ -114,6 +103,14 @@ function App() {
             <>
               <NavBar />
               <AddFacility />
+            </>
+          }
+        />
+        <Route
+          path="/CreateAccountPage"
+          element={
+            <>
+              <CreateAccountPage />
             </>
           }
         />

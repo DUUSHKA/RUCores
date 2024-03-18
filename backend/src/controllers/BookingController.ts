@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Authorized,
   Body,
@@ -19,6 +18,7 @@ import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
 import BookingService from "../services/BookingService";
 import FacilityService from "../services/FacilityService";
+import UserService from "../services/UserService";
 import { BookingModel } from "../types/BookingModel";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 
@@ -48,8 +48,18 @@ export class BookingController {
   @Get("/bookingID/:id")
   @HttpCode(200)
   @ResponseSchema(BookingEntity)
-  getOne(@Param("id") id: number) {
-    const booking = this.service.getOneByID(id);
+  async getOne(@Param("id") id: number) {
+    const booking = await this.service.getOneByID(id);
+    const availability = await booking.availability;
+    await availability.facility;
+    return booking;
+  }
+
+  @Get("/deleted/bookingID/:id")
+  @HttpCode(200)
+  @ResponseSchema(BookingEntity)
+  getOneDeleted(@Param("id") id: number) {
+    const booking = this.service.getDeletedByID(id);
     return booking;
   }
 
@@ -109,9 +119,50 @@ export class BookingController {
     summary: "Get all future bookings for a facility",
   })
   @ResponseSchema(BookingEntity, { isArray: true })
-  async getFuture(@Param("id") id: number): Promise<BookingEntity[]> {
+  async getAllFutureFacilityBookings(
+    @Param("id") id: number,
+  ): Promise<BookingEntity[]> {
     const facility = await new FacilityService().getOneByID(id);
     return this.service.getAllFutureFacilityBookings(facility);
+  }
+
+  @Get("/pastFacility/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all past bookings for a facility",
+  })
+  @ResponseSchema(BookingEntity, { isArray: true })
+  async getAllPastFacilityBookings(
+    @Param("id") id: number,
+  ): Promise<BookingEntity[]> {
+    const facility = await new FacilityService().getOneByID(id);
+    return this.service.getAllPastFacilityBookings(facility);
+  }
+
+  @Get("/futureUser/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all future bookings for a User",
+  })
+  @ResponseSchema(BookingEntity, { isArray: true })
+  async getAllFutureBookingUsers(
+    @Param("id") id: number,
+  ): Promise<BookingEntity[]> {
+    const user = await new UserService().getOneByID(id);
+    return this.service.getAllFutureUserBookings(user);
+  }
+
+  @Get("/pastUser/:id")
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Get all past bookings for a User",
+  })
+  @ResponseSchema(BookingEntity, { isArray: true })
+  async getAllPastBookingUsers(
+    @Param("id") id: number,
+  ): Promise<BookingEntity[]> {
+    const user = await new UserService().getOneByID(id);
+    return this.service.getAllPastUserBookings(user);
   }
 }
 

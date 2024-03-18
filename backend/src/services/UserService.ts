@@ -1,19 +1,54 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import crypto from "crypto";
 import { ForbiddenError, UnauthorizedError } from "routing-controllers";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
-import { GetAllQuery } from "../types/GenericUtilTypes";
+import {
+  groupByAndSum,
+  pushCostData,
+  pushTimeData,
+} from "../types/AnalyticsHelpers";
+import {
+  TransactionNotRefill,
+  monthlyData,
+  monthlyProviderData,
+  providerStats,
+  userStats,
+} from "../types/AnalyticsTypes";
+import { GetAllQuery, QueryError } from "../types/GenericUtilTypes";
 import { ProviderIDMapping } from "../types/ProviderUtilTypes";
+import { TransactionModel, TransactionType } from "../types/TransactionModel";
 import { UserModel } from "../types/UserModel";
+import AvailabilityService from "./AvailabilityService";
 import BookingService from "./BookingService";
+import FacilityService from "./FacilityService";
 import GenericService from "./GenericService";
 import SessionService from "./SessionService";
-
+import TransactionService from "./TransactionService";
 class UserService extends GenericService<UserEntity> {
   constructor() {
     super(UserEntity);
   }
+
+  query: GetAllQuery = {
+    limit: 10000,
+    offset: 0,
+  };
+  currDate = new Date();
+  year = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+  monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   private hashPassword(password: string, salt: string): string {
     const hmac = crypto.createHmac("sha256", salt);
@@ -30,8 +65,19 @@ class UserService extends GenericService<UserEntity> {
     newUser.hashedPassword = this.hashPassword(user.password, newUser.salt);
     newUser.roles = user.roles;
     newUser.isProvider = user.isProvider;
-    return this.repository.save(newUser);
+    newUser.balance = 0;
+    try {
+      return await this.repository.save(newUser);
+    } catch (error) {
+      const queryError = error as QueryError;
+      if (queryError.errno === 19) {
+        // SQLite error code for UNIQUE constraint failed
+        throw new ForbiddenError("Username already exists");
+      }
+      throw error;
+    }
   }
+
   public async createProvider(provider: UserModel): Promise<UserEntity> {
     if (provider.isProvider === false) {
       throw new ForbiddenError("User is not a provider");
@@ -142,12 +188,159 @@ class UserService extends GenericService<UserEntity> {
   //temporary function to add balance to a user
   //Need to integrate with paypal API
   public async addBalance(id: number, amount: number): Promise<UserEntity> {
+    const transact = await new TransactionService();
     const user = await this.repository.findOneBy({ id });
     if (!user) {
       throw new Error("User not found");
     }
     user.balance += amount;
+    const transaction: TransactionModel = {
+      amountChanged: amount,
+      eventDescription: "balance refill",
+      date: new Date(),
+      user_id: id,
+      transactionType: TransactionType.Refill,
+    };
+    await transact.createTransaction(transaction);
     return this.repository.save(user);
+  }
+
+  public async userAnalytics(user: UserEntity) {
+    const book = (
+      await new BookingService().getBookings(user, this.query)
+    ).filter(
+      (y) => y.startDateTime > this.year && y.startDateTime < this.currDate,
+    );
+    const transactions = (
+      await new TransactionService().getAllTransaction(user, this.query)
+    )
+      .filter((t) => t.transactionType !== "Refill")
+      .filter((y) => y.date > this.year) as TransactionNotRefill[]; // transaction service return TransactionEntity[]. After filter it stil thinks
+    //its this type but we need TransactionNotRefill[], so we cast it with as and it will just believe we are correct with the resulting type
+
+    const totalSpend =
+      -1 * transactions.reduce((sum, el) => (sum += el.amountChanged), 0); //total amount spent --> takes refunds into consideration
+    const averageSpend = parseFloat((totalSpend / 12).toFixed(2)); //average monthly spending
+    const totalSpendTime = transactions
+      .filter((y) => y.date < this.currDate)
+      .reduce((sum, el) => (sum += el.duration!), 0); //total amount spent --> takes refunds into consideration
+    const averageSpendTime = parseFloat((totalSpendTime / 12).toFixed(2)); //average monthly spending
+    const monthDataArr = [];
+    let facilityTimeArr = [];
+    let facilityCostArr = [];
+    for (let i = 0; i < 12; i++) {
+      let mYear = this.currDate.getFullYear();
+      const months = transactions.filter((d) => d.date.getMonth() == i);
+      const monthTime = book.filter((d) => d.startDateTime.getMonth() == i);
+      const ttl = -1 * months.reduce((sum, el) => (sum += el.amountChanged), 0);
+      const ttlTime = monthTime.reduce(
+        (sum, el) =>
+          (sum +=
+            (el.endDateTime.getTime() - el.startDateTime.getTime()) / 60000),
+        0,
+      );
+      if (this.currDate.getMonth() < i) {
+        mYear -= 1;
+      }
+      const facilityGroups = groupByAndSum(
+        months,
+        (t) => t.facility.id,
+        "amountChanged",
+      );
+      const facilityMonthCost = await pushCostData(facilityGroups);
+      const data: monthlyData = {
+        month: this.monthNames[i],
+        year: mYear,
+        spending: ttl,
+        time: ttlTime,
+        coinsSpent: facilityMonthCost,
+      };
+      monthDataArr.push(data);
+    }
+    let facilityGroups = groupByAndSum(
+      transactions,
+      (t) => t.facility.id,
+      "amountChanged",
+    );
+    facilityCostArr = await pushCostData(facilityGroups);
+    facilityGroups = groupByAndSum(
+      transactions.filter((y) => y.date),
+      (t) => t.facility.id,
+      "duration",
+    );
+    facilityTimeArr = await pushTimeData(facilityGroups);
+
+    const analytics: userStats = {
+      monthlySummary: {
+        total: totalSpend,
+        average: averageSpend,
+        totalTime: totalSpendTime,
+        averageTime: averageSpendTime,
+      },
+      monthlyData: monthDataArr,
+      coinsSpent: facilityCostArr,
+      timeScheduled: facilityTimeArr,
+      //timeSpent:
+    };
+    return analytics;
+  }
+
+  public async providerAnalytics(id: number) {
+    const availabilities = (
+      await new AvailabilityService().getAvailabilityByFacilityID(id)
+    ).filter((y) => y.startTime > this.year);
+    const transactions = (
+      await new TransactionService().getTransactionByFacilityID(id, this.query)
+    )
+      .filter((t) => t.transactionType !== "Refill")
+      .filter((y) => y.date > this.year);
+    const totalEarned =
+      -1 * transactions.reduce((sum, el) => (sum += el.amountChanged), 0); //total amount spent --> takes refunds into consideration
+    const averageEarned = parseFloat((totalEarned / 12).toFixed(2)); //average monthly spending
+    const Booked = transactions.reduce((sum, el) => (sum += el.duration!), 0);
+    const Unbooked = availabilities.reduce(
+      (sum, el) =>
+        (sum += (el.endTime.getTime() - el.startTime.getTime()) / 60000),
+      0,
+    );
+    const monthDataArr = [];
+    for (let i = 0; i < 12; i++) {
+      let mYear = this.currDate.getFullYear();
+      const months = transactions.filter((d) => d.date.getMonth() == i);
+      const monthAvail = availabilities.filter(
+        (d) => d.startTime.getMonth() == i,
+      );
+      const ttl = -1 * months.reduce((sum, el) => (sum += el.amountChanged), 0);
+      const ttlBooked = months.reduce((sum, el) => (sum += el.duration!), 0);
+      const ttlUnbooked = monthAvail.reduce(
+        (sum, el) =>
+          (sum += (el.endTime.getTime() - el.startTime.getTime()) / 60000),
+        0,
+      );
+      if (this.currDate.getMonth() < i) {
+        mYear -= 1;
+      }
+      const data: monthlyProviderData = {
+        month: this.monthNames[i],
+        year: mYear,
+        totalBooked: ttlBooked,
+        totalUnbooked: ttlUnbooked,
+        earnings: ttl,
+      };
+      monthDataArr.push(data);
+    }
+    const facilityName = (await new FacilityService().getOneByID(id)).name;
+    const analytics: providerStats = {
+      monthlySummary: {
+        name: facilityName,
+        totalEarning: totalEarned,
+        averageEarning: averageEarned,
+        totalBooked: Booked,
+        totalUnbooked: Unbooked,
+      },
+      monthlyData: monthDataArr,
+    };
+    return analytics;
   }
 }
 

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NotFoundError } from "routing-controllers";
-import { GetAllQuery } from "src/types/GenericUtilTypes";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { FacilityModel } from "../types/FacilityModel";
+import { GetAllQuery } from "../types/GenericUtilTypes";
 import BookingService from "./BookingService";
 import GenericService from "./GenericService";
 import UserService from "./UserService";
@@ -20,8 +19,8 @@ class FacilityService extends GenericService<FacilityEntity> {
     facilityEntity.name = facility.name;
     facilityEntity.address = facility.address;
     facilityEntity.description = facility.description;
-    const users = new UserService().getAllByID(facility.providers);
-    facilityEntity.providers = users;
+    const users = await new UserService().getAllByID(facility.providers);
+    facilityEntity.providers = Promise.resolve(users);
     facilityEntity.balance = facility.balance;
     facilityEntity.equipment = facility.equipment;
     return this.repository.save(facilityEntity);
@@ -34,13 +33,26 @@ class FacilityService extends GenericService<FacilityEntity> {
     if (!facility) {
       throw new NotFoundError("Facility not found");
     }
+    await facility.providers;
+    return facility;
+  }
+
+  public async getFacilityByID(id: number): Promise<FacilityEntity> {
+    const facility = await this.getOneByID(id);
+    await facility.providers;
     return facility;
   }
 
   public async getAllFacilities(
     filter: GetAllQuery,
   ): Promise<FacilityEntity[]> {
-    return this.getAll(filter);
+    const facilities = await this.getAll(filter);
+    return Promise.all(
+      facilities.map(async (facility) => {
+        await facility.providers;
+        return facility;
+      }),
+    );
   }
 
   //get All genericService method will not work with array of providers, and the join clause does
@@ -48,7 +60,6 @@ class FacilityService extends GenericService<FacilityEntity> {
   //This is an alternative way to get all facilities managed by a user, using query builder
   public async getAllManagedFacilities(
     user: UserEntity,
-    filter: GetAllQuery,
   ): Promise<FacilityEntity[]> {
     //verify user is a provider
     if (!user.isProvider) {
