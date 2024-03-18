@@ -33,13 +33,26 @@ class FacilityService extends GenericService<FacilityEntity> {
     if (!facility) {
       throw new NotFoundError("Facility not found");
     }
+    await facility.providers;
+    return facility;
+  }
+
+  public async getFacilityByID(id: number): Promise<FacilityEntity> {
+    const facility = await this.getOneByID(id);
+    await facility.providers;
     return facility;
   }
 
   public async getAllFacilities(
     filter: GetAllQuery,
   ): Promise<FacilityEntity[]> {
-    return this.getAll(filter);
+    const facilities = await this.getAll(filter);
+    return Promise.all(
+      facilities.map(async (facility) => {
+        await facility.providers;
+        return facility;
+      }),
+    );
   }
 
   //get All genericService method will not work with array of providers, and the join clause does
