@@ -1,19 +1,23 @@
+import moment from "moment";
 import React, { useEffect, useState } from "react";
-import BookingCalls from "../BookingCalls";
-import ListGroup from "react-bootstrap/ListGroup";
-import "./scheduleBookings.css";
-import Button from "react-bootstrap/esm/Button";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import BookingCalls from "../BookingCalls";
 import SuccessFailureAlert from "../SuccessFailureAlerts";
 
+const localizer = momentLocalizer(moment);
+
 function ScheduledBookings() {
-  const [bookings, setBookings] = useState([]);
   const [showModals, setShowModals] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [selectedBooking, setSelectedBooking] = useState(null);
 
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const [events, setEvents] = useState([]);
 
   const handleAlertCloseSuccess = () => {
     setSuccess(false);
@@ -32,8 +36,15 @@ function ScheduledBookings() {
   useEffect(() => {
     const bookingAPI = new BookingCalls();
     bookingAPI.getBookingsByUser(30, 0, "DESC").then((bookingsFromCall) => {
-      setBookings(bookingsFromCall);
-      setShowModals(new Array(bookingsFromCall.length).fill(false));
+      const formattedEvents = bookingsFromCall.map((booking) => ({
+        title: booking.__availability__.__facility__
+          ? booking.__availability__.__facility__.name
+          : "Deleted",
+        start: new Date(booking.startDateTime),
+        end: new Date(booking.endDateTime),
+        resource: booking,
+      }));
+      setEvents(formattedEvents);
     });
   }, []);
 
@@ -46,8 +57,9 @@ function ScheduledBookings() {
         console.log(isDeleted);
         if (isDeleted) {
           setSuccess(true);
-          setBookings((prevBookings) =>
-            prevBookings.filter((booking) => booking.id !== item.id),
+
+          setEvents((prevEvents) =>
+            prevEvents.filter((event) => event.resource.id !== item.id),
           );
         } else {
           setError(true);
@@ -78,105 +90,99 @@ function ScheduledBookings() {
     <>
       <div className="centerBookingsList">
         <h1>Scheduled Bookings</h1>
-        <ListGroup as="ul">
-          {bookings &&
-            bookings.length > 0 &&
-            bookings.map((item, index) => (
-              <ListGroup.Item key={index}>
-                {item.__availability__.__facility__
-                  ? item.__availability__.__facility__.name
-                  : "Deleted"}
-                {item.__availability__.__facility__
-                  ? item.__availability__.__facility__.address
-                  : "Deleted"}
-                {formatDate(item.startDateTime) +
-                  " - " +
-                  formatDate(item.endDateTime)}
-                <Button variant="link" onClick={() => handleShow(item)}>
-                  Manage and View Booking
-                </Button>
-                <Modal show={showModals[index]} onHide={handleClose}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>
-                      {item.__availability__.__facility__
-                        ? item.__availability__.__facility__.name
-                        : "Deleted"}
-                    </Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <div>
-                      <h2>Current Booking Details</h2>
-                      <p>
-                        <strong>Booking Start Date/Time:</strong>{" "}
-                        {item ? formatDate(item.startDateTime) : "Loading"}
-                      </p>
-                      <p>
-                        <strong>Booking End Date/Time:</strong>{" "}
-                        {item ? formatDate(item.endDateTime) : "Loading"}
-                      </p>
-                      <p>
-                        <strong>Booking Cost:</strong>{" "}
-                        {item ? item.cost : "Loading"}
-                      </p>
-                    </div>
-                    <div>
-                      <h2>Facility Details</h2>
-                      <p>
-                        <strong>Facility Address:</strong>{" "}
-                        {item.__availability__.__facility__
-                          ? item.__availability__.__facility__.address
-                          : "Loading"}
-                      </p>
-                      <p>
-                        <strong>Facility Description:</strong>{" "}
-                        {item.__availability__.__facility__
-                          ? item.__availability__.__facility__.description
-                          : "Loading"}
-                      </p>
-                      <p>
-                        <strong>Facility Equipment:</strong>{" "}
-                        {item.__availability__.__facility__
-                          ? item.__availability__.__facility__.equipment
-                          : "Loading"}
-                      </p>
-                    </div>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    {success && (
-                      <SuccessFailureAlert
-                        variant="success"
-                        alertText="Successfully Deleted Booking"
-                        show={success}
-                        onClose={handleAlertCloseSuccess}
-                      ></SuccessFailureAlert>
-                    )}
-                    {error && (
-                      <SuccessFailureAlert
-                        variant="danger"
-                        alertText="Error Deleting Booking"
-                        show={error}
-                        onClose={handleAlertCloseFail}
-                      ></SuccessFailureAlert>
-                    )}
-                    {!error && !success && (
-                      <Button
-                        variant="secondary"
-                        onClick={async () => {
-                          await deleteBooking(item);
-                        }}
-                      >
-                        Cancel Booking
-                      </Button>
-                    )}
-                    <Button variant="primary" onClick={handleClose}>
-                      Close
-                    </Button>
-                  </Modal.Footer>
-                </Modal>
-              </ListGroup.Item>
-            ))}
-        </ListGroup>
+        {}
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: "900px", margin: "50px" }}
+          onSelectEvent={(event) => handleShow(event.resource)}
+        />
       </div>
+      {}
+      {selectedBooking && (
+        <Modal
+          show={showModals.includes(selectedBooking.id)}
+          onHide={handleClose}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {selectedBooking.__availability__.__facility__
+                ? selectedBooking.__availability__.__facility__.name
+                : "Deleted"}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div>
+              <h2>Current Booking Details</h2>
+              <p>
+                <strong>Booking Start Date/Time:</strong>{" "}
+                {formatDate(selectedBooking.startDateTime)}
+              </p>
+              <p>
+                <strong>Booking End Date/Time:</strong>{" "}
+                {formatDate(selectedBooking.endDateTime)}
+              </p>
+              <p>
+                <strong>Booking Cost:</strong> {selectedBooking.cost}
+              </p>
+            </div>
+            <div>
+              <h2>Facility Details</h2>
+              <p>
+                <strong>Facility Address:</strong>{" "}
+                {selectedBooking.__availability__.__facility__
+                  ? selectedBooking.__availability__.__facility__.address
+                  : "Loading"}
+              </p>
+              <p>
+                <strong>Facility Description:</strong>{" "}
+                {selectedBooking.__availability__.__facility__
+                  ? selectedBooking.__availability__.__facility__.description
+                  : "Loading"}
+              </p>
+              <p>
+                <strong>Facility Equipment:</strong>{" "}
+                {selectedBooking.__availability__.__facility__
+                  ? selectedBooking.__availability__.__facility__.equipment
+                  : "Loading"}
+              </p>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            {success && (
+              <SuccessFailureAlert
+                variant="success"
+                alertText="Successfully Deleted Booking"
+                show={success}
+                onClose={handleAlertCloseSuccess}
+              />
+            )}
+            {error && (
+              <SuccessFailureAlert
+                variant="danger"
+                alertText="Error Deleting Booking"
+                show={error}
+                onClose={handleAlertCloseFail}
+              />
+            )}
+            {!error && !success && (
+              <Button
+                variant="secondary"
+                onClick={async () => {
+                  await deleteBooking(selectedBooking);
+                }}
+              >
+                Cancel Booking
+              </Button>
+            )}
+            <Button variant="primary" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </>
   );
 }
