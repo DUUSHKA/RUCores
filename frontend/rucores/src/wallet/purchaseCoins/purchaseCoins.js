@@ -6,8 +6,9 @@ import InputGroup from "react-bootstrap/InputGroup";
 import SuccessFailureAlert from "../../SuccessFailureAlerts";
 import User from "../../UserCalls";
 import "./purchaseCoins.css";
+import PropTypes from "prop-types";
 
-function PurchaseCoins() {
+function PurchaseCoins(prop) {
   const [numOfCoins, setNumOfCoins] = useState();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -27,6 +28,7 @@ function PurchaseCoins() {
       userAPI.addFundsToCurrUser(UserID, numOfCoins).then((resp) => {
         if (resp.id) {
           setShowSuccess(true);
+          prop.updateBalance[1](!prop.updateBalance[0]);
         } else {
           setShowError(true);
         }
@@ -85,5 +87,9 @@ function PurchaseCoins() {
     </>
   );
 }
+
+PurchaseCoins.propTypes = {
+  updateBalance: PropTypes.array,
+};
 
 export default PurchaseCoins;

@@ -2,8 +2,12 @@
     border: 2px solid grey;
     border-radius: 3px;
     margin: auto;
-    padding: 10px;
+    padding: 50px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-    height:860px;
-    width:860px;
+    height:900px;
+    width:900px;
+}
+
+.graphTabs{
+    margin-top: -10px;
 }
