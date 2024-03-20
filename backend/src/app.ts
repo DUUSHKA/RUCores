@@ -102,10 +102,19 @@ if (process.env.DB_TYPE === "mysql") {
   });
 }
 
+let prepopulate = false;
+if (process.env.SQLITE_DB_PATH)
+  if (!fs.existsSync(process.env.SQLITE_DB_PATH)) prepopulate = true;
+
 AppDataSource.initialize()
   .then(async () => {
     log.debug("Data Source initialized");
-    if (process.env.PREPOPULATE_DB === "true") {
+    //If the DB type is sqlite and the database file does not exist, prepopulate the database
+
+    if (
+      (process.env.DB_TYPE === "sqlite" && prepopulate) ||
+      process.env.PREPOPULATE_DB === "true"
+    ) {
       await prepopulateDB().catch((err) => console.log(err));
       log.debug("Database prepopulated");
     }

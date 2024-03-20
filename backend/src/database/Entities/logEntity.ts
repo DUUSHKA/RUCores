@@ -24,6 +24,7 @@ export enum modificatonType {
   create = "create",
   update = "update",
   delete = "delete",
+  default = "default",
 }
 
 export enum modificationEntity {
@@ -31,6 +32,7 @@ export enum modificationEntity {
   facility = "facility",
   booking = "booking",
   availability = "availability",
+  default = "default",
 }
 
 @Entity()
@@ -96,12 +98,12 @@ export class AvailabilityEvent extends LogEntity {
 @ChildEntity()
 export class ModificationEvent extends LogEntity {
   @Column({
-    enum: modificatonType,
+    default: modificatonType.default,
   })
   modificationType: modificatonType;
 
   @Column({
-    enum: modificationEntity,
+    default: modificationEntity.default,
   })
   modificationEntity: modificationEntity;
 
