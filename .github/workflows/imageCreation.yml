@@ -32,5 +32,9 @@ jobs:
             run: |
                 docker compose up --build
                 sleep 10
+            working-directory: ./backend
+        
+        -   name: Close the Docker image
+            run: |
                 docker compose down
             working-directory: ./backend
