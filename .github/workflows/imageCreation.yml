@@ -28,4 +28,8 @@ jobs:
                 tags: ${{secrets.DOCKER_HUB_USERNAME}}/rucoresbackend:latest
         
         -   name: Run the Docker image
-            run: docker run -p 8080:8080 ${{secrets.DOCKER_HUB_USERNAME}}/rucoresbackend:latest
+            #Run the container using compose up, wait for 20 seconds, and then compose down
+            run: |
+                docker-compose -f docker-compose.yml up 
+                sleep 10
+                docker-compose -f docker-compose.yml down
