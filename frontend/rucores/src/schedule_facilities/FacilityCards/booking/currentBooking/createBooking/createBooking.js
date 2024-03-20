@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // import Button from "react-bootstrap/esm/Button";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -7,7 +7,10 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 import Button from "react-bootstrap/esm/Button";
 import "./createBooking.css";
+import SuccessFailureAlert from "../../../../../SuccessFailureAlerts";
 function CreateBooking(props) {
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const [bookingStart, setBookingStart] = React.useState(
     dayjs(props.currentAvail.startTime),
   );
@@ -61,6 +64,9 @@ function CreateBooking(props) {
     setElapsedTime(elapsedTimeInHours);
   };
 
+  const closeAlert = () => {
+    setShowSuccess(false);
+  };
   /**
    * ran on component loading
    */
@@ -86,6 +92,7 @@ function CreateBooking(props) {
         const data = await response.json();
 
         setAlreadySetBookings(data);
+
         determineaAvialibleBookingTimes();
       } catch (error) {
         console.error("Error:", error);
@@ -150,6 +157,7 @@ function CreateBooking(props) {
 
       // eslint-disable-next-line no-unused-vars
       const result = await response.json();
+      setShowSuccess(true);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -196,6 +204,12 @@ function CreateBooking(props) {
         />
       </LocalizationProvider>
       <Button onClick={handlePostRequest}>Complete Booking</Button>
+      <SuccessFailureAlert
+        variant={"success"}
+        show={showSuccess}
+        alertText={"Successfully Created Booking!"}
+        onClose={closeAlert}
+      ></SuccessFailureAlert>
     </>
   );
 }

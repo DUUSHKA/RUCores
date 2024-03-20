@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./wallet.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CurrentBalance from "./currentBalance/currentBalance";
@@ -13,6 +13,7 @@ import TransactionHistory from "./transactionHistory/transactionHistory";
  * @returns none
  */
 function Wallet() {
+  const [updateBalance, setUpdateBalance] = useState();
   /**
    * data needed for current balance
    */
@@ -43,14 +44,18 @@ function Wallet() {
     <>
       <div className="CenterContent">
         <div className="leftSideContent">
-          <CurrentBalance currentBalancedata={currentBalancedata} />
+          <CurrentBalance
+            currentBalancedata={currentBalancedata}
+            refreshBalance={updateBalance}
+          />
           <div className="transHistCard">
             <TransactionHistory
               transactionHistoryData={transactionHistoryData}
+              refreshHistory={updateBalance}
             />
           </div>
           <div className="purchaseCard">
-            <PurchaseCoins />
+            <PurchaseCoins updateBalance={[updateBalance, setUpdateBalance]} />
           </div>
         </div>
         <div className="rightSideContent">

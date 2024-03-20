@@ -1,28 +1,60 @@
-import React, { useState } from "react";
-import "./transactionHistory.css";
+/* eslint-disable react/prop-types */
 import "bootstrap/dist/css/bootstrap.min.css";
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import Pagination from "react-bootstrap/Pagination";
-import PropTypes from "prop-types";
-
-function TransactionHistory(props) {
-  const itemsPerPage = 4; // Adjust the number of items per page as needed
+import Transaction from "../../transactionCalls";
+import "./transactionHistory.css";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+function TransactionHistory(prop) {
+  const [transactionData, setTransactionData] = useState([]);
+  const [history, setTransactionHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
 
-  const history = props.transactionHistoryData.history;
+  useEffect(() => {
+    const transactionAPI = new Transaction();
+    transactionAPI.getAllTransactions(50, 0, "date", "DESC").then((resp) => {
+      setTransactionData(resp);
+    });
+  }, [prop.refreshHistory]);
+
+  useEffect(() => {
+    if (transactionData && transactionData.length > 0) {
+      setTransactionHistory(
+        transactionData.map((item) => [
+          `${item.transactionType} ${item.amountChanged} RU Coins ${new Date(
+            item.date,
+          ).toLocaleString()}`,
+          item,
+        ]),
+      );
+    }
+  }, [transactionData]);
+
   const totalItems = history.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // Calculate the start and end indices for the current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage - 1, totalItems - 1);
-
-  // Extract the transactions for the current page
   const currentTransactions = history.slice(startIndex, endIndex + 1);
 
-  // Generate the list items for the current page
   const transactionListItems = currentTransactions.map((transaction, index) => (
-    <ListGroup.Item key={index}>{transaction}</ListGroup.Item>
+    <div key={index}>
+      <OverlayTrigger
+        placement="right"
+        delay={{ show: 250, hide: 400 }}
+        overlay={
+          <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"}`}</Tooltip>
+        }
+      >
+        <ListGroup.Item className="historyListItem">
+          {transaction[0]}
+        </ListGroup.Item>
+      </OverlayTrigger>
+    </div>
   ));
 
   // Generate pagination items
@@ -65,6 +97,7 @@ TransactionHistory.propTypes = {
       }),
     ).isRequired,
   }).isRequired,
+  refreshHistory: PropTypes.bool,
 };
 
 export default TransactionHistory;

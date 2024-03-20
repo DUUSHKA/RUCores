@@ -65,6 +65,32 @@ class BookingCalls {
       return false;
     }
   }
+
+  /**
+   * @param userID
+   *
+   * returns a list of bookings for a user
+   */
+  async getAllFutureBookingsByUser(userID) {
+    const apiUrl = `http://localhost:3001/api/booking/futureUser/${userID}`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error; // rethrow the error if needed
+    }
+  }
 }
 
 export default BookingCalls;

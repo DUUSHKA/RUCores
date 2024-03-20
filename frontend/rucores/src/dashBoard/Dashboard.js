@@ -7,10 +7,15 @@ import WeeklyCard from "./weeklyCard/weeklyCard";
 // import WeeklyCard from './weeklyCard/weeklyCard';
 import BookingCalls from "../BookingCalls";
 import User from "../UserCalls";
-
+import Transaction from "../transactionCalls";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 function Dashboard() {
   const [weeklyObject, setWeeklyObject] = useState();
   const [currentBalance, setCurrentBalance] = useState();
+  const [transactionData, setTransactionData] = useState([]);
+  const [history, setTransactionHistory] = useState([]);
+  const [transactionListItems, setTransactionListItems] = useState();
   /**
    * finds the date of monday of the current week
    */
@@ -47,9 +52,7 @@ function Dashboard() {
   };
 
   const filterDatesInWeekRange = (bookingsArray, startRange, endRange) => {
-    console.log("here");
     return bookingsArray.filter((booking) => {
-      console.log(booking);
       const startDateTime = new Date(booking.startDateTime);
       if (startDateTime >= startRange && startDateTime <= endRange) {
         return booking;
@@ -62,7 +65,6 @@ function Dashboard() {
     currentWeekBookings.forEach((booking) => {
       // Extract the day of the week from the booking's startDateTime
       const bookingDayOfWeek = new Date(booking.startDateTime).getDay();
-      console.log(bookingDayOfWeek);
       // Get the corresponding day key (e.g., "Monday", "Tuesday", etc.)
       const dayKey = Object.keys(weekBookingObject)[bookingDayOfWeek];
 
@@ -76,12 +78,10 @@ function Dashboard() {
   useEffect(() => {
     const APICall = new BookingCalls();
     APICall.getBookingsByUser(50, 0).then((bookings) => {
-      console.log(bookings);
       const mondaysDate = findCurrentMonday();
       const sundaysDate = findSunday(mondaysDate);
 
       if (bookings) {
-        console.log(filterDatesInWeekRange(bookings, mondaysDate, sundaysDate));
         const currentWeekBookings = filterDatesInWeekRange(
           bookings,
           mondaysDate,
@@ -110,34 +110,48 @@ function Dashboard() {
     ).then((resp) => {
       setCurrentBalance(resp.balance);
     });
+    const transactionAPI = new Transaction();
+    transactionAPI.getAllTransactions(4, 0, "date", "DESC").then((resp) => {
+      setTransactionData(resp);
+    });
   }, []);
 
-  /**
-   * sample transactionHistory Data
-   */
-  const transactionHistoryData = {
-    history: [
-      "spent xx coins on mm-dd-yy",
-      "spent xx coins on mm-dd-yy",
-      "spent xx coins on mm-dd-yy",
-      "spent xx coins on mm-dd-yy",
-      "spent xx coins on mm-dd-yy",
-      "spent xx coins on mm-dd-yy",
-    ],
-  };
+  useEffect(() => {
+    if (transactionData) {
+      setTransactionHistory(
+        transactionData.map((item) => [
+          `${item.transactionType} ${item.amountChanged} RU Coins ${new Date(
+            item.date,
+          ).toLocaleString()}`,
+          item,
+        ]),
+      );
+    }
+  }, [transactionData]);
 
-  /**
-   * transactionList
-   */
-  const transactionListItems = transactionHistoryData.history.map(
-    (transaction, index) => {
-      if (index < 4) {
-        return <ListGroup.Item key={index}>{transaction}</ListGroup.Item>;
-      } else {
-        return null;
-      }
-    },
-  );
+  useEffect(() => {
+    if (history) {
+      setTransactionListItems(
+        history.map((transaction, index) => {
+          return (
+            <div key={index}>
+              <OverlayTrigger
+                placement="right"
+                delay={{ show: 250, hide: 400 }}
+                overlay={
+                  <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"}`}</Tooltip>
+                }
+              >
+                <ListGroup.Item className="historyListItem">
+                  {transaction[0]}
+                </ListGroup.Item>
+              </OverlayTrigger>
+            </div>
+          );
+        }),
+      );
+    }
+  }, [history]);
 
   const isProvider = window.sessionStorage.getItem("isProvider") === "true";
 
@@ -160,14 +174,18 @@ function Dashboard() {
           </section>
           <section className="transactions">
             <h2 className="dashBoardH2">Recent Transactions</h2>
-            <div>
-              <ListGroup className="HistoryList" variant="flush">
-                {transactionListItems}
-              </ListGroup>
-              <Link to="/wallet">
-                <Button variant="link">View All Transactions</Button>
-              </Link>
-            </div>
+            {transactionListItems && transactionListItems.length > 0 ? (
+              <div>
+                <ListGroup className="HistoryList" variant="flush">
+                  {transactionListItems}
+                </ListGroup>
+                <Link to="/wallet">
+                  <Button variant="link">View All Transactions</Button>
+                </Link>
+              </div>
+            ) : (
+              <p>No transactions available.</p>
+            )}
           </section>
           {isProvider && (
             <section className="bookings">
