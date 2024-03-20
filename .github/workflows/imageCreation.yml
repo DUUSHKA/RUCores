@@ -30,11 +30,7 @@ jobs:
         -   name: Run the Docker image
             #Run the container using compose up, wait for 20 seconds, and then compose down
             run: |
-                docker compose up --build
-                sleep 10
-            working-directory: ./backend
-        
-        -   name: Close the Docker image
-            run: |
+                docker compose up --build &
+                sleep 5 &
                 docker compose down
             working-directory: ./backend
