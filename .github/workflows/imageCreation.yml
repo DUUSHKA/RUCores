@@ -33,3 +33,4 @@ jobs:
                 docker compose up --build
                 sleep 10
                 docker compose down
+            working-directory: ./backend
