@@ -29,7 +29,9 @@ jobs:
         
         -   name: Run the Docker image
             #Run the container using compose up, wait for 20 seconds, and then compose down
-            #The & makes it so that it does not hang on the compose up command
+            #The -d allows for the compose to happen in the background and more terminal
+            #commands can be run. The show logs show the output of the containers in the 
+            #background 
             run: |
                 docker compose up --build -d 
                 sleep 20 
