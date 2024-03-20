@@ -29,8 +29,14 @@ jobs:
         
         -   name: Run the Docker image
             #Run the container using compose up, wait for 20 seconds, and then compose down
+            #The & makes it so that it does not hang on the compose up command
             run: |
-                docker compose up --build &
-                sleep 20 &
+                docker compose up --build -d 
+                sleep 20 
                 docker compose down
+            working-directory: ./backend
+        
+        -   name: Show logs 
+            run: |
+                docker compose logs
             working-directory: ./backend
