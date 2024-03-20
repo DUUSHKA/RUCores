@@ -30,6 +30,6 @@ jobs:
         -   name: Run the Docker image
             #Run the container using compose up, wait for 20 seconds, and then compose down
             run: |
-                docker-compose -f docker-compose.yml up 
+                docker compose up --build
                 sleep 10
-                docker-compose -f docker-compose.yml down
+                docker compose down
