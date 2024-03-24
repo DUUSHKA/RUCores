@@ -8,45 +8,12 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  # database: 
-  # #mySql server 
-  #   image: mysql:5.7
-  #   environment:
-  #     MYSQL_PORT: 3306
-  #     MYSQL_HOST: localhost
-  #     MYSQL_DATABASE: RUCores
-  #     MYSQL_USERNAME: root
-  #     MYSQL_PASSWORD: root
-  #   ports:
-  #     - 3306:3306
-  #   # volumes:
-  #   #   - mysql-data:/var/lib/mysql
   server:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    image: mrjtest/rucoresbackend:latest
+    image: mrjtest/rucoresfrontend:latest
     environment:
-      PREPOPULATE_DB: true
       NODE_ENV: production
-      SQLITE_DB_PATH: ./database.sqlite3
-      DB_LOGGING: false
-      DB_SYNCHRONIZE: true
-      DB_TYPE: sqlite
-      APP_PORT: 3001
-      LOG_LEVEL: debug
-      SWAGGER: true
-      RESPONSE_STACKTRACE: true
     ports:
-      - 3001:3001
-    # depends_on:
-    #   database:
-    #     condition: service_healthy
-    # volumes:
-    #   - type: bind 
-    #     source: ../
-    #     target: /app
-    #     read_only: false
+      - 3000:3000
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
