@@ -53,6 +53,11 @@ export class TransactionEntity extends GenericEntity {
   @JoinColumn()
   facility?: FacilityEntity;
 
+  //Need this for transactions that represent a booking of a deleted facility in the past
+  @Column({ nullable: true })
+  @IsNumber()
+  facilityId?: number;
+
   @ManyToOne(() => BookingEntity, (booking) => booking.transactions, {
     nullable: true,
     eager: true,

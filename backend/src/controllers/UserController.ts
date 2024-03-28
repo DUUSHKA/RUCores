@@ -86,9 +86,17 @@ export class UserController {
     @CurrentUser() user: UserEntity,
     @Param("id") id: number,
   ) {
-    const managedFacilityIDs = (await user.managedFacilities).map(
+    let managedFacilityIDs = (await user.managedFacilities).map(
       (facility: FacilityEntity) => facility.id,
     );
+    //append past managed facilities of the user to this array
+    if (user.pastManagedFacilities) {
+      managedFacilityIDs = [
+        ...managedFacilityIDs,
+        ...user.pastManagedFacilities.map(Number),
+      ];
+    }
+
     if (managedFacilityIDs.includes(id) && user.roles.includes("provider")) {
       return this.service.providerAnalytics(id);
     }
@@ -188,13 +196,13 @@ export class UserController {
     return this.service.addBalance(id, refill);
   }
 
-  @Put("userID/:id")
+  @Put("/userID/:id")
   async put(@Param("id") id: number, @Body() user: UserModel) {
     //Update a user
     return this.service.updateUser(id, user);
   }
 
-  @Delete("userID/:id")
+  @Delete("/userID/:id")
   remove(@Param("id") id: number) {
     return this.service.deleteUser(id);
   }

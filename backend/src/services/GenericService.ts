@@ -66,6 +66,14 @@ class GenericService<T extends GenericEntity> {
     await this.repository.softRemove(entity);
   }
 
+  public async hardDelete(id: number) {
+    const entity = await this.getOneByID(id);
+    if (!entity) {
+      throw new NotFoundError(`${this.name} not found`);
+    }
+    await this.repository.remove(entity);
+  }
+
   public async getAllWithDeleted(
     filter?: GetAllQuery,
     extraOptions?: FindManyOptions<T>,
@@ -118,7 +126,6 @@ class GenericService<T extends GenericEntity> {
     const entity = await this.repository.findOne({
       where: {
         id: id,
-        deletedAt: Not(IsNull()),
         ...extraOptionsWhere,
       },
       withDeleted: true,

@@ -251,6 +251,7 @@ class BookingService extends GenericService<BookingEntity> {
       throw new NotFoundError("Availability not found");
     }
     newBooking.availability = Promise.resolve(availability);
+    newBooking.facilityId = (await availability.facility).id;
     const resp = await this.repository.save(newBooking);
     const transaction: TransactionModel = {
       amountChanged: -1 * cost,
@@ -337,6 +338,19 @@ class BookingService extends GenericService<BookingEntity> {
   }
 
   public async getBookings(user: UserEntity, filter: GetAllQuery) {
+    //This method will account for bookings that may have past and its facility
+
+    // let bookingsQuery = this.repository.createQueryBuilder("booking")
+    //   .leftJoinAndSelect("booking.availability", "availability")
+    //   .leftJoinAndSelect("availability.facility", "facility")
+    //   .where("booking.user = :user", { user: user.id })
+    //   .withDeleted()
+    //   .andWhere("booking.deletedAt IS NULL")
+    //   .orderBy(`booking.${filter.orderBy ?? "id"}`, filter.order ?? "ASC");
+    // if (filter.offset) bookingsQuery = bookingsQuery.offset(filter.offset);
+    // if (filter.limit) bookingsQuery = bookingsQuery.limit(filter.limit);
+    // const bookings = await bookingsQuery.getMany();
+
     const bookings = await this.getAll(filter, {
       where: {
         user: {
@@ -366,6 +380,15 @@ class BookingService extends GenericService<BookingEntity> {
     //refund the booking
     await this.refundBooking(user, await booking.availability, booking);
     return this.delete(booking_id);
+  }
+
+  public async cancelBooking(booking: BookingEntity) {
+    await this.refundBooking(
+      await booking.user,
+      await booking.availability,
+      booking,
+    );
+    return this.delete(booking.id);
   }
 }
 

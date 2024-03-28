@@ -43,6 +43,11 @@ export class BookingEntity extends GenericEntity {
   @Expose()
   cost: number;
 
+  @Column()
+  @IsNumber()
+  @Expose()
+  facilityId: number;
+
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.bookings)
   @JoinColumn({ name: "userId" }) //specify join name for instance if you already have a DB
   @ValidateNested()

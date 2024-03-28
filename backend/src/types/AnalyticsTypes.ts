@@ -54,4 +54,5 @@ export class providerStats {
 
 export class TransactionNotRefill extends TransactionEntity {
   facility: FacilityEntity;
+  facilityId: number; //For soft deleted facilities
 }

@@ -83,9 +83,9 @@ export const prepopulateDB = async () => {
   const bioBooking3 = new BookingEntity();
 
   const session = new SessionEntity();
-  const date1Original = new Date(2024, 2, 4, 12, 0, 0);
-  const date2Original = new Date(2024, 1, 26, 12, 0, 0);
-  const date3Original = new Date(2024, 3, 15, 12, 0, 0);
+  const date1Original = new Date(2024, 3, 4, 12, 0, 0);
+  const date2Original = new Date(2024, 2, 26, 12, 0, 0);
+  const date3Original = new Date(2024, 4, 15, 12, 0, 0);
 
   // booking.bookingId = i;
   // facility.id = i;
@@ -157,9 +157,10 @@ export const prepopulateDB = async () => {
   user3.salt = salt3;
   const hmac3 = crypto.createHmac("sha256", salt3);
   user3.hashedPassword = hmac3.update("password").digest("hex");
-  user3.roles = ["user"];
+  user3.roles = ["user", "provider"];
+  user3.isProvider = true;
   user3.bookings = Promise.resolve([chemBooking3, physBooking1, bioBooking2]);
-  //user3.managedFacilities = Promise.resolve([facility2]);
+  user3.managedFacilities = Promise.resolve([facility2]);
 
   // transaction.amountChanged = Math.floor(Math.random() * 1001) - 500;
   // transaction.date = new Date();
@@ -261,35 +262,40 @@ export const prepopulateDB = async () => {
   //booking.user = Promise.resolve(user);
   booking.availability = Promise.resolve(chemAvailability);
   booking.cost = 20;
+  booking.facilityId = 0;
 
   chemBooking1.startDateTime = chemAvailability1.startTime;
   chemBooking1.endDateTime = chemAvailability1.endTime;
   chemBooking1.user = Promise.resolve(user1);
   chemBooking1.availability = Promise.resolve(chemAvailability1);
   chemBooking1.cost = 20;
+  chemBooking1.facilityId = 0;
 
   chemBooking2.startDateTime = chemAvailability2.startTime;
   chemBooking2.endDateTime = dateAdd(chemAvailability2.endTime, "hour", -1.5);
   chemBooking2.user = Promise.resolve(user2);
   chemBooking2.availability = Promise.resolve(chemAvailability2);
   chemBooking2.cost = 10;
+  chemBooking2.facilityId = 0;
 
   chemBooking3.startDateTime = chemAvailability3.startTime;
   chemBooking3.endDateTime = dateAdd(chemAvailability3.endTime, "hour", -1.5);
   chemBooking3.user = Promise.resolve(user3);
   chemBooking3.availability = Promise.resolve(chemAvailability3);
   chemBooking3.cost = 10;
+  chemBooking3.facilityId = 0;
 
   chemBooking4.startDateTime = dateAdd(chemAvailability3.endTime, "hour", -1.5);
   chemBooking4.endDateTime = chemAvailability3.endTime;
   chemBooking4.user = Promise.resolve(user3);
   chemBooking4.availability = Promise.resolve(chemAvailability3);
   chemBooking4.cost = 10;
+  chemBooking4.facilityId = 0;
 
   ////////////// PHYSICS LAB ///////////////////
 
   const physAvailability = new AvailabilityEntity();
-  physAvailability.Date = dateAdd(date1Original, "day", 6);
+  physAvailability.Date = dateAdd(date3Original, "day", 6);
   physAvailability.startTime = dateAdd(physAvailability.Date, "hour", 6);
   physAvailability.endTime = dateAdd(physAvailability.startTime, "hour", 2);
   physAvailability.facility = Promise.resolve(facility2);
@@ -347,24 +353,28 @@ export const prepopulateDB = async () => {
   physBooking.user = Promise.resolve(user3);
   physBooking.availability = Promise.resolve(physAvailability);
   physBooking.cost = 30;
+  physBooking.facilityId = 0;
 
   physBooking1.startDateTime = physAvailability1.startTime;
   physBooking1.endDateTime = physAvailability1.endTime;
   physBooking1.user = Promise.resolve(user2);
   physBooking1.availability = Promise.resolve(physAvailability1);
   physBooking1.cost = 30;
+  physBooking1.facilityId = 0;
 
   physBooking2.startDateTime = physAvailability4.startTime;
   physBooking2.endDateTime = dateAdd(physAvailability4.endTime, "hour", -1);
   physBooking2.user = Promise.resolve(user1);
   physBooking2.availability = Promise.resolve(physAvailability4);
   physBooking2.cost = 15;
+  physBooking2.facilityId = 0;
 
   physBooking3.startDateTime = dateAdd(physAvailability4.endTime, "hour", -1);
   physBooking3.endDateTime = physAvailability4.endTime;
   physBooking3.user = Promise.resolve(user);
   physBooking3.availability = Promise.resolve(physAvailability4);
   physBooking3.cost = 15;
+  physBooking3.facilityId = 0;
 
   //////////////BIOLOGY///////////////
 
@@ -427,24 +437,28 @@ export const prepopulateDB = async () => {
   bioBooking.user = Promise.resolve(user1);
   bioBooking.availability = Promise.resolve(bioAvailability3);
   bioBooking.cost = 20;
+  bioBooking.facilityId = 0;
 
   bioBooking1.startDateTime = dateAdd(bioAvailability3.startTime, "hour", -2);
   bioBooking1.endDateTime = dateAdd(bioAvailability3.endTime, "hour", -1);
   bioBooking1.user = Promise.resolve(user2);
   bioBooking1.availability = Promise.resolve(bioAvailability3);
   bioBooking1.cost = 20;
+  bioBooking1.facilityId = 0;
 
   bioBooking2.startDateTime = dateAdd(bioAvailability3.startTime, "hour", -1);
   bioBooking2.endDateTime = bioAvailability3.endTime;
   bioBooking2.user = Promise.resolve(user3);
   bioBooking2.availability = Promise.resolve(bioAvailability3);
   bioBooking2.cost = 20;
+  bioBooking2.facilityId = 0;
 
   bioBooking3.startDateTime = bioAvailability1.startTime;
   bioBooking3.endDateTime = bioAvailability1.endTime;
   bioBooking3.user = Promise.resolve(user4);
   bioBooking3.availability = Promise.resolve(bioAvailability1);
   bioBooking3.cost = 60;
+  bioBooking3.facilityId = 0;
 
   await AppDataSource.manager.save(user);
   await AppDataSource.manager.save(user1);
@@ -466,4 +480,49 @@ export const prepopulateDB = async () => {
   // if( user !== null)
   // bookingRepo.create({ bookingId: 1, startDateTime: new Date(),
   //     endDateTime: new Date(), user: user, });
+
+  const chemFacility = await AppDataSource.getRepository(
+    FacilityEntity,
+  ).findOneBy({
+    name: "Chemistry Lab",
+  });
+  const physFacility = await AppDataSource.getRepository(
+    FacilityEntity,
+  ).findOneBy({
+    name: "Physics Lab",
+  });
+  const bioFacility = await AppDataSource.getRepository(
+    FacilityEntity,
+  ).findOneBy({
+    name: "Biology Center",
+  });
+
+  booking.facilityId = chemFacility!.id;
+  chemBooking1.facilityId = chemFacility!.id;
+  chemBooking2.facilityId = chemFacility!.id;
+  chemBooking3.facilityId = chemFacility!.id;
+  chemBooking4.facilityId = chemFacility!.id;
+  physBooking.facilityId = physFacility!.id;
+  physBooking1.facilityId = physFacility!.id;
+  physBooking2.facilityId = physFacility!.id;
+  physBooking3.facilityId = physFacility!.id;
+  bioBooking.facilityId = bioFacility!.id;
+  bioBooking1.facilityId = bioFacility!.id;
+  bioBooking2.facilityId = bioFacility!.id;
+  bioBooking3.facilityId = bioFacility!.id;
+
+  await AppDataSource.manager.save(booking);
+  await AppDataSource.manager.save(chemBooking1);
+  await AppDataSource.manager.save(chemBooking2);
+  await AppDataSource.manager.save(chemBooking3);
+  await AppDataSource.manager.save(chemBooking4);
+  await AppDataSource.manager.save(physBooking);
+  await AppDataSource.manager.save(physBooking1);
+  await AppDataSource.manager.save(physBooking2);
+  await AppDataSource.manager.save(physBooking3);
+  await AppDataSource.manager.save(bioBooking);
+  await AppDataSource.manager.save(bioBooking1);
+  await AppDataSource.manager.save(bioBooking2);
+  await AppDataSource.manager.save(bioBooking3);
+  console.log("DB Finished Populating Bookings!!");
 };
