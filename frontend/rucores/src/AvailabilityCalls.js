@@ -20,7 +20,6 @@ class Availability {
       }
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Fetch error:", error);
@@ -176,7 +175,6 @@ class Availability {
       }
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Fetch error:", error);

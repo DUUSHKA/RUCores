@@ -72,7 +72,6 @@ function AddFacility() {
         0,
         equipment,
       ).then((resp) => {
-        console.log(resp);
         if (resp.id) {
           setShowSuccess(true);
           navigate(`/editFacility/${resp.id}`);

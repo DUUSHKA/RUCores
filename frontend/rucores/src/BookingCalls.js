@@ -33,7 +33,6 @@ class BookingCalls {
       }
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Fetch error:", error);
@@ -84,7 +83,56 @@ class BookingCalls {
       }
 
       const data = await response.json();
-      console.log(data);
+      return data;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error; // rethrow the error if needed
+    }
+  }
+
+  /**
+   * @param facilityID
+   *
+   * returns a list of bookings for a facility
+   */
+  async getAllFutureBookingsByFacility(facilityID) {
+    const apiUrl = `http://localhost:3001/api/booking/futureFacility/${facilityID}`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error; // rethrow the error if needed
+    }
+  }
+
+  /**
+   * @param facilityID
+   *
+   * returns a list of bookings for a facility
+   */
+  async getAllPastBookingsByFacility(facilityID) {
+    const apiUrl = `http://localhost:3001/api/booking/pastFacility/${facilityID}`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error("Fetch error:", error);

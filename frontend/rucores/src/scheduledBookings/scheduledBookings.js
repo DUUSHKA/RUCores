@@ -54,7 +54,6 @@ function ScheduledBookings() {
     try {
       if (item) {
         const isDeleted = await bookingAPI.deleteBookingbybookingID(item.id);
-        console.log(isDeleted);
         if (isDeleted) {
           setSuccess(true);
 

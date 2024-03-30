@@ -13,7 +13,7 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { Line } from "react-chartjs-2";
-import User from "../../UserCalls";
+import User from "../../../UserCalls";
 import "./balanceHistoryGraph.css";
 function BalanceHistoryGraph(props) {
   /**

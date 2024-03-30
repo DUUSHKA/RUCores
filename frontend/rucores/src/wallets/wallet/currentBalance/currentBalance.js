@@ -4,8 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import PropTypes from "prop-types";
-import BookingCalls from "../../BookingCalls";
-import User from "../../UserCalls";
+import BookingCalls from "../../../BookingCalls";
+import User from "../../../UserCalls";
 
 function CurrentBalance(prop) {
   ChartJS.register(ArcElement, Tooltip, Legend);

@@ -14,7 +14,6 @@ function Booking(props) {
   const [dates, setDates] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [currentAvails, setCurrentAvails] = useState();
-  console.log(dates);
   useEffect(() => {
     setIsLoading(true);
 
