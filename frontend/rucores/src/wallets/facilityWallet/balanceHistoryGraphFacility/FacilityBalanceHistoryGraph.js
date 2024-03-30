@@ -123,17 +123,13 @@ function FacilityBalanceHistoryGraph(props) {
     const userApi = new User();
     userApi.getProviderAnalytics(props.facilityID).then((resp) => {
       setFacilityAnalytics(resp);
-      console.log(resp);
     });
     const BookingApi = new BookingCalls();
     BookingApi.getAllFutureBookingsByFacility(props.facilityID).then(
       (resp1) => {
         BookingApi.getAllPastBookingsByFacility(props.facilityID).then(
           (resp) => {
-            console.log(resp);
-            console.log(resp1);
             const allBookings = resp.concat(resp1);
-            console.log(allBookings);
             setTimePerMonth(calculateTotalBookingTimeByMonth(allBookings));
           },
         );
@@ -146,8 +142,6 @@ function FacilityBalanceHistoryGraph(props) {
       setSpendingData(
         facilityAnalytics.monthlyData.map((item) => item.totalBooked),
       );
-      console.log(spendingData);
-      console.log(timePerMonth);
     }
   }, [facilityAnalytics]);
 

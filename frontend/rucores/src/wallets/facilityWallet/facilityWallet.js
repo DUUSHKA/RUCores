@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import FacilityBalanceHistoryGraph from "./balanceHistoryGraphFacility/FacilityBalanceHistoryGraph";
 import CurrentFacilityBalance from "./currentBalance/currentFacilityBalance";
+import FacilityTransactionHistory from "./transactionHistory/facilityTransactionHistory";
 /**
  *
  * wallet page- contains current balance, analytics
@@ -24,10 +25,7 @@ function FacilityWallet(props) {
           <div className="leftSideContent">
             <CurrentFacilityBalance currentFacilityId={currentFacility.id} />
             <div className="transHistCard">
-              {/* <TransactionHistory
-          transactionHistoryData={transactionHistoryData}
-          refreshHistory={updateBalance}
-        /> */}
+              <FacilityTransactionHistory facilityID={currentFacility.id}></FacilityTransactionHistory>
             </div>
             <div className="purchaseCard">
               {/* <PurchaseCoins updateBalance={[updateBalance, setUpdateBalance]} /> */}

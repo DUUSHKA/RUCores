@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import FacilityCalls from "../FacilityCalls";
 import Wallet from "./wallet/wallet";
 import FacilityWallet from "./facilityWallet/facilityWallet";
-
+import './walletManager.css';
 function WalletManager() {
   const [providerDisplay, setProviderDisplay] = useState(false);
   const [providerUserwallet, setProviderUserWallet] = useState(true);
@@ -39,8 +39,9 @@ function WalletManager() {
   return (
     <>
       {providerDisplay && (
-        <Form.Select onChange={handleSelectChange}>
-          <option className="dropdownSelect">Select a Wallet</option>
+        <div className="CenterContent">
+        <Form.Select className="dropdownSelect" onChange={handleSelectChange}>
+          <option >Select a Wallet</option>
           <option value="1">Your Wallet</option>
           {facilityData.map((option, index) => (
             <option key={index} value={option.name}>
@@ -48,6 +49,8 @@ function WalletManager() {
             </option>
           ))}
         </Form.Select>
+        <div className="SelectSpacer"></div>
+        </div>
       )}
       {(providerUserwallet || !providerDisplay) && selectedFacility == null && (
         <Wallet />

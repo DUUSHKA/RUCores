@@ -1,3 +1,15 @@
 .dropdownSelect{
-    width:70px;
+    
+    margin-left: 0px;
+    width:300px;
+}
+
+.CenterContent{
+    display: flex;
+    justify-content: center;
+    padding-bottom: 20px;
+}
+
+.SelectSpacer{
+    width:930px;
 }

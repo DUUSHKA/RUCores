@@ -32,7 +32,6 @@ function CurrentFacilityBalance(prop) {
       const userApi = new User();
       userApi.getProviderAnalytics(prop.currentFacilityId).then((resp) => {
         setCurrentBalance(resp.monthlySummary.totalEarning);
-        console.log(resp.monthlySummary.totalEarning);
       });
     }
   }, [prop.currentFacilityId]);

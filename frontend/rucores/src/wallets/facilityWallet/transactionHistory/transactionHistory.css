@@ -1,25 +1,24 @@
-.transactionCardStyling{
+.FacilitytransactionCardStyling{
     border: 2px solid grey;
     border-radius: 3px;
     margin: auto;
     padding: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     width: 300px;
-    height: 280px;
+    height: 455px;
 }
 
-.historyPagination{
-    margin-top: 15px;
+.facilityhistoryPagination{
+    margin-top: 180px;
     padding-top: 20px;
     display: flex;
     justify-content: center;
 }
 
 
-.HistoryList{
-    height: 164px;
-}
+
 
 .historyListItem{
     font-size:12px;
 }
+
