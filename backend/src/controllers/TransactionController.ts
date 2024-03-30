@@ -45,6 +45,13 @@ export class TransactionController {
     return this.service.getOneByID(id);
   }
 
+  @Get("/facilityID/:id")
+  @HttpCode(200)
+  @ResponseSchema(TransactionEntity)
+  getfacility(@Param("id") id: number, @QueryParams() query: GetAllQuery) {
+    return this.service.getTransactionByFacilityID(id, query);
+  }
+
   //endpoint should not be called EVER only here for testing purposes
   @Post("/create")
   @HttpCode(200)
