@@ -10,7 +10,7 @@ function WalletManager() {
   const [providerUserwallet, setProviderUserWallet] = useState(true);
   const [facilityData, setFacilityData] = useState();
   const [selectedFacility, setSelectedFacility] = useState();
-
+  const [walletDisplayName, setWalletDisplayName] = useState("Your");
   useEffect(() => {
     const facilityCalls = new FacilityCalls();
 
@@ -27,6 +27,16 @@ function WalletManager() {
 
   const handleSelectChange = (event) => {
     const value = event.target.value;
+    if(value==="0"){
+      return;
+    }else{
+      if(event.target.options[event.target.selectedIndex].text.includes("Wallet")){
+        setWalletDisplayName("Your");
+      }else{
+        setWalletDisplayName(event.target.options[event.target.selectedIndex].text);         
+      }
+    }
+    
     if (value === "1") {
       setProviderUserWallet(value === "1");
       setSelectedFacility(null);
@@ -41,7 +51,7 @@ function WalletManager() {
       {providerDisplay && (
         <div className="CenterContent">
         <Form.Select className="dropdownSelect" onChange={handleSelectChange}>
-          <option >Select a Wallet</option>
+          <option value="0">Select a Wallet</option>
           <option value="1">Your Wallet</option>
           {facilityData.map((option, index) => (
             <option key={index} value={option.name}>
@@ -49,7 +59,7 @@ function WalletManager() {
             </option>
           ))}
         </Form.Select>
-        <div className="SelectSpacer"></div>
+        <div className="SelectSpacer"><h1 className="walletName">{walletDisplayName} Wallet</h1></div>
         </div>
       )}
       {(providerUserwallet || !providerDisplay) && selectedFacility == null && (
