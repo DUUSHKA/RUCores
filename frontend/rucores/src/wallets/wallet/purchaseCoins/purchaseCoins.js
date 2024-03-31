@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import SuccessFailureAlert from "../../SuccessFailureAlerts";
-import User from "../../UserCalls";
+import SuccessFailureAlert from "../../../SuccessFailureAlerts";
+import User from "../../../UserCalls";
 import "./purchaseCoins.css";
 import PropTypes from "prop-types";
 

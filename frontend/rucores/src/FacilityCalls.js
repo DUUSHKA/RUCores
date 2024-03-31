@@ -178,6 +178,30 @@ class FacilityCalls {
       return false;
     }
   }
+
+  /**
+   * gets the current users facilities
+   */
+  async getFacilitiesByUser() {
+    const apiUrl = `http://localhost:3001/api/facility/managed`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error;
+    }
+  }
 }
 
 export default FacilityCalls;

@@ -117,7 +117,6 @@ function EditFacility() {
     const availAPI = new Availability();
     const currentDate = new Date();
 
-    console.log(newAvailability);
     const selectedDate = new Date(newAvailability.Date);
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth() + 1;
@@ -174,8 +173,6 @@ function EditFacility() {
 
   const handleDeleteAvailability = (availabilityId) => {
     if (window.confirm("Are you sure you want to delete this availability?")) {
-      console.log("clicked", availabilityId);
-
       const availAPI = new Availability();
       if (availabilityId) {
         availAPI.deleteAvail(availabilityId).then(() => {
@@ -190,7 +187,6 @@ function EditFacility() {
   useEffect(() => {
     const AvailAPI = new Availability();
     AvailAPI.getAvailByFacilityID(parseInt(facilityID)).then((resp) => {
-      console.log(resp);
       setAvailabilities(resp);
     });
   }, [
@@ -210,14 +206,12 @@ function EditFacility() {
   };
 
   const formatDate = (dateString) => {
-    console.log(dateString);
     const formattedDate = new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
       timeZone: "America/New_York",
     });
-    console.log(formattedDate);
     return formattedDate;
   };
 

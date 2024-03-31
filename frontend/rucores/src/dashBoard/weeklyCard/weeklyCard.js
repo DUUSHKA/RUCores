@@ -64,7 +64,6 @@ function WeeklyCard(props) {
     try {
       if (booking) {
         const isDeleted = await bookingAPI.deleteBookingbybookingID(booking.id);
-        console.log(isDeleted);
         if (isDeleted) {
           setSuccess(true);
         } else {
@@ -89,7 +88,6 @@ function WeeklyCard(props) {
 
   useEffect(() => {
     setBooking(props.bookingInfo);
-    console.log(props.bookingInfo.__availability__.__facility__.address);
   }, [props.bookingInfo]);
 
   return (

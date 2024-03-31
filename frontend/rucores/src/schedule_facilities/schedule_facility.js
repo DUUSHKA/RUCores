@@ -26,7 +26,6 @@ function ScheduleFacility() {
         }
 
         const data = await response.json();
-        console.log(data);
         setFacilityData(data);
       } catch (error) {
         console.error("Error:", error);

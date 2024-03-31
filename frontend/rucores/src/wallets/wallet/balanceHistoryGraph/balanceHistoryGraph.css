@@ -1,0 +1,13 @@
+.walletGraphStyling{
+    border: 2px solid grey;
+    border-radius: 3px;
+    margin: auto;
+    padding: 50px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    height:900px;
+    width:900px;
+}
+
+.graphTabs{
+    margin-top: -10px;
+}
