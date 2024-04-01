@@ -63,7 +63,7 @@ ul {
 
 
 .weekCard{
-  margin-top: -100px;
+  margin-top: -500px;
   display: flex;
   margin-left: 10px;
   margin-right: 10px;
@@ -86,4 +86,14 @@ ul {
 .WeeklyCardContent{
   padding: 10px;
 
+}
+
+.facility-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.facility-item > span {
+  flex-grow: 1;
 }

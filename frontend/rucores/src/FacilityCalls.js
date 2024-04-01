@@ -202,6 +202,28 @@ class FacilityCalls {
       throw error;
     }
   }
+  async getManagedFacilities() {
+    try {
+      const url = `http://localhost:3001/api/facility/managed`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Ensure cookies or auth tokens are sent with the request
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch managed facilities");
+      }
+
+      const facilities = await response.json();
+      return facilities;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  }
 }
 
 export default FacilityCalls;
