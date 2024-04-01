@@ -43,7 +43,7 @@
   border-radius: 8px;
 }
 
-button {
+.specialButton{
   font-size: 14px;
   padding: 8px 16px; 
   border: none;
@@ -57,18 +57,13 @@ button:not(:last-child) {
   margin-right: 10px; 
 }
 
-.btn-primary, .btn-danger, .btn-secondary {
-  flex-grow: 1; 
-  display: block; 
-  width: auto; 
-}
 
 button:hover {
   opacity: 0.8;
 }
 
 .enlargeModal {
-  max-width: 90%;
+  min-width: 1200px;
 }
 
 .btn-primary, .btn-danger, .btn-secondary {

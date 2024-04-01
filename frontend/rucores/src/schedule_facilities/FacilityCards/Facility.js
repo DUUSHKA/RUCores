@@ -116,11 +116,11 @@ function FacilityInfo(prop) {
           </p>
           <div className="cost">
             {isProvider && (
-              <Button onClick={editFacility}>Edit Facility</Button>
+              <Button className = "specialButton" onClick={editFacility}>Edit Facility</Button>
             )}
-            <Button onClick={getFacilityInfo}>Schedule a Booking</Button>
+            <Button className = "specialButton" onClick={getFacilityInfo}>Schedule a Booking</Button>
             {isProvider && (
-              <Button variant="danger" onClick={handleDeleteFacility}>
+              <Button className = "specialButton" variant="danger" onClick={handleDeleteFacility}>
                 Delete Facility
               </Button>
             )}
