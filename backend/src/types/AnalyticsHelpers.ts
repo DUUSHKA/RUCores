@@ -27,7 +27,8 @@ export async function pushTimeData(facilityGroups: GroupedWithSum<any>) {
       const group = facilityGroups[key];
       const sum = group.sum;
       const data: timeByFacility = {
-        facility: (await new FacilityService().getOneByID(Number(key))).name,
+        facility: (await new FacilityService().getDeletedByID(Number(key)))
+          .name,
         time: sum,
       };
       facilityTimeArr.push(data);
@@ -44,7 +45,8 @@ export async function pushCostData(facilityGroups: GroupedWithSum<any>) {
       const group = facilityGroups[key];
       const sum = -1 * group.sum;
       const data: coinsByFacility = {
-        facility: (await new FacilityService().getOneByID(Number(key))).name,
+        facility: (await new FacilityService().getDeletedByID(Number(key)))
+          .name,
         coins: sum,
       };
       facilityCostArr.push(data);

@@ -23,12 +23,18 @@ class TransactionService extends GenericService<TransactionEntity> {
         transaction.facility_id,
       );
       newTransaction.facility = facility;
+      newTransaction.facilityId = facility.id;
     }
     if (transaction.booking_id !== undefined) {
       const bookingSave = await new BookingService().getOneByID(
         transaction.booking_id,
       );
       newTransaction.booking = bookingSave;
+      newTransaction.facilityId = (
+        await (
+          await bookingSave.availability
+        ).facility
+      ).id;
     }
     if (transaction.duration !== undefined) {
       newTransaction.duration = transaction.duration;
@@ -55,7 +61,7 @@ class TransactionService extends GenericService<TransactionEntity> {
     facility_id: number,
     filter: GetAllQuery,
   ) {
-    const facility = await new FacilityService().getOneByID(facility_id);
+    const facility = await new FacilityService().getDeletedByID(facility_id);
     if (!facility) {
       throw new NotFoundError("Facility not found");
     }

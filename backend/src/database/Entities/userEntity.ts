@@ -84,6 +84,9 @@ export class UserEntity extends GenericEntity {
   @Expose()
   isProvider: boolean;
 
+  @Column("simple-array", { nullable: true })
+  pastManagedFacilities?: number[];
+
   @JoinTable({
     joinColumn: { name: "userId" },
     inverseJoinColumn: { name: "facilityId" },

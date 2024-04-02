@@ -1,6 +1,7 @@
 import { NotFoundError } from "routing-controllers";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
+import AppDataSource from "../database/data-source";
 import { FacilityModel } from "../types/FacilityModel";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 import BookingService from "./BookingService";
@@ -86,9 +87,74 @@ class FacilityService extends GenericService<FacilityEntity> {
     if (!facility) {
       throw new NotFoundError("Facility not found for this user");
     }
+    //delete all future bookings associated with this facility
+    const bookingService = new BookingService();
+    const bookings =
+      await bookingService.getAllFutureFacilityBookings(facility);
+    //refund these bookings
+    await Promise.all(
+      bookings.map(async (booking) => {
+        return bookingService.cancelBooking(booking);
+      }),
+    );
+    //get the providers and move them to the user's old managed facilities
+    //Do not need to edit managedFacilities because they are soft deleted and will not show
+    (await facility.providers).forEach((user) => {
+      user.pastManagedFacilities = [
+        ...(user.pastManagedFacilities ?? []),
+        facility.id,
+      ].map(Number); //will not help because fetching from database makes elements a string
+      AppDataSource.getRepository(UserEntity).save(user);
+    });
+
     return this.delete(id);
   }
 
+  //test to see if you need to edit users managed facilities as well, but believe editing
+  //just providers is enough
+  public async addProvider(
+    facilityID: number,
+    providerID: number,
+  ): Promise<FacilityEntity> {
+    const facility = await this.getOneByID(facilityID);
+    const provider = await new UserService().getOneByID(providerID);
+    if (!facility || !provider) {
+      throw new NotFoundError("Facility or Provider not found");
+    }
+    if (await facility.providers) {
+      facility.providers = Promise.resolve([
+        ...(await facility.providers),
+        provider,
+      ]);
+    } else {
+      facility.providers = Promise.resolve([provider]);
+    }
+    return this.repository.save(facility);
+  }
+
+  public async removeProvider(
+    facilityID: number,
+    providerID: number,
+  ): Promise<FacilityEntity> {
+    const facility = await this.getOneByID(facilityID);
+    const provider = await new UserService().getOneByID(providerID);
+    if (!facility || !provider) {
+      throw new NotFoundError("Facility or Provider not found");
+    }
+    if (await facility.providers) {
+      facility.providers = Promise.resolve(
+        (await facility.providers).filter((user) => user.id !== providerID),
+      );
+    }
+    //move the provider to the user's past managed facilities
+    provider.pastManagedFacilities = [
+      ...(provider.pastManagedFacilities ?? []),
+      facilityID,
+    ].map(Number);
+    AppDataSource.getRepository(UserEntity).save(provider);
+
+    return this.repository.save(facility);
+  }
   public async updateFacility(
     id: number,
     facility: Partial<FacilityModel>,

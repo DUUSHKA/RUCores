@@ -244,7 +244,7 @@ class UserService extends GenericService<UserEntity> {
       }
       const facilityGroups = groupByAndSum(
         months,
-        (t) => t.facility.id,
+        (t) => t.facilityId,
         "amountChanged",
       );
       const facilityMonthCost = await pushCostData(facilityGroups);
@@ -259,13 +259,13 @@ class UserService extends GenericService<UserEntity> {
     }
     let facilityGroups = groupByAndSum(
       transactions,
-      (t) => t.facility.id,
+      (t) => t.facilityId,
       "amountChanged",
     );
     facilityCostArr = await pushCostData(facilityGroups);
     facilityGroups = groupByAndSum(
       transactions.filter((y) => y.date),
-      (t) => t.facility.id,
+      (t) => t.facilityId,
       "duration",
     );
     facilityTimeArr = await pushTimeData(facilityGroups);
@@ -329,7 +329,7 @@ class UserService extends GenericService<UserEntity> {
       };
       monthDataArr.push(data);
     }
-    const facilityName = (await new FacilityService().getOneByID(id)).name;
+    const facilityName = (await new FacilityService().getDeletedByID(id)).name;
     const analytics: providerStats = {
       monthlySummary: {
         name: facilityName,

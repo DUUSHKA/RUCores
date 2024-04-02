@@ -3,6 +3,7 @@ import { AvailabilityEntity } from "../database/Entities/availabilityEntity";
 import { FacilityEntity } from "../database/Entities/facilityEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { AvailabilityModel } from "../types/AvailabilityModel";
+import BookingService from "./BookingService";
 import FacilityService from "./FacilityService";
 import GenericService from "./GenericService";
 
@@ -85,7 +86,7 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
   }
 
   public async getAvailabilityByFacilityID(facility_id: number) {
-    const facility = await new FacilityService().getOneByID(facility_id);
+    const facility = await new FacilityService().getDeletedByID(facility_id);
     if (!facility) {
       throw new NotFoundError("Facility not found");
     }
@@ -185,10 +186,21 @@ class AvailabilityService extends GenericService<AvailabilityEntity> {
     if (!availability) {
       throw new NotFoundError("Availability not found");
     }
+    if (availability.startTime.getTime() < Date.now()) {
+      throw new Error("Availability has already passed");
+    }
     const facility = await availability.facility;
     if (!(await this.verifyOwnership(user, facility))) {
       throw new NotFoundError("User does not have access to this facility");
     }
+    //get and refund all bookings in the availability
+    const bookingService = new BookingService();
+    const bookings = await availability.bookings;
+    await Promise.all(
+      bookings.map(async (booking) => {
+        return bookingService.cancelBooking(booking);
+      }),
+    );
     return this.repository.softRemove(availability);
   }
 }
