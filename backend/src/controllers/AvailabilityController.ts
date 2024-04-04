@@ -3,6 +3,7 @@ import {
   Body,
   CurrentUser,
   Delete,
+  ForbiddenError,
   Get,
   HttpCode,
   JsonController,
@@ -64,7 +65,10 @@ export class AvailabilityController {
     @CurrentUser() user: UserEntity,
     @Body() availability: AvailabilityModel,
   ): Promise<AvailabilityEntity> {
-    return this.service.createAvailability(user, availability);
+    if (user.roles.includes("Provider") || user.roles.includes("admin")) {
+      return this.service.createAvailability(user, availability);
+    }
+    throw new ForbiddenError("user is not a provider account or an admin");
   }
 
   @Put("/:id")
@@ -73,7 +77,7 @@ export class AvailabilityController {
     summary: "Update an availibility by ID",
   })
   @ResponseSchema(AvailabilityEntity)
-  put(
+  async put(
     @CurrentUser() user: UserEntity,
     @Param("id") id: number,
     @Body({
@@ -81,7 +85,16 @@ export class AvailabilityController {
     })
     availability: AvailabilityModel,
   ): Promise<AvailabilityEntity> {
-    return this.service.updateAvailability(user, id, availability);
+    const old = this.service.getOneByID(id);
+    if (
+      (await user.managedFacilities).includes(await (await old).facility) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.updateAvailability(user, id, availability);
+    }
+    throw new ForbiddenError(
+      "User is not the provider for the availability or an admin",
+    );
   }
 
   @Delete("/:id")
@@ -90,8 +103,17 @@ export class AvailabilityController {
     summary: "Delete an availability",
   })
   @OnUndefined(204)
-  remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
-    return this.service.deleteAvailability(user, id);
+  async remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
+    const old = this.service.getOneByID(id);
+    if (
+      (await user.managedFacilities).includes(await (await old).facility) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.deleteAvailability(user, id);
+    }
+    throw new ForbiddenError(
+      "User is not the provider for the availability or an admin",
+    );
   }
 }
 

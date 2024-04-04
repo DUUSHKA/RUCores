@@ -3,6 +3,7 @@ import {
   Authorized,
   Body,
   BodyParam,
+  CookieParam,
   CurrentUser,
   Delete,
   ForbiddenError,
@@ -114,10 +115,11 @@ export class UserController {
 
   @Get("/deleted/userID/:id")
   @HttpCode(200)
+  @Authorized(["admin"])
   @ResponseSchema(UserEntity)
   getOneDeleted(@Param("id") id: number) {
     const user = this.service.getDeletedByID(id);
-    log.debug(" user found by ID: ", user);
+    //log.debug(" user found by ID: ", user);
     return user;
   }
 
@@ -128,8 +130,8 @@ export class UserController {
   async getProviders(
     @CurrentUser() user: UserEntity,
   ): Promise<ProviderIDMapping[]> {
-    if (user.isProvider === false) {
-      throw new ForbiddenError("User is not a provider");
+    if (user.isProvider === false || user.roles.includes("admin")) {
+      throw new ForbiddenError("User is not a provider or an admin");
     }
     const providers = this.service.getAllProviderIDs();
     //log.debug("All providers: ", providers);
@@ -190,20 +192,52 @@ export class UserController {
   @Post("/refillBalance/:id")
   @HttpCode(200)
   async changeBalance(
+    @CurrentUser() user: UserEntity,
     @Param("id") id: number,
     @BodyParam("refill", { required: true }) refill: number,
   ) {
-    return this.service.addBalance(id, refill);
+    if (id == user.id || user.roles.includes("admin")) {
+      return this.service.addBalance(user, refill);
+    }
+    throw new ForbiddenError(
+      "User is trying to refill another user's balance or is not an admin",
+    );
   }
 
   @Put("/userID/:id")
-  async put(@Param("id") id: number, @Body() user: UserModel) {
-    //Update a user
-    return this.service.updateUser(id, user);
+  @HttpCode(200)
+  @OpenAPI({
+    summary: "Update a user",
+  })
+  @ResponseSchema(UserEntity)
+  async put(
+    @CurrentUser() user: UserEntity,
+    @Param("id") id: number,
+    @Body({
+      validate: { forbidUnknownValues: true, skipMissingProperties: true },
+    })
+    newUser: UserModel,
+  ): Promise<UserEntity> {
+    if (id == user.id || user.roles.includes("admin")) {
+      return this.service.updateUser(id, newUser);
+    }
+    throw new ForbiddenError(
+      "User is trying to change another user's information or is not an admin",
+    );
   }
 
   @Delete("/userID/:id")
-  remove(@Param("id") id: number) {
-    return this.service.deleteUser(id);
+  remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
+    if (id == user.id || user.roles.includes("admin")) {
+      return this.service.deleteUser(id);
+    }
+    throw new ForbiddenError(
+      "User is trying to delete another user or is not an admin",
+    );
+  }
+
+  @Delete("/logout")
+  logout(@CookieParam("session") token: string) {
+    return this.service.logout(token);
   }
 }

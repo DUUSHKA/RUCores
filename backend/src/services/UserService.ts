@@ -1,5 +1,9 @@
 import crypto from "crypto";
-import { ForbiddenError, UnauthorizedError } from "routing-controllers";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "routing-controllers";
 import { SessionEntity } from "../database/Entities/sessionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import {
@@ -136,6 +140,15 @@ class UserService extends GenericService<UserEntity> {
     return new SessionService().createSession(user);
   }
 
+  public async logout(token: string) {
+    const sessionServ = new SessionService();
+    const session = await sessionServ.findSessionByToken(token);
+    if (!session) {
+      throw new NotFoundError(`${this.name} not found`);
+    }
+    return sessionServ.repository.remove(session);
+  }
+
   public async updateUser(id: number, user: UserModel): Promise<UserEntity> {
     const userToUpdate = await this.repository
       .findOne({
@@ -187,9 +200,11 @@ class UserService extends GenericService<UserEntity> {
 
   //temporary function to add balance to a user
   //Need to integrate with paypal API
-  public async addBalance(id: number, amount: number): Promise<UserEntity> {
+  public async addBalance(
+    user: UserEntity,
+    amount: number,
+  ): Promise<UserEntity> {
     const transact = await new TransactionService();
-    const user = await this.repository.findOneBy({ id });
     if (!user) {
       throw new Error("User not found");
     }
@@ -198,7 +213,7 @@ class UserService extends GenericService<UserEntity> {
       amountChanged: amount,
       eventDescription: "balance refill",
       date: new Date(),
-      user_id: id,
+      user_id: user.id,
       transactionType: TransactionType.Refill,
     };
     await transact.createTransaction(transaction);
