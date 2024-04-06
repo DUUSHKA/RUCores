@@ -12,7 +12,7 @@ import {
   QueryParams,
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
-import FacilityService from "src/services/FacilityService";
+import FacilityService from "../services/FacilityService";
 import { TransactionEntity } from "../database/Entities/transactionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
