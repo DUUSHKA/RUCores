@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/esm/Button";
 import { useNavigate } from "react-router-dom";
 import FacilityCalls from "../../FacilityCalls";
 import SuccessFailureAlert from "../../SuccessFailureAlerts";
-import "./Facility.css";
-import Booking from "./booking/booking";
+import "../FacilityCards/Facility.css";
+import Booking from "../FacilityCards/booking/booking";
 function FacilityInfo(prop) {
   const [show, setShow] = useState(false);
   const isProvider = window.sessionStorage.getItem("isProvider") === "true";
@@ -15,10 +15,6 @@ function FacilityInfo(prop) {
   const [showErrorDeleteFacility, setShowErrorDeleteFacility] = useState(false);
   const [showSuccessDeleteFacility, setShowSuccessDeleteFacility] =
     useState(false);
-  const [isManagedByUser, setIsManagedByUser] = useState(false);
-
-  const navigate = useNavigate();
-
   const facilityDetails = {
     name: prop.facilityDetails.name,
     equipment: prop.facilityDetails.equipment,
@@ -26,21 +22,7 @@ function FacilityInfo(prop) {
     description: prop.facilityDetails.description,
     id: prop.facilityDetails.id,
   };
-
-  useEffect(() => {
-    const checkManagedFacilities = async () => {
-      if (isProvider) {
-        const facilityAPI = new FacilityCalls();
-        const managedFacilities = await facilityAPI.getManagedFacilities();
-        const isManaged = managedFacilities.some(
-          (facility) => facility.id === prop.facilityDetails.id,
-        );
-        setIsManagedByUser(isManaged);
-      }
-    };
-
-    checkManagedFacilities();
-  }, [prop.facilityDetails.id, isProvider]);
+  const navigate = useNavigate();
 
   const getFacilityInfo = () => {
     const fetchAvailabilityData = async () => {
@@ -101,44 +83,39 @@ function FacilityInfo(prop) {
 
   return (
     <>
-      {isManagedByUser && (
-        <div className="facilityInfo">
-          <h1>{prop.facilityDetails.name}</h1>
-          <p>
-            <strong>Description:</strong> {prop.facilityDetails.description}
-          </p>
-          <p>
-            <strong>Available Equipment:</strong>{" "}
-            {prop.facilityDetails.equipment}
-          </p>
-          <p>
-            <strong>Address:</strong> {prop.facilityDetails.address}
-          </p>
-          <div className="cost">
-            {isProvider && (
-              <Button className = "specialButton" onClick={editFacility}>Edit Facility</Button>
-            )}
-            <Button className = "specialButton" onClick={getFacilityInfo}>Schedule a Booking</Button>
-            {isProvider && (
-              <Button className = "specialButton" variant="danger" onClick={handleDeleteFacility}>
-                Delete Facility
-              </Button>
-            )}
-            <SuccessFailureAlert
-              variant={"danger"}
-              show={showErrorDeleteFacility}
-              alertText={"Failed to Delete Facility!"}
-              onClose={closeAlertDeleteFacility}
-            />
-            <SuccessFailureAlert
-              variant={"success"}
-              show={showSuccessDeleteFacility}
-              alertText={"Deleted Facility!"}
-              onClose={closeAlertDeleteFacility}
-            />
-          </div>
+      <div className="facilityInfo">
+        <h1>{facilityDetails.name}</h1>
+        <p>
+          <strong>Description:</strong> {facilityDetails.description}
+        </p>
+        <p>
+          <strong>Available Equipment:</strong> {facilityDetails.equipment}
+        </p>
+        <p>
+          <strong>Address:</strong> {facilityDetails.address}
+        </p>
+        <div className="cost">
+          {isProvider && <Button onClick={editFacility}>Edit Facility</Button>}
+          <Button onClick={getFacilityInfo}>Schedule a Booking</Button>
+          {isProvider && (
+            <Button variant="danger" onClick={handleDeleteFacility}>
+              Delete Facility
+            </Button>
+          )}
+          <SuccessFailureAlert
+            variant={"danger"}
+            show={showErrorDeleteFacility}
+            alertText={"Failed to Delete Facility!"}
+            onClose={closeAlertDeleteFacility}
+          ></SuccessFailureAlert>
+          <SuccessFailureAlert
+            variant={"success"}
+            show={showSuccessDeleteFacility}
+            alertText={"Deleted Facility!"}
+            onClose={closeAlertDeleteFacility}
+          ></SuccessFailureAlert>
         </div>
-      )}
+      </div>
       <Modal
         show={show}
         onHide={handleClose}
@@ -146,12 +123,10 @@ function FacilityInfo(prop) {
         dialogClassName="enlargeModal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>
-            Create Booking for {prop.facilityDetails.name}
-          </Modal.Title>
+          <Modal.Title>Create Booking for {facilityDetails.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Booking facilityID={prop.facilityDetails.id} />
+          <Booking facilityID={facilityDetails.id} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -162,10 +137,8 @@ function FacilityInfo(prop) {
     </>
   );
 }
-
 FacilityInfo.propTypes = {
   facilityDetails: PropTypes.object,
   fetchData: PropTypes.array,
 };
-
 export default FacilityInfo;

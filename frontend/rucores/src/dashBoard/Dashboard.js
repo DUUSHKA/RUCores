@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import WeeklyCard from "./weeklyCard/weeklyCard";
 // import WeeklyCard from './weeklyCard/weeklyCard';
 import BookingCalls from "../BookingCalls";
+import FacilityCalls from "../FacilityCalls";
 import User from "../UserCalls";
-import Transaction from "../transactionCalls";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
+
 function Dashboard() {
   const [weeklyObject, setWeeklyObject] = useState();
   const [currentBalance, setCurrentBalance] = useState();
-  const [transactionData, setTransactionData] = useState([]);
-  const [history, setTransactionHistory] = useState([]);
-  const [transactionListItems, setTransactionListItems] = useState();
+  const [userFacilities, setUserFacilities] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [facilitiesPerPage] = useState(5);
+  const navigate = useNavigate();
+  const facilityAPI = new FacilityCalls();
+  const userId = parseInt(window.sessionStorage.getItem("id"), 10);
+  const isProvider = window.sessionStorage.getItem("isProvider") === "true";
   /**
    * finds the date of monday of the current week
    */
@@ -52,7 +55,9 @@ function Dashboard() {
   };
 
   const filterDatesInWeekRange = (bookingsArray, startRange, endRange) => {
+    console.log("here");
     return bookingsArray.filter((booking) => {
+      console.log(booking);
       const startDateTime = new Date(booking.startDateTime);
       if (startDateTime >= startRange && startDateTime <= endRange) {
         return booking;
@@ -65,6 +70,7 @@ function Dashboard() {
     currentWeekBookings.forEach((booking) => {
       // Extract the day of the week from the booking's startDateTime
       const bookingDayOfWeek = new Date(booking.startDateTime).getDay();
+      console.log(bookingDayOfWeek);
       // Get the corresponding day key (e.g., "Monday", "Tuesday", etc.)
       const dayKey = Object.keys(weekBookingObject)[bookingDayOfWeek];
 
@@ -78,10 +84,27 @@ function Dashboard() {
   useEffect(() => {
     const APICall = new BookingCalls();
     APICall.getBookingsByUser(50, 0).then((bookings) => {
+      console.log(bookings);
       const mondaysDate = findCurrentMonday();
       const sundaysDate = findSunday(mondaysDate);
 
+      // Only fetch managed facilities if the user is a provider
+      if (isProvider) {
+        const fetchManagedFacilities = async () => {
+          try {
+            const facilities = await facilityAPI.getManagedFacilities();
+            setUserFacilities(facilities);
+          } catch (error) {
+            console.error("Failed to fetch managed facilities:", error);
+            // Optionally handle the error, e.g., by setting an error state or logging
+          }
+        };
+
+        fetchManagedFacilities();
+      }
+
       if (bookings) {
+        console.log(filterDatesInWeekRange(bookings, mondaysDate, sundaysDate));
         const currentWeekBookings = filterDatesInWeekRange(
           bookings,
           mondaysDate,
@@ -103,57 +126,111 @@ function Dashboard() {
         setWeeklyObject(updatedWeekBookingObject);
       }
     });
-
     const UserCall = new User();
     UserCall.getUserByID(
       parseInt(window.sessionStorage.getItem("id"), 10),
     ).then((resp) => {
       setCurrentBalance(resp.balance);
     });
-    const transactionAPI = new Transaction();
-    transactionAPI.getAllTransactions(4, 0, "date", "DESC").then((resp) => {
-      setTransactionData(resp);
-    });
-  }, []);
+  }, [userId, isProvider]);
 
-  useEffect(() => {
-    if (transactionData) {
-      setTransactionHistory(
-        transactionData.map((item) => [
-          `${item.transactionType} ${item.amountChanged} RU Coins ${new Date(
-            item.date,
-          ).toLocaleString()}`,
-          item,
-        ]),
-      );
+  const fetchUserFacilities = async () => {
+    const FacilityAPI = new FacilityCalls();
+    const userId = parseInt(window.sessionStorage.getItem("id"), 10);
+    const facilities = await FacilityAPI.getFacilitiesByUserId(userId);
+    if (facilities) {
+      setUserFacilities(facilities);
     }
-  }, [transactionData]);
+  };
 
-  useEffect(() => {
-    if (history) {
-      setTransactionListItems(
-        history.map((transaction, index) => {
-          return (
-            <div key={index}>
-              <OverlayTrigger
-                placement="right"
-                delay={{ show: 250, hide: 400 }}
-                overlay={
-                  <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"}`}</Tooltip>
-                }
-              >
-                <ListGroup.Item className="historyListItem">
-                  {transaction[0]}
-                </ListGroup.Item>
-              </OverlayTrigger>
-            </div>
-          );
-        }),
-      );
+  const handleDeleteFacility = async (facilityId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this facility?",
+    );
+    if (confirmDelete) {
+      const FacilityAPI = new FacilityCalls();
+      const success = await FacilityAPI.deleteFacility(facilityId);
+      if (success) {
+        alert("Facility deleted successfully.");
+        fetchUserFacilities(); // Refresh the list of facilities
+      } else {
+        alert("Failed to delete facility.");
+      }
     }
-  }, [history]);
+  };
 
-  const isProvider = window.sessionStorage.getItem("isProvider") === "true";
+  /**
+   * sample transactionHistory Data
+   */
+  const transactionHistoryData = {
+    history: [
+      "spent xx coins on mm-dd-yy",
+      "spent xx coins on mm-dd-yy",
+      "spent xx coins on mm-dd-yy",
+      "spent xx coins on mm-dd-yy",
+      "spent xx coins on mm-dd-yy",
+      "spent xx coins on mm-dd-yy",
+    ],
+  };
+
+  const indexOfLastFacility = currentPage * facilitiesPerPage;
+  const indexOfFirstFacility = indexOfLastFacility - facilitiesPerPage;
+  const currentFacilities = userFacilities.slice(
+    indexOfFirstFacility,
+    indexOfLastFacility,
+  );
+
+  const totalPages = Math.ceil(userFacilities.length / facilitiesPerPage);
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return pageNumbers.map((number) => (
+      <li key={number} className="page-item">
+        <Button className="page-link" onClick={() => setCurrentPage(number)}>
+          {number}
+        </Button>
+      </li>
+    ));
+  };
+
+  const facilitiesList = currentFacilities.map((facility) => (
+    <ListGroup.Item key={facility.id}>
+      <div className="facility-item">
+        <span>{facility.name}</span>
+        <div>
+          <Button
+            variant="info"
+            onClick={() => navigate(`/editFacility/${facility.id}`)}
+          >
+            Edit Facility
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => handleDeleteFacility(facility.id)}
+          >
+            Delete Facility
+          </Button>
+        </div>
+      </div>
+    </ListGroup.Item>
+  ));
+
+  /**
+   * transactionList
+   */
+  const transactionListItems = transactionHistoryData.history.map(
+    (transaction, index) => {
+      if (index < 4) {
+        return <ListGroup.Item key={index}>{transaction}</ListGroup.Item>;
+      } else {
+        return null;
+      }
+    },
+  );
 
   return (
     <>
@@ -174,27 +251,28 @@ function Dashboard() {
           </section>
           <section className="transactions">
             <h2 className="dashBoardH2">Recent Transactions</h2>
-            {transactionListItems && transactionListItems.length > 0 ? (
-              <div>
-                <ListGroup className="HistoryList" variant="flush">
-                  {transactionListItems}
-                </ListGroup>
-                <Link to="/wallet">
-                  <Button variant="link">View All Transactions</Button>
-                </Link>
-              </div>
-            ) : (
-              <p>No transactions available.</p>
-            )}
+            <div>
+              <ListGroup className="HistoryList" variant="flush">
+                {transactionListItems}
+              </ListGroup>
+              <Link to="/wallet">
+                <Button variant="link">View All Transactions</Button>
+              </Link>
+            </div>
           </section>
           {isProvider && (
-            <section className="bookings">
+            <section className="facilities">
               <h2 className="dashBoardH2">Your Facilities</h2>
-              <ul>
-                {/* Placeholder bookings*/}
-                <li>Lab A - Chemistry </li>
-                <li>Lab B - Biology </li>
-              </ul>
+              <ListGroup>
+                {facilitiesList.length > 0 ? (
+                  facilitiesList
+                ) : (
+                  <p>You currently do not manage any facilities.</p>
+                )}
+              </ListGroup>
+              <nav>
+                <ul className="pagination">{renderPageNumbers()}</ul>
+              </nav>
             </section>
           )}
 

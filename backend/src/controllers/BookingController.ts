@@ -3,6 +3,7 @@ import {
   Body,
   CurrentUser,
   Delete,
+  ForbiddenError,
   Get,
   HttpCode,
   JsonController,
@@ -18,7 +19,6 @@ import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
 import BookingService from "../services/BookingService";
 import FacilityService from "../services/FacilityService";
-import UserService from "../services/UserService";
 import { BookingModel } from "../types/BookingModel";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 
@@ -48,14 +48,24 @@ export class BookingController {
   @Get("/bookingID/:id")
   @HttpCode(200)
   @ResponseSchema(BookingEntity)
-  async getOne(@Param("id") id: number) {
+  async getOne(@CurrentUser() user: UserEntity, @Param("id") id: number) {
     const booking = await this.service.getOneByID(id);
     const availability = await booking.availability;
-    await availability.facility;
-    return booking;
+    const facility = await availability.facility;
+    if (
+      (await booking.user).id == user.id ||
+      (await user.managedFacilities).includes(facility) ||
+      user.roles.includes("admin")
+    ) {
+      return booking;
+    }
+    throw new ForbiddenError(
+      "User is not the owner or a provider for the booking or an admin",
+    );
   }
 
   @Get("/deleted/bookingID/:id")
+  @Authorized(["admin"])
   @HttpCode(200)
   @ResponseSchema(BookingEntity)
   getOneDeleted(@Param("id") id: number) {
@@ -82,7 +92,7 @@ export class BookingController {
     summary: "Update a booking",
   })
   @ResponseSchema(BookingEntity)
-  put(
+  async put(
     @CurrentUser() user: UserEntity,
     @Param("id") id: number,
     @Body({
@@ -90,7 +100,23 @@ export class BookingController {
     })
     booking: BookingModel,
   ): Promise<BookingEntity> {
-    return this.service.updateBooking(user, id, booking);
+    const old = this.service.getOneByID(id);
+    if (
+      (await (await old).user).id == user.id ||
+      (await user.managedFacilities).includes(
+        await (
+          await (
+            await old
+          ).availability
+        ).facility,
+      ) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.updateBooking(user, id, booking);
+    }
+    throw new ForbiddenError(
+      "User is not the owner or provider for the booking or an admin",
+    );
   }
 
   @Delete("/:id")
@@ -99,8 +125,24 @@ export class BookingController {
     summary: "Delete a booking",
   })
   @OnUndefined(204)
-  remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
-    return this.service.deleteBooking(user, id);
+  async remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
+    const old = this.service.getOneByID(id);
+    if (
+      (await (await old).user).id == user.id ||
+      (await user.managedFacilities).includes(
+        await (
+          await (
+            await old
+          ).availability
+        ).facility,
+      ) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.deleteBooking(user, id);
+    }
+    throw new ForbiddenError(
+      "User is not the owner or provider for the booking or an admin",
+    );
   }
 
   @Get("/availabilityID/:id")
@@ -120,10 +162,19 @@ export class BookingController {
   })
   @ResponseSchema(BookingEntity, { isArray: true })
   async getAllFutureFacilityBookings(
+    @CurrentUser() user: UserEntity,
     @Param("id") id: number,
   ): Promise<BookingEntity[]> {
     const facility = await new FacilityService().getOneByID(id);
-    return this.service.getAllFutureFacilityBookings(facility);
+    if (
+      (await user.managedFacilities).includes(facility) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.getAllFutureFacilityBookings(facility);
+    }
+    throw new ForbiddenError(
+      "User is not the provider for the facility or an admin",
+    );
   }
 
   @Get("/pastFacility/:id")
@@ -133,10 +184,19 @@ export class BookingController {
   })
   @ResponseSchema(BookingEntity, { isArray: true })
   async getAllPastFacilityBookings(
+    @CurrentUser() user: UserEntity,
     @Param("id") id: number,
   ): Promise<BookingEntity[]> {
     const facility = await new FacilityService().getOneByID(id);
-    return this.service.getAllPastFacilityBookings(facility);
+    if (
+      (await user.managedFacilities).includes(facility) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.getAllPastFacilityBookings(facility);
+    }
+    throw new ForbiddenError(
+      "User is not the provider for the facility or an admin",
+    );
   }
 
   @Get("/futureUser/:id")
@@ -146,10 +206,15 @@ export class BookingController {
   })
   @ResponseSchema(BookingEntity, { isArray: true })
   async getAllFutureBookingUsers(
+    @CurrentUser() user: UserEntity,
     @Param("id") id: number,
   ): Promise<BookingEntity[]> {
-    const user = await new UserService().getOneByID(id);
-    return this.service.getAllFutureUserBookings(user);
+    if (id == user.id || user.roles.includes("admin")) {
+      return this.service.getAllFutureUserBookings(user);
+    }
+    throw new ForbiddenError(
+      "User is trying to get another user's bookings or is not an admin",
+    );
   }
 
   @Get("/pastUser/:id")
@@ -159,10 +224,15 @@ export class BookingController {
   })
   @ResponseSchema(BookingEntity, { isArray: true })
   async getAllPastBookingUsers(
+    @CurrentUser() user: UserEntity,
     @Param("id") id: number,
   ): Promise<BookingEntity[]> {
-    const user = await new UserService().getOneByID(id);
-    return this.service.getAllPastUserBookings(user);
+    if (id == user.id || user.roles.includes("admin")) {
+      return this.service.getAllFutureUserBookings(user);
+    }
+    throw new ForbiddenError(
+      "User is trying to get another user's bookings or is not an admin",
+    );
   }
 }
 

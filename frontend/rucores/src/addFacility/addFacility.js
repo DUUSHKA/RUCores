@@ -2,11 +2,11 @@ import "flatpickr/dist/themes/material_green.css"; // Import the Flatpickr style
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import FacilityInfo from "../schedule_facilities/FacilityCards/Facility";
-import "./addFacility.css";
+import { useNavigate } from "react-router-dom";
 import FacilityCalls from "../FacilityCalls";
 import SuccessFailureAlert from "../SuccessFailureAlerts";
-import { useNavigate } from "react-router-dom";
+import FacilityInfo from "../schedule_facilities/preview/preview.js";
+import "./addFacility.css";
 
 function AddFacility() {
   const [title, setTitle] = useState("");
@@ -14,7 +14,6 @@ function AddFacility() {
   const [address, setAddress] = useState("");
   const [equipment, setEquipment] = useState("");
   const [cost, setCost] = useState("");
-
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
@@ -72,7 +71,6 @@ function AddFacility() {
         0,
         equipment,
       ).then((resp) => {
-        console.log(resp);
         if (resp.id) {
           setShowSuccess(true);
           navigate(`/editFacility/${resp.id}`);

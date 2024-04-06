@@ -43,6 +43,7 @@ export class FacilityController {
 
   @Get("/getAllWithDeleted")
   @HttpCode(200)
+  @Authorized(["admin"])
   @OpenAPI({
     summary: "Get all facilities including deleted facilities",
   })
@@ -55,6 +56,7 @@ export class FacilityController {
 
   @Get("/getDeleted")
   @HttpCode(200)
+  @Authorized(["admin"])
   @OpenAPI({
     summary: "Get all deleted facilities",
   })
@@ -77,6 +79,7 @@ export class FacilityController {
 
   @Get("/deleted/facilityID/:id")
   @HttpCode(200)
+  @Authorized(["admin"])
   @OpenAPI({
     summary: "Get deleted facilities by ID",
   })
@@ -143,7 +146,7 @@ export class FacilityController {
     if (managedFacilityIDs.includes(id) || user.roles.includes("admin")) {
       return this.service.updateFacility(id, facility);
     }
-    throw new ForbiddenError("Not a provider for this facility");
+    throw new ForbiddenError("Not a provider for this facility or an admin");
   }
 
   @Delete("/:id")
@@ -153,8 +156,17 @@ export class FacilityController {
   })
   @Authorized(["provider"])
   @OnUndefined(204)
-  remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
-    return this.service.deleteFacility(user, id);
+  async remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
+    const old = this.service.getOneByID(id);
+    if (
+      (await user.managedFacilities).includes(await old) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.deleteFacility(user, id);
+    }
+    throw new ForbiddenError(
+      "User is not the provider for the facility or an admin",
+    );
   }
 }
 

@@ -1,7 +1,9 @@
 import {
+  Authorized,
   Body,
   CurrentUser,
   Delete,
+  ForbiddenError,
   Get,
   HttpCode,
   JsonController,
@@ -10,6 +12,7 @@ import {
   QueryParams,
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
+import FacilityService from "src/services/FacilityService";
 import { TransactionEntity } from "../database/Entities/transactionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
@@ -41,8 +44,38 @@ export class TransactionController {
   @Get("/transactionID/:id")
   @HttpCode(200)
   @ResponseSchema(TransactionEntity)
-  getOne(@Param("id") id: number) {
-    return this.service.getOneByID(id);
+  async getOne(@CurrentUser() user: UserEntity, @Param("id") id: number) {
+    const transact = this.service.getOneByID(id);
+    if (
+      user.roles.includes("admin") ||
+      (await user.transactions).includes(await transact)
+    ) {
+      return transact;
+    }
+    throw new ForbiddenError(
+      "user is not the owner of the transaction or an admin",
+    );
+  }
+
+  @Get("/facilityID/:id")
+  @HttpCode(200)
+  @Authorized(["provider"])
+  @ResponseSchema(TransactionEntity)
+  async getfacility(
+    @CurrentUser() user: UserEntity,
+    @Param("id") id: number,
+    @QueryParams() query: GetAllQuery,
+  ) {
+    const facility = await new FacilityService().getOneByID(id);
+    if (
+      (await user.managedFacilities).includes(facility) ||
+      user.roles.includes("admin")
+    ) {
+      return this.service.getTransactionByFacilityID(id, query);
+    }
+    throw new ForbiddenError(
+      "user is not a provider for the facility or an admin",
+    );
   }
 
   //endpoint should not be called EVER only here for testing purposes

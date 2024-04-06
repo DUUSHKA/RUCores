@@ -3,23 +3,29 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
-import Pagination from "react-bootstrap/Pagination";
-import Transaction from "../../transactionCalls";
-import "./transactionHistory.css";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Pagination from "react-bootstrap/Pagination";
 import Tooltip from "react-bootstrap/Tooltip";
-function TransactionHistory(prop) {
+import Transaction from "../../../transactionCalls";
+import "./transactionHistory.css";
+function FacilityTransactionHistory(prop) {
   const [transactionData, setTransactionData] = useState([]);
   const [history, setTransactionHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 8;
 
   useEffect(() => {
+
+
+
     const transactionAPI = new Transaction();
-    transactionAPI.getAllTransactions(50, 0, "date", "DESC").then((resp) => {
+
+    transactionAPI.getTransactionsByFacilityId((prop.facilityID),50,0).then((resp)=>{
+      console.log("GET TRANSACTIONS",resp);
       setTransactionData(resp);
     });
-  }, [prop.refreshHistory]);
+
+  }, [prop.facilityID]);
 
   useEffect(() => {
     if (transactionData && transactionData.length > 0) {
@@ -47,7 +53,7 @@ function TransactionHistory(prop) {
         placement="right"
         delay={{ show: 250, hide: 400 }}
         overlay={
-          <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"}`}</Tooltip>
+          <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"} : ${transaction[1]?.eventDesription}`}</Tooltip>
         }
       >
         <ListGroup.Item className="historyListItem">
@@ -73,14 +79,14 @@ function TransactionHistory(prop) {
 
   return (
     <>
-      <div className="transactionCardStyling">
+      <div className="FacilitytransactionCardStyling">
         <h5>Transaction History</h5>
         <div>
           <ListGroup className="HistoryList" variant="flush">
             {transactionListItems}
           </ListGroup>
         </div>
-        <div className="historyPagination">
+        <div className="facilityhistoryPagination">
           <Pagination size="sm">{paginationItems}</Pagination>
         </div>
       </div>
@@ -88,7 +94,7 @@ function TransactionHistory(prop) {
   );
 }
 
-TransactionHistory.propTypes = {
+FacilityTransactionHistory.propTypes = {
   transactionHistoryData: PropTypes.shape({
     history: PropTypes.arrayOf(
       PropTypes.shape({
@@ -98,6 +104,7 @@ TransactionHistory.propTypes = {
     ).isRequired,
   }).isRequired,
   refreshHistory: PropTypes.bool,
+  facilityID: PropTypes.number,
 };
 
-export default TransactionHistory;
+export default FacilityTransactionHistory;

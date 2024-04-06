@@ -57,7 +57,6 @@ class User {
       }
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Fetch error:", error);
@@ -84,7 +83,6 @@ class User {
       }
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Fetch error:", error);
