@@ -1,13 +1,17 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import "./CreateAccountPage.css";
 // import InputGroup from 'react-bootstrap/InputGroup';
+import PropTypes from "prop-types";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
+import SuccessFailureAlert from "../../SuccessFailureAlerts";
+import User from "../../UserCalls";
 
-function CreateAccountPage() {
+function CreateAccountPage(props) {
   const navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [userDetails, setUserDetails] = useState({
     firstName: "",
     lastName: "",
@@ -16,6 +20,27 @@ function CreateAccountPage() {
     password: "",
     isProvider: false,
   });
+
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    if (props.isUpdateAccount) {
+      const userAPI = new User;
+      userAPI.getCurrentUser().then((res) => {
+        console.log(res);
+        setUserDetails({
+          firstName: res.firstName,
+          lastName: res.lastName,
+          username: res.username,
+          email: res.email,
+          password: window.sessionStorage.getItem("pw"),
+          isProvider: res.isProvider,
+        });
+      });
+    }
+  }, [props.isUpdateAccount]);
 
   // /**
   //  * set background color to red for login button
@@ -40,29 +65,41 @@ function CreateAccountPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const firstName = userDetails.firstName;
+    const lastName = userDetails.lastName;
+    const userName = userDetails.username;
+    const email = userDetails.email;
+    const password = userDetails.password;
+    const roles = userDetails.roles;
+    const isProvider = userDetails.isProvider;
 
-    try {
-      const response = await fetch("http://localhost:3001/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userDetails),
+    const userAPI = new User;
+    if (!props.isUpdateAccount) {
+      userAPI.createUser(firstName, lastName, userName, email, password, roles, isProvider).then((resp) => {
+        if (resp.firstName) {
+          navigate("/");
+        }else{
+          setShowError(true);
+        }
       });
-
-      if (!response.ok) {
-        const errorBody = await response.json();
-        console.error("Error details:", errorBody.errors);
-        throw new Error(errorBody.message || "Failed to create account");
-      }
-
-      // eslint-disable-next-line no-unused-vars
-      const result = await response.json();
-      navigate("/login");
-    } catch (error) {
-      console.error("Error creating user:", error);
-      //setError(error.message);
     }
+    else {
+      const userID = parseInt(window.sessionStorage.getItem("id"));
+      userAPI.updateUser(userID, firstName, lastName, email, userName, password).then((resp) => {
+        if (resp == false) {
+          setShowError(true);
+        } else {
+          setShowSuccess(true);
+        }
+        console.log(resp);
+      });
+    }
+  };
+
+
+  const closeAlert = () => {
+    setShowSuccess(false);
+    setShowError(false);
   };
   return (
     <div className="loginCard">
@@ -73,6 +110,7 @@ function CreateAccountPage() {
             type="text"
             placeholder="First Name"
             name="firstName"
+            value={userDetails.firstName}
             onChange={handleChange}
           />
         </Form.Group>
@@ -82,6 +120,7 @@ function CreateAccountPage() {
             type="text"
             placeholder="Last Name"
             name="lastName"
+            value={userDetails.lastName}
             onChange={handleChange}
           />
         </Form.Group>
@@ -91,6 +130,7 @@ function CreateAccountPage() {
             type="text"
             placeholder="Username/NetID"
             name="username"
+            value={userDetails.username}
             onChange={handleChange}
           />
         </Form.Group>
@@ -100,34 +140,61 @@ function CreateAccountPage() {
             type="email"
             placeholder="Enter email"
             name="email"
+            value={userDetails.email}
             onChange={handleChange}
           />
         </Form.Group>
+        
         <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
+          <div className="passwordCreateAccount">
           <Form.Control
-            type="password"
+            type={passwordVisible ? "text" : "password"}
             placeholder="Password"
             name="password"
+            value={userDetails.password}
             onChange={handleChange}
           />
+          <Button variant="outline-secondary" onClick={() => setPasswordVisible(!passwordVisible)} className="showHideButton">
+          {passwordVisible ? "Hide" : "Show"}
+        </Button>
+        </div>
         </Form.Group>
-        <Form.Check
+        
+        {props.isUpdateAccount ? <div></div> : <Form.Check
           type="switch"
           id="custom-switch"
           label="Are you a provider?"
           name="isProvider"
+          checked={userDetails.isProvider}
           onChange={handleChange}
-        />
+        />}
         <Button variant="primary" type="submit">
-          Create Account
+          {props.isUpdateAccount ? "Update Account" : "Create Account"}
         </Button>
-        <Link to="/" className="btn btn-link">
+        {props.isUpdateAccount ? <div className="blankPadding"></div> : <Link to="/" className="btn btn-link">
           Back To Login
-        </Link>
+        </Link>}
       </Form>
+      <SuccessFailureAlert
+        variant={"success"}
+        show={showSuccess}
+        alertText={"Successfully Updated Account Info!"}
+        onClose={closeAlert}
+      ></SuccessFailureAlert>
+      <SuccessFailureAlert
+        variant={"danger"}
+        show={showError}
+        alertText={"Failed!"}
+        onClose={closeAlert}
+      ></SuccessFailureAlert>
     </div>
   );
 }
+
+
+CreateAccountPage.propTypes = {
+  isUpdateAccount: PropTypes.number,
+};
 
 export default CreateAccountPage;

@@ -101,7 +101,7 @@ function FacilityInfo(prop) {
 
   return (
     <>
-      {isManagedByUser && (
+      
         <div className="facilityInfo">
           <h1>{prop.facilityDetails.name}</h1>
           <p>
@@ -115,11 +115,11 @@ function FacilityInfo(prop) {
             <strong>Address:</strong> {prop.facilityDetails.address}
           </p>
           <div className="cost">
-            {isProvider && (
+            {isProvider && isManagedByUser&& (
               <Button className = "specialButton" onClick={editFacility}>Edit Facility</Button>
             )}
             <Button className = "specialButton" onClick={getFacilityInfo}>Schedule a Booking</Button>
-            {isProvider && (
+            {isProvider && isManagedByUser&& (
               <Button className = "specialButton" variant="danger" onClick={handleDeleteFacility}>
                 Delete Facility
               </Button>
@@ -138,7 +138,7 @@ function FacilityInfo(prop) {
             />
           </div>
         </div>
-      )}
+      
       <Modal
         show={show}
         onHide={handleClose}

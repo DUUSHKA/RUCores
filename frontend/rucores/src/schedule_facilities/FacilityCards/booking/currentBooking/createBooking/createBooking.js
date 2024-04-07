@@ -10,6 +10,7 @@ import "./createBooking.css";
 import SuccessFailureAlert from "../../../../../SuccessFailureAlerts";
 function CreateBooking(props) {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const [bookingStart, setBookingStart] = React.useState(
     dayjs(props.currentAvail.startTime),
@@ -66,6 +67,7 @@ function CreateBooking(props) {
 
   const closeAlert = () => {
     setShowSuccess(false);
+    setShowError(true);
   };
   /**
    * ran on component loading
@@ -152,7 +154,8 @@ function CreateBooking(props) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create post");
+        setShowError(true);
+        return;
       }
 
       // eslint-disable-next-line no-unused-vars
@@ -208,6 +211,12 @@ function CreateBooking(props) {
         variant={"success"}
         show={showSuccess}
         alertText={"Successfully Created Booking!"}
+        onClose={closeAlert}
+      ></SuccessFailureAlert>
+            <SuccessFailureAlert
+        variant={"danger"}
+        show={showError}
+        alertText={"Failed to Create Booking!"}
         onClose={closeAlert}
       ></SuccessFailureAlert>
     </>

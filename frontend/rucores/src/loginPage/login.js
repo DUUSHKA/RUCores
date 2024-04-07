@@ -8,6 +8,7 @@ import "./login.css";
 
 function Login() {
   const navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   // const [isRequestSent, setIsRequestSent] = useState(false);
   const [username, setUsername] = useState();
@@ -16,7 +17,7 @@ function Login() {
   const reroute = (result) => {
     window.sessionStorage.setItem("isProvider", String(result.isProvider));
     window.sessionStorage.setItem("id", String(result.id));
-
+    window.sessionStorage.setItem("pw", String(password));
     navigate("/dashboard");
   };
 
@@ -76,12 +77,19 @@ function Login() {
         </InputGroup>
         <InputGroup className="passwordInput">
           <InputGroup.Text id="basic-addon1">Password</InputGroup.Text>
+          <div className="passwordCreateAccount">
+
           <Form.Control
+            type={passwordVisible ? "text" : "password"}
             placeholder="Password"
             aria-label="Password"
             aria-describedby="basic-addon1"
             onChange={(e) => setPassword(e.target.value)}
           />
+          <Button variant="outline-secondary" onClick={() => setPasswordVisible(!passwordVisible)} className="showHideButton">
+          {passwordVisible ? "Hide" : "Show"}
+        </Button>
+          </div>
         </InputGroup>
         <Link to="/CreateAccountPage">
           <Button variant="link">{"Create account"}</Button>
