@@ -11,6 +11,7 @@ import EditFacility from "./schedule_facilities/edit_facilities/editFacility";
 import ScheduleFacility from "./schedule_facilities/schedule_facility";
 import ScheduledBookings from "./scheduledBookings/scheduledBookings";
 import WalletManager from "./wallets/walletManager";
+import AccountManage from "./accountManage/accountManage";
 
 function App() {
   return (
@@ -94,6 +95,7 @@ function App() {
           element={
             <>
               <NavBar />
+              <AccountManage className="manageAccount"></AccountManage>
             </>
           }
         />

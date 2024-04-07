@@ -216,7 +216,7 @@ class User {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create user");
+        return false;
       }
 
       const result = await response.json();
@@ -304,6 +304,58 @@ class User {
       throw error;
     }
   }
+
+
+
+  /**
+   *
+   * @param {number} userID
+   * @param {string} firstName
+   * @param {string} lastName
+   * @param {string} email
+   * @param {string} username
+   * @param {string} password
+   * @returns updated user acct
+   */
+    async updateUser(
+      userID,
+      firstName,
+      lastName,
+      email,
+      username,
+      password,
+    ) {
+      const apiUrl = `http://localhost:3001/api/users/userID/${userID}`;
+  
+      try {
+        const updatedData = {
+          "firstName": firstName,
+          "lastName": lastName,
+          "email": email,
+          "username": username,
+          "password": password
+      };
+  
+        const response = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(updatedData),
+        });
+  
+        if (!response.ok) {
+          return false;
+        }
+  
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Fetch error:", error);
+        throw error;
+      }
+    }
 }
 
 export default User;

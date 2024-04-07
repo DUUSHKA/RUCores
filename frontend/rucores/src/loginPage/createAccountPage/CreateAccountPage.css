@@ -1,0 +1,10 @@
+.blankPadding{
+    width: 250px;
+}
+.passwordCreateAccount{
+    display: flex;
+}
+.showHideButton{
+    width: fit-content;
+    height: 37.33px;
+}
