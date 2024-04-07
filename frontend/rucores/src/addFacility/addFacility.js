@@ -13,7 +13,6 @@ function AddFacility() {
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
   const [equipment, setEquipment] = useState("");
-  const [cost, setCost] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
@@ -134,17 +133,7 @@ function AddFacility() {
               </InputGroup>
               <div className="mb-3"></div>
 
-              <InputGroup className="mb-3">
-                <InputGroup.Text>Cost</InputGroup.Text>
-                <Form.Control
-                  placeholder="Cost"
-                  aria-label="Cost"
-                  value={cost}
-                  onChange={(e) =>
-                    setCost(e.target.value ? parseInt(e.target.value) : "")
-                  }
-                />
-              </InputGroup>
+
             </div>
             <button
               type="submit"
@@ -173,7 +162,6 @@ function AddFacility() {
             facilityDetails={{
               name: title,
               equipment: equipment,
-              cost: cost,
               address: address,
               description: description,
             }}
