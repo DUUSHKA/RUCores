@@ -5,9 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import WeeklyCard from "./weeklyCard/weeklyCard";
 // import WeeklyCard from './weeklyCard/weeklyCard';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 import BookingCalls from "../BookingCalls";
 import FacilityCalls from "../FacilityCalls";
 import User from "../UserCalls";
+import Transaction from "../transactionCalls";
 
 function Dashboard() {
   const [weeklyObject, setWeeklyObject] = useState();
@@ -15,6 +18,9 @@ function Dashboard() {
   const [userFacilities, setUserFacilities] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [facilitiesPerPage] = useState(5);
+  const [transactionData, setTransactionData] = useState([]);
+  const [history, setTransactionHistory] = useState([]);
+  const [transactionListItems, setTransactionListItems] = useState();
   const navigate = useNavigate();
   const facilityAPI = new FacilityCalls();
   const userId = parseInt(window.sessionStorage.getItem("id"), 10);
@@ -132,7 +138,48 @@ function Dashboard() {
     ).then((resp) => {
       setCurrentBalance(resp.balance);
     });
+    const transactionAPI = new Transaction();
+    transactionAPI.getAllTransactions(4, 0, "date", "DESC").then((resp) => {
+      setTransactionData(resp);
+    });
   }, [userId, isProvider]);
+
+  useEffect(() => {
+    if (transactionData) {
+      setTransactionHistory(
+        transactionData.map((item) => [
+          `${item.transactionType} ${item.amountChanged} RU Coins ${new Date(
+            item.date,
+          ).toLocaleString()}`,
+          item,
+        ]),
+      );
+    }
+  }, [transactionData]);
+
+  useEffect(() => {
+    if (history) {
+      setTransactionListItems(
+        history.map((transaction, index) => {
+          return (
+            <div key={index}>
+              <OverlayTrigger
+                placement="right"
+                delay={{ show: 250, hide: 400 }}
+                overlay={
+                  <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"}`}</Tooltip>
+                }
+              >
+                <ListGroup.Item className="historyListItem">
+                  {transaction[0]}
+                </ListGroup.Item>
+              </OverlayTrigger>
+            </div>
+          );
+        }),
+      );
+    }
+  }, [history]);
 
   const fetchUserFacilities = async () => {
     const FacilityAPI = new FacilityCalls();
@@ -161,7 +208,7 @@ function Dashboard() {
 
   /**
    * sample transactionHistory Data
-   */
+   
   const transactionHistoryData = {
     history: [
       "spent xx coins on mm-dd-yy",
@@ -172,7 +219,7 @@ function Dashboard() {
       "spent xx coins on mm-dd-yy",
     ],
   };
-
+*/
   const indexOfLastFacility = currentPage * facilitiesPerPage;
   const indexOfFirstFacility = indexOfLastFacility - facilitiesPerPage;
   const currentFacilities = userFacilities.slice(
@@ -219,19 +266,6 @@ function Dashboard() {
     </ListGroup.Item>
   ));
 
-  /**
-   * transactionList
-   */
-  const transactionListItems = transactionHistoryData.history.map(
-    (transaction, index) => {
-      if (index < 4) {
-        return <ListGroup.Item key={index}>{transaction}</ListGroup.Item>;
-      } else {
-        return null;
-      }
-    },
-  );
-
   return (
     <>
       <div className="dashboard">
@@ -251,14 +285,18 @@ function Dashboard() {
           </section>
           <section className="transactions">
             <h2 className="dashBoardH2">Recent Transactions</h2>
-            <div>
-              <ListGroup className="HistoryList" variant="flush">
-                {transactionListItems}
-              </ListGroup>
-              <Link to="/wallet">
-                <Button variant="link">View All Transactions</Button>
-              </Link>
-            </div>
+            {transactionListItems && transactionListItems.length > 0 ? (
+              <div>
+                <ListGroup className="HistoryList" variant="flush">
+                  {transactionListItems}
+                </ListGroup>
+                <Link to="/wallet">
+                  <Button variant="link">View All Transactions</Button>
+                </Link>
+              </div>
+            ) : (
+              <p>No transactions available.</p>
+            )}
           </section>
           {isProvider && (
             <section className="facilities">
