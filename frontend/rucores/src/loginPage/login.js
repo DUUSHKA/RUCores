@@ -5,10 +5,12 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.css";
+import SuccessFailureAlert from "../SuccessFailureAlerts";
 
 function Login() {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   // const [isRequestSent, setIsRequestSent] = useState(false);
   const [username, setUsername] = useState();
@@ -39,7 +41,8 @@ function Login() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create post");
+        setShowError(true);
+        return;
       }
 
       const result = await response.json();
@@ -62,6 +65,10 @@ function Login() {
   // eslint-disable-next-line no-undef
   const RULogo = require("../assets/Logo-Rutgers-University.jpg");
 
+  const closeAlert = () => {
+    setShowError(false);
+  };
+
   return (
     <>
       <div className="loginCard">
@@ -78,17 +85,20 @@ function Login() {
         <InputGroup className="passwordInput">
           <InputGroup.Text id="basic-addon1">Password</InputGroup.Text>
           <div className="passwordCreateAccount">
-
-          <Form.Control
-            type={passwordVisible ? "text" : "password"}
-            placeholder="Password"
-            aria-label="Password"
-            aria-describedby="basic-addon1"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button variant="outline-secondary" onClick={() => setPasswordVisible(!passwordVisible)} className="showHideButton">
-          {passwordVisible ? "Hide" : "Show"}
-        </Button>
+            <Form.Control
+              type={passwordVisible ? "text" : "password"}
+              placeholder="Password"
+              aria-label="Password"
+              aria-describedby="basic-addon1"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button
+              variant="outline-secondary"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+              className="showHideButton"
+            >
+              {passwordVisible ? "Hide" : "Show"}
+            </Button>
           </div>
         </InputGroup>
         <Link to="/CreateAccountPage">
@@ -98,6 +108,13 @@ function Login() {
         <Button style={buttonColor} onClick={handlePostRequest}>
           Login
         </Button>
+
+        <SuccessFailureAlert
+          variant={"danger"}
+          show={showError}
+          alertText={"Invalid Username or Password!"}
+          onClose={closeAlert}
+        ></SuccessFailureAlert>
         <Link to="/dashboard"></Link>
       </div>
     </>
