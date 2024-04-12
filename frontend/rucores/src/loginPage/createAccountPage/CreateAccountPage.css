@@ -8,3 +8,23 @@
     width: fit-content;
     height: 37.33px;
 }
+
+.error{
+    --bs-alert-bg: transparent;
+    --bs-alert-padding-x: 0.5rem; 
+    --bs-alert-padding-y: 0.5rem; 
+    --bs-alert-margin-bottom: 0.5rem; 
+    --bs-alert-color: inherit;
+    --bs-alert-border-color: transparent;
+    --bs-alert-border: var(--bs-border-width) solid #f1aeb5;
+    --bs-alert-border-radius: var(--bs-border-radius);
+    --bs-alert-link-color: inherit;
+    position: relative;
+    padding: var(--bs-alert-padding-y) var(--bs-alert-padding-x);
+    margin-bottom: var(--bs-alert-margin-bottom);
+    color: #58151c;
+    background-color: #f8d7da;
+    border: var(--bs-alert-border);
+    border-radius: var(--bs-alert-border-radius);
+    font-size: 0.8em; 
+}
