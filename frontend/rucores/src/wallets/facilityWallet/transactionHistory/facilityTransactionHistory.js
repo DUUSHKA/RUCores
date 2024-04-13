@@ -15,16 +15,14 @@ function FacilityTransactionHistory(prop) {
   const itemsPerPage = 8;
 
   useEffect(() => {
-
-
-
     const transactionAPI = new Transaction();
 
-    transactionAPI.getTransactionsByFacilityId((prop.facilityID),50,0).then((resp)=>{
-      console.log("GET TRANSACTIONS",resp);
-      setTransactionData(resp);
-    });
-
+    transactionAPI
+      .getTransactionsByFacilityId(prop.facilityID, 50, 0)
+      .then((resp) => {
+        console.log("GET TRANSACTIONS", resp);
+        setTransactionData(resp);
+      });
   }, [prop.facilityID]);
 
   useEffect(() => {

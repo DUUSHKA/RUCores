@@ -101,44 +101,50 @@ function FacilityInfo(prop) {
 
   return (
     <>
-      
-        <div className="facilityInfo">
-          <h1>{prop.facilityDetails.name}</h1>
-          <p>
-            <strong>Description:</strong> {prop.facilityDetails.description}
-          </p>
-          <p>
-            <strong>Available Equipment:</strong>{" "}
-            {prop.facilityDetails.equipment}
-          </p>
-          <p>
-            <strong>Address:</strong> {prop.facilityDetails.address}
-          </p>
-          <div className="cost">
-            {isProvider && isManagedByUser&& (
-              <Button className = "specialButton" onClick={editFacility}>Edit Facility</Button>
-            )}
-            <Button className = "specialButton" onClick={getFacilityInfo}>Schedule a Booking</Button>
-            {isProvider && isManagedByUser&& (
-              <Button className = "specialButton" variant="danger" onClick={handleDeleteFacility}>
-                Delete Facility
-              </Button>
-            )}
-            <SuccessFailureAlert
-              variant={"danger"}
-              show={showErrorDeleteFacility}
-              alertText={"Failed to Delete Facility!"}
-              onClose={closeAlertDeleteFacility}
-            />
-            <SuccessFailureAlert
-              variant={"success"}
-              show={showSuccessDeleteFacility}
-              alertText={"Deleted Facility!"}
-              onClose={closeAlertDeleteFacility}
-            />
-          </div>
+      <div className="facilityInfo">
+        <h1>{prop.facilityDetails.name}</h1>
+        <p>
+          <strong>Description:</strong> {prop.facilityDetails.description}
+        </p>
+        <p>
+          <strong>Available Equipment:</strong> {prop.facilityDetails.equipment}
+        </p>
+        <p>
+          <strong>Address:</strong> {prop.facilityDetails.address}
+        </p>
+        <div className="cost">
+          {isProvider && isManagedByUser && (
+            <Button className="specialButton" onClick={editFacility}>
+              Edit Facility
+            </Button>
+          )}
+          <Button className="specialButton" onClick={getFacilityInfo}>
+            Schedule a Booking
+          </Button>
+          {isProvider && isManagedByUser && (
+            <Button
+              className="specialButton"
+              variant="danger"
+              onClick={handleDeleteFacility}
+            >
+              Delete Facility
+            </Button>
+          )}
+          <SuccessFailureAlert
+            variant={"danger"}
+            show={showErrorDeleteFacility}
+            alertText={"Failed to Delete Facility!"}
+            onClose={closeAlertDeleteFacility}
+          />
+          <SuccessFailureAlert
+            variant={"success"}
+            show={showSuccessDeleteFacility}
+            alertText={"Deleted Facility!"}
+            onClose={closeAlertDeleteFacility}
+          />
         </div>
-      
+      </div>
+
       <Modal
         show={show}
         onHide={handleClose}
