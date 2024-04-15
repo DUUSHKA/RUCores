@@ -15,23 +15,21 @@ function FacilityTransactionHistory(prop) {
   const itemsPerPage = 8;
 
   useEffect(() => {
-
-
-
     const transactionAPI = new Transaction();
 
-    transactionAPI.getTransactionsByFacilityId((prop.facilityID),50,0).then((resp)=>{
-      console.log("GET TRANSACTIONS",resp);
-      setTransactionData(resp);
-    });
-
+    transactionAPI
+      .getTransactionsByFacilityId(prop.facilityID, 50, 0)
+      .then((resp) => {
+        console.log("GET TRANSACTIONS", resp);
+        setTransactionData(resp);
+      });
   }, [prop.facilityID]);
 
   useEffect(() => {
     if (transactionData && transactionData.length > 0) {
       setTransactionHistory(
         transactionData.map((item) => [
-          `${item.transactionType} ${item.amountChanged} RU Coins ${new Date(
+          `${item.transactionType} ${item.amountChanged * -1} RU Coins ${new Date(
             item.date,
           ).toLocaleString()}`,
           item,
