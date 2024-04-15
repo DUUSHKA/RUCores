@@ -25,7 +25,9 @@ function FacilityWallet(props) {
           <div className="leftSideContent">
             <CurrentFacilityBalance currentFacilityId={currentFacility.id} />
             <div className="transHistCard">
-              <FacilityTransactionHistory facilityID={currentFacility.id}></FacilityTransactionHistory>
+              <FacilityTransactionHistory
+                facilityID={currentFacility.id}
+              ></FacilityTransactionHistory>
             </div>
             <div className="purchaseCard">
               {/* <PurchaseCoins updateBalance={[updateBalance, setUpdateBalance]} /> */}

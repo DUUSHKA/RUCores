@@ -33,17 +33,16 @@ class Transaction {
     }
   }
 
-
   /**
-   * 
+   *
    * @param {number} facilityID
-   * @param {number} limit 
-   * @param {number} offset 
-   * @param {string} orderBy 
-   * @param {string} order 
-   * @returns a list of previous 
+   * @param {number} limit
+   * @param {number} offset
+   * @param {string} orderBy
+   * @param {string} order
+   * @returns a list of previous
    */
-  async getTransactionsByFacilityId(facilityID,limit, offset, orderBy, order) {
+  async getTransactionsByFacilityId(facilityID, limit, offset, orderBy, order) {
     const apiUrl = `http://localhost:3001/api/transactions/facilityID/${facilityID}`;
     let urlWithParams = `${apiUrl}?limit=${limit}&offset=${offset}`;
     if (orderBy) {
