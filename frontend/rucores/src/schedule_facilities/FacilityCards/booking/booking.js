@@ -35,7 +35,7 @@ function Booking(props) {
         const data = await response.json();
         setFacilityAvailibility(data);
         const arrayOfDates = data.map((obj) => {
-          const isoDate = obj.Date;
+          const isoDate = obj.startTime;
           const yyyyMMdd = isoDate.split("T")[0]; // Extract YYYY-MM-DD
           return yyyyMMdd;
         });

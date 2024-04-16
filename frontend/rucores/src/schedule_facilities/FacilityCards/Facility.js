@@ -15,6 +15,7 @@ function FacilityInfo(prop) {
   const [showErrorDeleteFacility, setShowErrorDeleteFacility] = useState(false);
   const [showSuccessDeleteFacility, setShowSuccessDeleteFacility] =
     useState(false);
+  const [areButtonsDisabled, setAreButtonsDisabled] = useState(false);
   const [isManagedByUser, setIsManagedByUser] = useState(false);
 
   const navigate = useNavigate();
@@ -92,8 +93,9 @@ function FacilityInfo(prop) {
         .then((resp) => {
           if (resp) {
             setShowSuccessDeleteFacility(true);
+            setAreButtonsDisabled(true);
           } else {
-            showErrorDeleteFacility(true);
+            setShowErrorDeleteFacility(true);
           }
         });
     }
@@ -114,18 +116,24 @@ function FacilityInfo(prop) {
         </p>
         <div className="cost">
           {isProvider && isManagedByUser && (
-            <Button className="specialButton" onClick={editFacility}>
+            <Button
+              className="specialButton"
+              onClick={areButtonsDisabled ? null : editFacility}
+            >
               Edit Facility
             </Button>
           )}
-          <Button className="specialButton" onClick={getFacilityInfo}>
+          <Button
+            className="specialButton"
+            onClick={areButtonsDisabled ? null : getFacilityInfo}
+          >
             Schedule a Booking
           </Button>
           {isProvider && isManagedByUser && (
             <Button
               className="specialButton"
               variant="danger"
-              onClick={handleDeleteFacility}
+              onClick={areButtonsDisabled ? null : handleDeleteFacility}
             >
               Delete Facility
             </Button>

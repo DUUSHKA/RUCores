@@ -67,8 +67,9 @@ export class TransactionController {
     @QueryParams() query: GetAllQuery,
   ) {
     const facility = await new FacilityService().getOneByID(id);
+
     if (
-      (await user.managedFacilities).includes(facility) ||
+      (await user.managedFacilities).some((obj) => obj.id === facility.id) ||
       user.roles.includes("admin")
     ) {
       return this.service.getTransactionByFacilityID(id, query);
