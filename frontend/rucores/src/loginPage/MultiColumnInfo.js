@@ -6,16 +6,16 @@ function MultiColumnInfo() {
   return (
     <Row className="mt-4">
       <InfoColumn
-        title="Heading"
-        content="Some representative placeholder content for the three columns of text below the carousel. This is the first column."
+        title="Professional Equipment"
+        content="Use RU Coins to access the plethora of Rutgers facility equipment. State of the art technology is at your fingertips!"
       />
       <InfoColumn
-        title="Heading"
-        content="Another exciting bit of representative placeholder content. This time, we've moved on to the second column."
+        title="Register as A Provider"
+        content="Are you a Rutgers faculty member? Register as a provider to manage facilities for other researchers!"
       />
       <InfoColumn
-        title="Heading"
-        content="And lastly this, the third column of representative placeholder content."
+        title="Reserve Your Spot"
+        content="Make booking in advanced for your research group to never miss the chance to use the equipment you need!"
       />
     </Row>
   );

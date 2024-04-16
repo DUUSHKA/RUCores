@@ -11,14 +11,15 @@ function MultiColumnFeaturette({ clickedSection }) {
           <Row>
             <Col>
               <h2 className="featurette-heading fw-normal lh-1">
-                First featurette heading.
+                Rutgers First Virtual Currency - RU Coins.
                 <span className="text-body-secondary">
-                  It’ll blow your mind.
+                  Where Rutgers meets the Blockchain.
                 </span>
               </h2>
               <p className="lead">
-                Some great placeholder content for the first featurette here.
-                Imagine some exciting prose here.
+                RU Coins allow for faster and more secure transactions between
+                Rutgers faculty and students. Get research grants converted or
+                be rewarded for school spirit and activity participation.
               </p>
             </Col>
             <Col md="auto">
