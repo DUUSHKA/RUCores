@@ -183,8 +183,7 @@ function Dashboard() {
 
   const fetchUserFacilities = async () => {
     const FacilityAPI = new FacilityCalls();
-    const userId = parseInt(window.sessionStorage.getItem("id"), 10);
-    const facilities = await FacilityAPI.getFacilitiesByUserId(userId);
+    const facilities = await FacilityAPI.getFacilitiesByUser();
     if (facilities) {
       setUserFacilities(facilities);
     }
