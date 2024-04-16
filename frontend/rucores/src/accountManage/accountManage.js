@@ -1,16 +1,15 @@
 import React from "react";
-import CreateAccountPage from './../loginPage/createAccountPage/CreateAccountPage';
-import './accountManage.css';
+import CreateAccountPage from "./../loginPage/createAccountPage/CreateAccountPage";
+import "./accountManage.css";
 
-function AccountManage(){
-
-    return(
-        <>
-        <div >
+function AccountManage() {
+  return (
+    <>
+      <div>
         <CreateAccountPage isUpdateAccount={true}></CreateAccountPage>
-        </div>
-        </>
-    );
+      </div>
+    </>
+  );
 }
 
 export default AccountManage;

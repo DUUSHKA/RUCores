@@ -6,3 +6,10 @@
 body  { 
     font-family: "Verdana", Georgia, serif !important; 
   }
+
+  .scheduledBookingsContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    
+  }

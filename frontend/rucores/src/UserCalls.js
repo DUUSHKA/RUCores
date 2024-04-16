@@ -305,8 +305,6 @@ class User {
     }
   }
 
-
-
   /**
    *
    * @param {number} userID
@@ -317,45 +315,38 @@ class User {
    * @param {string} password
    * @returns updated user acct
    */
-    async updateUser(
-      userID,
-      firstName,
-      lastName,
-      email,
-      username,
-      password,
-    ) {
-      const apiUrl = `http://localhost:3001/api/users/userID/${userID}`;
-  
-      try {
-        const updatedData = {
-          "firstName": firstName,
-          "lastName": lastName,
-          "email": email,
-          "username": username,
-          "password": password
+  async updateUser(userID, firstName, lastName, email, username, password) {
+    const apiUrl = `http://localhost:3001/api/users/userID/${userID}`;
+
+    try {
+      const updatedData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        username: username,
+        password: password,
       };
-  
-        const response = await fetch(apiUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(updatedData),
-        });
-  
-        if (!response.ok) {
-          return false;
-        }
-  
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error("Fetch error:", error);
-        throw error;
+
+      const response = await fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!response.ok) {
+        return false;
       }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error;
     }
+  }
 }
 
 export default User;

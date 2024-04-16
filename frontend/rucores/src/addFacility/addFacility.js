@@ -132,8 +132,6 @@ function AddFacility() {
                 </InputGroup>
               </InputGroup>
               <div className="mb-3"></div>
-
-
             </div>
             <button
               type="submit"

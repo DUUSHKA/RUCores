@@ -4,10 +4,10 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Link, useNavigate } from "react-router-dom";
-import "./login.css";
 import SuccessFailureAlert from "../SuccessFailureAlerts";
+import "./login.css";
 
-function Login() {
+function LoginCard() {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -121,4 +121,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginCard;

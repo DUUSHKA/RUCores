@@ -213,7 +213,7 @@ function CreateBooking(props) {
         alertText={"Successfully Created Booking!"}
         onClose={closeAlert}
       ></SuccessFailureAlert>
-            <SuccessFailureAlert
+      <SuccessFailureAlert
         variant={"danger"}
         show={showError}
         alertText={"Failed to Create Booking!"}
