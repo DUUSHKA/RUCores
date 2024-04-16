@@ -276,7 +276,7 @@ function Dashboard() {
             {currentBalance ? (
               <p>{currentBalance} RU Coins</p>
             ) : (
-              <p>Loading...</p>
+              <p>0 RU Coins</p>
             )}{" "}
             {/* Placeholder value */}
             <Link to="/wallet">
