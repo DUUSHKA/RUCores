@@ -21,13 +21,12 @@ function CreateAccountPage(props) {
     isProvider: false,
   });
 
-
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     if (props.isUpdateAccount) {
-      const userAPI = new User;
+      const userAPI = new User();
       userAPI.getCurrentUser().then((res) => {
         console.log(res);
         setUserDetails({
@@ -70,32 +69,42 @@ function CreateAccountPage(props) {
     const userName = userDetails.username;
     const email = userDetails.email;
     const password = userDetails.password;
-    const roles = userDetails.roles;
     const isProvider = userDetails.isProvider;
+    const roles = isProvider ? ["user", "provider"] : ["user"];
 
-    const userAPI = new User;
+    const userAPI = new User();
     if (!props.isUpdateAccount) {
-      userAPI.createUser(firstName, lastName, userName, email, password, roles, isProvider).then((resp) => {
-        if (resp.firstName) {
-          navigate("/");
-        }else{
-          setShowError(true);
-        }
-      });
-    }
-    else {
+      userAPI
+        .createUser(
+          firstName,
+          lastName,
+          userName,
+          email,
+          password,
+          roles,
+          isProvider,
+        )
+        .then((resp) => {
+          if (resp.firstName) {
+            navigate("/");
+          } else {
+            setShowError(true);
+          }
+        });
+    } else {
       const userID = parseInt(window.sessionStorage.getItem("id"));
-      userAPI.updateUser(userID, firstName, lastName, email, userName, password).then((resp) => {
-        if (resp == false) {
-          setShowError(true);
-        } else {
-          setShowSuccess(true);
-        }
-        console.log(resp);
-      });
+      userAPI
+        .updateUser(userID, firstName, lastName, email, userName, password)
+        .then((resp) => {
+          if (resp == false) {
+            setShowError(true);
+          } else {
+            setShowSuccess(true);
+          }
+          console.log(resp);
+        });
     }
   };
-
 
   const closeAlert = () => {
     setShowSuccess(false);
@@ -144,37 +153,49 @@ function CreateAccountPage(props) {
             onChange={handleChange}
           />
         </Form.Group>
-        
+
         <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
           <div className="passwordCreateAccount">
-          <Form.Control
-            type={passwordVisible ? "text" : "password"}
-            placeholder="Password"
-            name="password"
-            value={userDetails.password}
+            <Form.Control
+              type={passwordVisible ? "text" : "password"}
+              placeholder="Password"
+              name="password"
+              value={userDetails.password}
+              onChange={handleChange}
+            />
+            <Button
+              variant="outline-secondary"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+              className="showHideButton"
+            >
+              {passwordVisible ? "Hide" : "Show"}
+            </Button>
+          </div>
+        </Form.Group>
+
+        {props.isUpdateAccount ? (
+          <div></div>
+        ) : (
+          <Form.Check
+            type="switch"
+            id="custom-switch"
+            label="Are you a provider?"
+            name="isProvider"
+            checked={userDetails.isProvider}
             onChange={handleChange}
           />
-          <Button variant="outline-secondary" onClick={() => setPasswordVisible(!passwordVisible)} className="showHideButton">
-          {passwordVisible ? "Hide" : "Show"}
-        </Button>
-        </div>
-        </Form.Group>
-        
-        {props.isUpdateAccount ? <div></div> : <Form.Check
-          type="switch"
-          id="custom-switch"
-          label="Are you a provider?"
-          name="isProvider"
-          checked={userDetails.isProvider}
-          onChange={handleChange}
-        />}
+        )}
         <Button variant="primary" type="submit">
           {props.isUpdateAccount ? "Update Account" : "Create Account"}
         </Button>
-        {props.isUpdateAccount ? <div className="blankPadding"></div> : <Link to="/" className="btn btn-link">
-          Back To Login
-        </Link>}
+        {props.isUpdateAccount ? (
+          <div className="blankPadding"></div>
+        ) : (
+          <Link to="/" className="btn btn-link">
+            Back To Login
+          </Link>
+        )}
       </Form>
       <SuccessFailureAlert
         variant={"success"}
@@ -191,7 +212,6 @@ function CreateAccountPage(props) {
     </div>
   );
 }
-
 
 CreateAccountPage.propTypes = {
   isUpdateAccount: PropTypes.number,
