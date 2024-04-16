@@ -95,10 +95,16 @@ function FacilityInfo(prop) {
           <strong>Address:</strong> {facilityDetails.address}
         </p>
         <div className="cost">
-          {isProvider && <Button onClick={editFacility}>Edit Facility</Button>}
-          <Button onClick={getFacilityInfo}>Schedule a Booking</Button>
           {isProvider && (
-            <Button variant="danger" onClick={handleDeleteFacility}>
+            <Button onClick={editFacility} disabled>
+              Edit Facility
+            </Button>
+          )}
+          <Button onClick={getFacilityInfo} disabled>
+            Schedule a Booking
+          </Button>
+          {isProvider && (
+            <Button variant="danger" onClick={handleDeleteFacility} disabled>
               Delete Facility
             </Button>
           )}

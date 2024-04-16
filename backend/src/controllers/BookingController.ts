@@ -54,7 +54,7 @@ export class BookingController {
     const facility = await availability.facility;
     if (
       (await booking.user).id == user.id ||
-      (await user.managedFacilities).includes(facility) ||
+      (await user.managedFacilities).some((obj) => obj.id === facility.id) ||
       user.roles.includes("admin")
     ) {
       return booking;
@@ -103,12 +103,9 @@ export class BookingController {
     const old = this.service.getOneByID(id);
     if (
       (await (await old).user).id == user.id ||
-      (await user.managedFacilities).includes(
-        await (
-          await (
-            await old
-          ).availability
-        ).facility,
+      (await user.managedFacilities).some(
+        async (obj) =>
+          obj.id === (await (await (await old).availability).facility).id,
       ) ||
       user.roles.includes("admin")
     ) {
@@ -129,12 +126,9 @@ export class BookingController {
     const old = this.service.getOneByID(id);
     if (
       (await (await old).user).id == user.id ||
-      (await user.managedFacilities).includes(
-        await (
-          await (
-            await old
-          ).availability
-        ).facility,
+      (await user.managedFacilities).some(
+        async (obj) =>
+          obj.id === (await (await (await old).availability).facility).id,
       ) ||
       user.roles.includes("admin")
     ) {
@@ -167,7 +161,7 @@ export class BookingController {
   ): Promise<BookingEntity[]> {
     const facility = await new FacilityService().getOneByID(id);
     if (
-      (await user.managedFacilities).includes(facility) ||
+      (await user.managedFacilities).some((obj) => obj.id === facility.id) ||
       user.roles.includes("admin")
     ) {
       return this.service.getAllFutureFacilityBookings(facility);
@@ -189,7 +183,7 @@ export class BookingController {
   ): Promise<BookingEntity[]> {
     const facility = await new FacilityService().getOneByID(id);
     if (
-      (await user.managedFacilities).includes(facility) ||
+      (await user.managedFacilities).some((obj) => obj.id === facility.id) ||
       user.roles.includes("admin")
     ) {
       return this.service.getAllPastFacilityBookings(facility);
