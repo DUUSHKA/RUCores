@@ -91,8 +91,8 @@ function CreateAccountPage(props) {
     const userName = userDetails.username;
     const email = userDetails.email;
     const password = userDetails.password;
-    const roles = userDetails.roles;
     const isProvider = userDetails.isProvider;
+    const roles = isProvider ? ["user", "provider"] : ["user"];
 
     const userAPI = new User();
     if (!props.isUpdateAccount) {
