@@ -555,7 +555,7 @@ export const prepopulateDB = async () => {
   const physAvailability2 = new AvailabilityEntity();
   physAvailability2.Date = date3Original;
   physAvailability2.startTime = date3Original;
-  physAvailability2.endTime = dateAdd(physAvailability2.startTime, "week", 2);
+  physAvailability2.endTime = dateAdd(physAvailability2.startTime, "hour", 2);
   physAvailability2.facility = Promise.resolve(facility2);
   //physAvailability.bookings = Promise.resolve([physBooking]);
   physAvailability2.price = 30;
@@ -570,7 +570,7 @@ export const prepopulateDB = async () => {
 
   const physAvailability4 = new AvailabilityEntity();
   physAvailability4.Date = date3Original;
-  physAvailability4.startTime = dateAdd(physAvailability4.Date, "hour", -2);
+  physAvailability4.startTime = dateAdd(physAvailability4.Date, "hour", 2);
   physAvailability4.endTime = dateAdd(physAvailability4.startTime, "hour", 2);
   physAvailability4.facility = Promise.resolve(facility2);
   //physAvailability.bookings = Promise.resolve([physBooking]);
