@@ -1,5 +1,7 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import image2 from "../assets/CoinImage.jpg";
+import image1 from "../assets/RutgersBlackandRedLogo.jpg";
 
 // eslint-disable-next-line react/prop-types, no-unused-vars
 function MultiColumnFeaturette({ clickedSection }) {
@@ -24,31 +26,13 @@ function MultiColumnFeaturette({ clickedSection }) {
             </Col>
             <Col md="auto">
               <div style={{ paddingRight: "10px" }}>
-                <svg
+                <img
                   className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+                  src={image1}
+                  alt="Descriptive text for the second image"
                   width="500"
                   height="500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  role="img"
-                  aria-label="Placeholder: 500x500"
-                  preserveAspectRatio="xMidYMid slice"
-                  focusable="false"
-                >
-                  <title>Placeholder</title>
-                  <rect
-                    width="100%"
-                    height="100%"
-                    fill="var(--bs-secondary-bg)"
-                  />
-                  <text
-                    x="50%"
-                    y="50%"
-                    fill="var(--bs-secondary-color)"
-                    dy=".3em"
-                  >
-                    500x500
-                  </text>
-                </svg>
+                />
               </div>
             </Col>
           </Row>
@@ -59,31 +43,13 @@ function MultiColumnFeaturette({ clickedSection }) {
           <Row>
             <Col md="auto">
               <div style={{ paddingRight: "10px" }}>
-                <svg
+                <img
                   className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+                  src={image2}
+                  alt="Descriptive text for the first image"
                   width="500"
                   height="500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  role="img"
-                  aria-label="Placeholder: 500x500"
-                  preserveAspectRatio="xMidYMid slice"
-                  focusable="false"
-                >
-                  <title>Placeholder</title>
-                  <rect
-                    width="100%"
-                    height="100%"
-                    fill="var(--bs-secondary-bg)"
-                  />
-                  <text
-                    x="50%"
-                    y="50%"
-                    fill="var(--bs-secondary-color)"
-                    dy=".3em"
-                  >
-                    500x500
-                  </text>
-                </svg>
+                />
               </div>
             </Col>
             <Col>
@@ -101,15 +67,8 @@ function MultiColumnFeaturette({ clickedSection }) {
           </Row>
         </Container>
       </section>
-      <hr className="featurette-divider" />
     </Container>
   );
 }
-
-// MultiColumnFeaturette.propTypes = {
-//     heading: PropTypes.string.isRequired,
-//     subheading: PropTypes.string.isRequired,
-//     text: PropTypes.string.isRequired,
-// };
 
 export default MultiColumnFeaturette;
