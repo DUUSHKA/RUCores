@@ -88,14 +88,14 @@ function MultiColumnFeaturette({ clickedSection }) {
             </Col>
             <Col>
               <h2 className="featurette-heading fw-normal lh-1">
-                First featurette heading.
-                <span className="text-body-secondary">
-                  It’ll blow your mind.
-                </span>
+                RU Cores Facility - {}
+                <span className="text-body-secondary">Our Mission</span>
               </h2>
               <p className="lead">
-                Some great placeholder content for the first featurette here.
-                Imagine some exciting prose here.
+                Our mission is to create a centralized area in order to allow
+                students and faculty to be able to quickly access and use
+                Rutgers Core Facilities with ease! We want students to continue
+                to stay inspired and work towards innovation!
               </p>
             </Col>
           </Row>
