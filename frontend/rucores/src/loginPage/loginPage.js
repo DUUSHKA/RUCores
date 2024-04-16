@@ -10,13 +10,17 @@ import NavBarLogin from "./navBarLogin";
 
 function LoginPage() {
   const [showModal, setShowModal] = useState(false);
-
+  const [clickedSection, setClickedSection] = useState(null);
   //   const openModal = () => {
   //     setShowModal(true);
   //   };
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const handleSectionClick = (sectionId) => {
+    setClickedSection(sectionId);
   };
   //   const buttonColor = {
   //     backgroundColor: "red",
@@ -37,11 +41,13 @@ function LoginPage() {
   return (
     <>
       <div className="page-background">
-        <NavBarLogin />
+        <NavBarLogin onSectionClick={handleSectionClick} />
         <main>
           <CarouselLogin />
-          <MultiColumnInfo />
-          <MultiColumnFeaturette />
+          <section id="features">
+            <MultiColumnInfo />
+          </section>
+          <MultiColumnFeaturette clickedSection={clickedSection} />
         </main>
       </div>
 
