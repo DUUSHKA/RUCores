@@ -159,7 +159,9 @@ export class FacilityController {
   async remove(@CurrentUser() user: UserEntity, @Param("id") id: number) {
     const old = this.service.getOneByID(id);
     if (
-      (await user.managedFacilities).includes(await old) ||
+      (await user.managedFacilities).some(
+        async (obj) => obj.id == (await old).id,
+      ) ||
       user.roles.includes("admin")
     ) {
       return this.service.deleteFacility(user, id);
