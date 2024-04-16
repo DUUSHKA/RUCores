@@ -6,6 +6,7 @@ import "./CreateAccountPage.css";
 import PropTypes from "prop-types";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
+import * as Yup from "yup";
 import SuccessFailureAlert from "../../SuccessFailureAlerts";
 import User from "../../UserCalls";
 
@@ -23,6 +24,7 @@ function CreateAccountPage(props) {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [errors, setErrors] = useState(false);
 
   useEffect(() => {
     if (props.isUpdateAccount) {
@@ -62,8 +64,28 @@ function CreateAccountPage(props) {
     }));
   };
 
+  const validationSchema = Yup.object({
+    firstName: Yup.string().required("First Name is Required!"),
+    lastName: Yup.string().required("Last Name is Required!"),
+    username: Yup.string().required("Username Name is Required!"),
+    email: Yup.string()
+      .required("Email is Required!")
+      .email("Invalid Email Format!"),
+    password: Yup.string()
+      .required("Password Required!")
+      .min(8, "Password must be at least 8 characters!")
+      .matches(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "Password must contain at least one symbol!",
+      )
+      .matches(/[0-9]/, "Password must contain at least one number!")
+      .matches(/[A-Z]/, "Password must contain at least one uppercase letter!")
+      .matches(/[a-z]/, "Password must contain at least one lowercase letter!"),
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const firstName = userDetails.firstName;
     const lastName = userDetails.lastName;
     const userName = userDetails.username;
@@ -104,6 +126,19 @@ function CreateAccountPage(props) {
           console.log(resp);
         });
     }
+
+    try {
+      await validationSchema.validate(userDetails, { abortEarly: false });
+      console.log("Form Submitted", userDetails);
+    } catch (error) {
+      const newErrors = {};
+
+      error.inner.forEach((err) => {
+        newErrors[err.path] = err.message;
+      });
+
+      setErrors(newErrors);
+    }
   };
 
   const closeAlert = () => {
@@ -122,6 +157,7 @@ function CreateAccountPage(props) {
             value={userDetails.firstName}
             onChange={handleChange}
           />
+          {errors.firstName && <div className="error">{errors.firstName} </div>}
         </Form.Group>
         <Form.Group className="mb-3">
           <Form.Label>Last Name</Form.Label>
@@ -132,6 +168,7 @@ function CreateAccountPage(props) {
             value={userDetails.lastName}
             onChange={handleChange}
           />
+          {errors.lastName && <div className="error">{errors.lastName} </div>}
         </Form.Group>
         <Form.Group className="mb-3">
           <Form.Label>Username/NetID</Form.Label>
@@ -142,6 +179,7 @@ function CreateAccountPage(props) {
             value={userDetails.username}
             onChange={handleChange}
           />
+          {errors.username && <div className="error">{errors.username} </div>}
         </Form.Group>
         <Form.Group className="mb-3">
           <Form.Label>Email address</Form.Label>
@@ -152,6 +190,7 @@ function CreateAccountPage(props) {
             value={userDetails.email}
             onChange={handleChange}
           />
+          {errors.email && <div className="error">{errors.email} </div>}
         </Form.Group>
 
         <Form.Group className="mb-3">
@@ -164,6 +203,7 @@ function CreateAccountPage(props) {
               value={userDetails.password}
               onChange={handleChange}
             />
+
             <Button
               variant="outline-secondary"
               onClick={() => setPasswordVisible(!passwordVisible)}
@@ -172,6 +212,7 @@ function CreateAccountPage(props) {
               {passwordVisible ? "Hide" : "Show"}
             </Button>
           </div>
+          {errors.password && <div className="error">{errors.password} </div>}
         </Form.Group>
 
         {props.isUpdateAccount ? (
