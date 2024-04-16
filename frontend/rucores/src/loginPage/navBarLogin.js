@@ -6,12 +6,25 @@ import Navbar from "react-bootstrap/Navbar";
 import LoginCard from "./login"; // Import the LoginCard component
 import "./login.css";
 
-function NavBarLogin() {
+// eslint-disable-next-line react/prop-types
+function NavBarLogin({ onSectionClick }) {
   const [showModal, setShowModal] = useState(false);
 
   const closeModal = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
-
+  const scrollToSection = (sectionId) => {
+    if (onSectionClick) {
+      onSectionClick(sectionId); // Pass the section ID to the parent component
+    }
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const offsetTop = section.offsetTop;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: "smooth",
+      });
+    }
+  };
   return (
     <>
       <header data-bs-theme="dark">
@@ -21,9 +34,15 @@ function NavBarLogin() {
             <Navbar.Toggle aria-controls="navbarCollapse" />
             <Navbar.Collapse id="navbarCollapse">
               <Nav className="me-auto mb-2 mb-md-0">
-                <Nav.Link href="#">Features</Nav.Link>
-                <Nav.Link href="#">Coins</Nav.Link>
-                <Nav.Link href="#">About Us</Nav.Link>
+                <Nav.Link onClick={() => scrollToSection("features")}>
+                  Features
+                </Nav.Link>
+                <Nav.Link onClick={() => scrollToSection("coins")}>
+                  Coins
+                </Nav.Link>
+                <Nav.Link onClick={() => scrollToSection("about")}>
+                  About Us
+                </Nav.Link>
                 <Nav.Link onClick={handleShow}>Login</Nav.Link>
               </Nav>
             </Navbar.Collapse>
