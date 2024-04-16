@@ -29,7 +29,7 @@ function MultiColumnFeaturette({ clickedSection }) {
               <div style={{ paddingRight: "10px" }}>
                 <img
                   className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-                  src={image1}
+                  src={image2}
                   alt="Descriptive text for the second image"
                   width="500"
                   height="500"
@@ -46,7 +46,7 @@ function MultiColumnFeaturette({ clickedSection }) {
               <div style={{ paddingRight: "10px" }}>
                 <img
                   className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-                  src={image2}
+                  src={image1}
                   alt="Descriptive text for the first image"
                   width="500"
                   height="500"
