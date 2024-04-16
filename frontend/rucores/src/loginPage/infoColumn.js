@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { Button, Col } from "react-bootstrap";
+import { Col } from "react-bootstrap";
 
 function InfoColumn(props) {
   return (
@@ -24,9 +24,9 @@ function InfoColumn(props) {
       <h2 className="text-center mt-3">{props.title}</h2>
       <p className="text-center mb-4">{props.content}</p>
       <p className="mt-auto">
-        <Button variant="secondary" href="#">
+        {/* <Button variant="secondary" href="#">
           View details &raquo;
-        </Button>
+        </Button> */}
       </p>
     </Col>
   );

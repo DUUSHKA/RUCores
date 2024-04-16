@@ -8,7 +8,7 @@ import rutgersHealth from "../assets/rutgersHealth.jpg";
 function CarouselLogin() {
   return (
     <>
-      <Carousel>
+      <Carousel style={{ margin: "-30px" }}>
         <Carousel.Item className="carousel-item">
           <img
             className="d-block w-100 opaque-image"

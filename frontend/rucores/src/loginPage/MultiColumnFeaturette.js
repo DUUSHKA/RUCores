@@ -17,7 +17,8 @@ function MultiColumnFeaturette({ clickedSection }) {
                 </span>
               </h2>
               <p className="lead">
-                RU Coins allow for faster and more secure transactions between
+                The goal for RU Coins is to build into a private blockchain. RU
+                Coins allow for faster and more secure transactions between
                 Rutgers faculty and students. Get research grants converted or
                 be rewarded for school spirit and activity participation.
               </p>

@@ -11,11 +11,11 @@ function MultiColumnInfo() {
       />
       <InfoColumn
         title="Register as A Provider"
-        content="Are you a Rutgers faculty member? Register as a provider to manage facilities for other researchers!"
+        content="Are you a Rutgers faculty member? Collect RU Coins by registering as a provider to manage facilities for other researchers!"
       />
       <InfoColumn
         title="Reserve Your Spot"
-        content="Make booking in advanced for your research group to never miss the chance to use the equipment you need!"
+        content="Make booking in advanced for your research group! Recover analytics to see your spending behavior!"
       />
     </Row>
   );
