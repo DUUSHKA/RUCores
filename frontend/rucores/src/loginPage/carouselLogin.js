@@ -1,49 +1,61 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
 import Carousel from "react-bootstrap/Carousel";
-import "../assets/Logo-Rutgers-University.jpg";
-import RULogo from "../assets/Logo-Rutgers-University.jpg";
+import bitcoin from "../assets/bitcoin.jpg";
 import LabWorkers from "../assets/labWork.jpg";
-import Wallet from "../assets/wallet.jpg";
+import "../assets/Logo-Rutgers-University.jpg";
+import rutgersHealth from "../assets/rutgersHealth.jpg";
 
 function CarouselLogin() {
   return (
     <>
       <Carousel>
         <Carousel.Item className="carousel-item">
-          <img className="d-block w-100" src={Wallet} alt="First slide" />
-          <Carousel.Caption>
-            <h3>State of the Art Equipment at Rutgers Facilities</h3>
-            <p>Schedule time to work with top equipment.</p>
-            <Button variant="primary" size="lg" href="#">
+          <img
+            className="d-block w-100 opaque-image"
+            src={bitcoin}
+            alt="First slide"
+          />
+          <Carousel.Caption className="Centered-caption">
+            <h3>RU Cores Wallet</h3>
+            <p>Using virtual currency to schedule research!</p>
+            <div style={{ minHeight: "180px" }}></div>
+            {/* <Button variant="primary" size="lg" href="#">
               Sign up today
-            </Button>
+            </Button> */}
           </Carousel.Caption>
         </Carousel.Item>
         <Carousel.Item className="carousel-item">
-          <img className="d-block w-100" src={LabWorkers} alt="Second slide" />
-          <Carousel.Caption>
-            <h3>Another example headline.</h3>
+          <img
+            className="d-block w-100 opaque-image"
+            src={LabWorkers}
+            alt="Second slide"
+          />
+          <Carousel.Caption className="Centered-caption">
+            <h3>State of the art Research Facilities</h3>
             <p>
-              Some representative placeholder content for the second slide of
-              the carousel.
+              Use Rutgers RU Coins to schedule time with professional equipment
             </p>
-            <Button variant="primary" size="lg" href="#">
+            <div style={{ minHeight: "180px" }}></div>
+            {/* <Button variant="primary" size="lg" href="#">
               Learn more
-            </Button>
+            </Button> */}
           </Carousel.Caption>
         </Carousel.Item>
         <Carousel.Item className="carousel-item">
-          <img className="d-block w-100" src={RULogo} alt="Third slide" />
-          <Carousel.Caption>
-            <h3>One more for good measure.</h3>
+          <img
+            className="d-block w-100 opaque-image"
+            src={rutgersHealth}
+            alt="Third slide"
+          />
+          <Carousel.Caption className="Centered-caption">
+            <h3>Open To Faculty and Graduates</h3>
             <p>
-              Some representative placeholder content for the third slide of
-              this carousel.
+              Rutgers University is proud to offer this service to our members
             </p>
-            <Button variant="primary" size="lg" href="#">
+            <div style={{ minHeight: "180px" }}></div>
+            {/* <Button variant="primary" size="lg" href="#">
               Browse gallery
-            </Button>
+            </Button> */}
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>

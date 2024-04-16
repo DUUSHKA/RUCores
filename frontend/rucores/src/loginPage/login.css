@@ -91,6 +91,17 @@
     margin-right: auto; 
 } */ 
 
+.opaque-image {
+  opacity: 0.5;
+}
+
+.centered-caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 .loginCard {
     border: 2px solid grey;
     border-radius: 3px;
