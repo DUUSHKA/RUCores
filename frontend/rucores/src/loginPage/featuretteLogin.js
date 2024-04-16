@@ -13,22 +13,13 @@ function Featurette(props) {
         <p className="lead">{props.text}</p>
       </Col>
       <Col md={5}>
-        <svg
-          className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+        <img
+          className="featurette-image img-fluid mx-auto"
+          src={props.imageSrc}
+          alt={props.imageAlt}
           width="500"
           height="500"
-          xmlns="http://www.w3.org/2000/svg"
-          role="img"
-          aria-label="Placeholder: 500x500"
-          preserveAspectRatio="xMidYMid slice"
-          focusable="false"
-        >
-          <title>Placeholder</title>
-          <rect width="100%" height="100%" fill="var(--bs-secondary-bg)" />
-          <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
-            500x500
-          </text>
-        </svg>
+        />
       </Col>
     </Row>
   );
@@ -38,5 +29,8 @@ Featurette.propTypes = {
   heading: PropTypes.string.isRequired,
   subheading: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
+  imageSrc: PropTypes.string.isRequired,
+  imageAlt: PropTypes.string.isRequired,
 };
+
 export default Featurette;
