@@ -12,6 +12,7 @@ import ScheduleFacility from "./schedule_facilities/schedule_facility";
 import ScheduledBookings from "./scheduledBookings/scheduledBookings";
 import WalletManager from "./wallets/walletManager";
 import AccountManage from "./accountManage/accountManage";
+import ScheduledBookingTitle from "./scheduledBookings/scheduleBookingTitle";
 
 function App() {
   return (
@@ -77,7 +78,10 @@ function App() {
           element={
             <>
               <NavBar />
-              <ScheduledBookings />
+              <div className="scheduledBookingsContainer">
+                <ScheduledBookingTitle />
+                <ScheduledBookings />
+              </div>
             </>
           }
         />
