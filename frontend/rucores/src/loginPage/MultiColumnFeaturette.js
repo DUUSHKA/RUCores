@@ -12,9 +12,9 @@ function MultiColumnFeaturette({ clickedSection }) {
         <Container>
           <Row>
             <Col>
-              <h2 className="featurette-heading fw-normal lh-1">
-                Rutgers First Virtual Currency - RU Coins.
-                <span className="text-body-secondary">
+              <h2 className="login-font-Display-Header-Featurette-Bold">
+                Rutgers First Virtual Currency: RU Coins.
+                <span className="text-body-secondary login-font-Display-Header-Featurette-Bold">
                   Where Rutgers meets the Blockchain.
                 </span>
               </h2>
@@ -54,9 +54,11 @@ function MultiColumnFeaturette({ clickedSection }) {
               </div>
             </Col>
             <Col>
-              <h2 className="featurette-heading fw-normal lh-1">
+              <h2 className="login-font-Display-Header-Featurette-Bold">
                 RU Cores Facility - {}
-                <span className="text-body-secondary">Our Mission</span>
+                <span className="text-body-secondary login-font-Display-Header-Featurette-Bold">
+                  Our Mission
+                </span>
               </h2>
               <p className="lead">
                 Our mission is to create a centralized area in order to allow

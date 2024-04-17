@@ -1,10 +1,25 @@
+@font-face {
+  font-family: 'FontDisplay';
+  src: url('./SF-proFont/SF-Pro-Rounded-Regular.otf') format('opentype');
+  font-weight: 400; /* Normal font weight */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FontDisplay';
+  src: url('./SF-proFont/SF-Pro-Rounded-Semibold.otf') format('opentype');
+  font-weight: 700; /* Normal font weight */
+  font-style: normal;
+}
+
+
 .manageAccount{
     padding-top: 300px;
 }
 
 
 body  { 
-    font-family: "Verdana", Georgia, serif !important; 
+    font-family: 'FontDisplay', Georgia, serif  !important; 
   }
 
   .scheduledBookingsContainer{

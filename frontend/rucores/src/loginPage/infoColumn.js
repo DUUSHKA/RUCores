@@ -15,8 +15,10 @@ function InfoColumn(props) {
         width="140"
         height="140"
       />
-      <h2 className="text-center mt-3">{props.title}</h2>
-      <p className="text-center mb-4">{props.content}</p>
+      <h2 className="text-center mt-3 login-font-Display-Header-Bold">
+        {props.title}
+      </h2>
+      <p className="text-center mb-4 login-font-Text">{props.content}</p>
       <p className="mt-auto">
         {/* <Button variant="secondary" href="#">
           View details &raquo;

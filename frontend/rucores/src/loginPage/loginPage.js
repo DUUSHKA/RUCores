@@ -44,7 +44,8 @@ function LoginPage() {
         <NavBarLogin onSectionClick={handleSectionClick} />
         <main>
           <CarouselLogin />
-          <section id="features">
+
+          <section id="features" style={{ margin: "0px 20px" }}>
             <MultiColumnInfo />
           </section>
           <MultiColumnFeaturette clickedSection={clickedSection} />
