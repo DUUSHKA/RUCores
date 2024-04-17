@@ -28,7 +28,11 @@ function NavBarLogin({ onSectionClick }) {
   return (
     <>
       <header data-bs-theme="dark">
-        <Navbar style={{background:"rgba(211, 47, 47,1)"}} expand="md" fixed="top" >
+        <Navbar
+          style={{ background: "rgba(211, 47, 47,1)" }}
+          expand="md"
+          fixed="top"
+        >
           <Container fluid>
             <Navbar.Brand href="#">RU Cores Wallet</Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarCollapse" />
