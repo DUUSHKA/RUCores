@@ -1,6 +1,6 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import image2 from "../assets/CoinImage.jpg";
+import image2 from "../assets/RUCoin.jpg";
 import image1 from "../assets/RutgersBlackandRedLogo.jpg";
 
 // eslint-disable-next-line react/prop-types, no-unused-vars
