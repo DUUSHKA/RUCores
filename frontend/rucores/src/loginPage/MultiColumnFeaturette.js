@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import image2 from "../assets/RUCoin.jpg";
-import image1 from "../assets/RutgersBlackandRedLogo.jpg";
+import image1 from "../assets/RutgersBlackandRedLogo.png";
 
 // eslint-disable-next-line react/prop-types, no-unused-vars
 function MultiColumnFeaturette({ clickedSection }) {

@@ -1,6 +1,6 @@
 import React from "react";
 import Carousel from "react-bootstrap/Carousel";
-import bitcoin from "../assets/bitcoin.jpg";
+import bitcoin from "../assets/RUCoinBannerImage.jpg";
 import LabWorkers from "../assets/labWork.jpg";
 import "../assets/Logo-Rutgers-University.jpg";
 import rutgersHealth from "../assets/rutgersHealth.jpg";
