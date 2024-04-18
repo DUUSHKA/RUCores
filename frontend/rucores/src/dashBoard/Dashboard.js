@@ -236,7 +236,7 @@ function Dashboard() {
 
     return pageNumbers.map((number) => (
       <li key={number} className="page-item">
-        <Button className="page-link" onClick={() => setCurrentPage(number)}>
+        <Button className="page-links" onClick={() => setCurrentPage(number)}>
           {number}
         </Button>
       </li>
@@ -249,7 +249,7 @@ function Dashboard() {
         <span>{facility.name}</span>
         <div>
           <Button
-            variant="info"
+            variant="primary"
             onClick={() => navigate(`/editFacility/${facility.id}`)}
           >
             Edit Facility
