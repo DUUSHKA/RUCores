@@ -88,8 +88,6 @@ function ScheduledBookings() {
   return (
     <>
       <div className="centerBookingsList">
-        <h1>Scheduled Bookings</h1>
-        {}
         <Calendar
           localizer={localizer}
           events={events}

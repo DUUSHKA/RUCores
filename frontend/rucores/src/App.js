@@ -2,16 +2,18 @@ import React from "react";
 import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import FAQ from "./FAQ";
+import AccountManage from "./accountManage/accountManage";
 import AddFacility from "./addFacility/addFacility";
 import Dashboard from "./dashBoard/Dashboard";
 import CreateAccountPage from "./loginPage/createAccountPage/CreateAccountPage";
-import Login from "./loginPage/login";
+import LoginCard from "./loginPage/login";
+import LoginPage from "./loginPage/loginPage";
 import NavBar from "./navBar/navBar";
 import EditFacility from "./schedule_facilities/edit_facilities/editFacility";
 import ScheduleFacility from "./schedule_facilities/schedule_facility";
+import ScheduledBookingTitle from "./scheduledBookings/scheduleBookingTitle";
 import ScheduledBookings from "./scheduledBookings/scheduledBookings";
 import WalletManager from "./wallets/walletManager";
-import AccountManage from "./accountManage/accountManage";
 
 function App() {
   return (
@@ -23,7 +25,7 @@ function App() {
           path="/"
           element={
             <>
-              <Login />
+              <LoginPage />
             </>
           }
         />
@@ -41,7 +43,7 @@ function App() {
           element={
             <>
               <NavBar />
-              <Login />
+              <LoginCard />
             </>
           }
         />
@@ -77,7 +79,10 @@ function App() {
           element={
             <>
               <NavBar />
-              <ScheduledBookings />
+              <div className="scheduledBookingsContainer">
+                <ScheduledBookingTitle />
+                <ScheduledBookings />
+              </div>
             </>
           }
         />

@@ -12,10 +12,10 @@ import {
   QueryParams,
 } from "routing-controllers";
 import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";
-import FacilityService from "../services/FacilityService";
 import { TransactionEntity } from "../database/Entities/transactionEntity";
 import { UserEntity } from "../database/Entities/userEntity";
 import { auth_errors } from "../documentation/common";
+import FacilityService from "../services/FacilityService";
 import TransactionService from "../services/TransactionService";
 import { GetAllQuery } from "../types/GenericUtilTypes";
 import { TransactionModel } from "../types/TransactionModel";
@@ -67,8 +67,9 @@ export class TransactionController {
     @QueryParams() query: GetAllQuery,
   ) {
     const facility = await new FacilityService().getOneByID(id);
+
     if (
-      (await user.managedFacilities).includes(facility) ||
+      (await user.managedFacilities).some((obj) => obj.id === facility.id) ||
       user.roles.includes("admin")
     ) {
       return this.service.getTransactionByFacilityID(id, query);

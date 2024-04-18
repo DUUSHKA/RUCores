@@ -65,7 +65,7 @@ export class AvailabilityController {
     @CurrentUser() user: UserEntity,
     @Body() availability: AvailabilityModel,
   ): Promise<AvailabilityEntity> {
-    if (user.roles.includes("Provider") || user.roles.includes("admin")) {
+    if (user.roles.includes("provider") || user.roles.includes("admin")) {
       return this.service.createAvailability(user, availability);
     }
     throw new ForbiddenError("user is not a provider account or an admin");

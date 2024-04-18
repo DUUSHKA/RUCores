@@ -2,8 +2,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
 import FacilityCalls from "../FacilityCalls";
-import Wallet from "./wallet/wallet";
 import FacilityWallet from "./facilityWallet/facilityWallet";
+import Wallet from "./wallet/wallet";
 import "./walletManager.css";
 function WalletManager() {
   const [providerDisplay, setProviderDisplay] = useState(false);

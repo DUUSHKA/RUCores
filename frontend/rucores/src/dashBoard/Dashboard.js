@@ -183,8 +183,7 @@ function Dashboard() {
 
   const fetchUserFacilities = async () => {
     const FacilityAPI = new FacilityCalls();
-    const userId = parseInt(window.sessionStorage.getItem("id"), 10);
-    const facilities = await FacilityAPI.getFacilitiesByUserId(userId);
+    const facilities = await FacilityAPI.getFacilitiesByUser();
     if (facilities) {
       setUserFacilities(facilities);
     }
@@ -237,7 +236,7 @@ function Dashboard() {
 
     return pageNumbers.map((number) => (
       <li key={number} className="page-item">
-        <Button className="page-link" onClick={() => setCurrentPage(number)}>
+        <Button className="page-links" onClick={() => setCurrentPage(number)}>
           {number}
         </Button>
       </li>
@@ -250,7 +249,7 @@ function Dashboard() {
         <span>{facility.name}</span>
         <div>
           <Button
-            variant="info"
+            variant="primary"
             onClick={() => navigate(`/editFacility/${facility.id}`)}
           >
             Edit Facility
@@ -276,7 +275,7 @@ function Dashboard() {
             {currentBalance ? (
               <p>{currentBalance} RU Coins</p>
             ) : (
-              <p>Loading...</p>
+              <p>0 RU Coins</p>
             )}{" "}
             {/* Placeholder value */}
             <Link to="/wallet">
