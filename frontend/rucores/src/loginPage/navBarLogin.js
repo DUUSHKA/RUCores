@@ -34,20 +34,33 @@ function NavBarLogin({ onSectionClick }) {
           fixed="top"
         >
           <Container fluid>
-            <Navbar.Brand href="#">RU Cores Wallet</Navbar.Brand>
+            <Navbar.Brand className="my-navbar-brand" href="#">
+              RU Cores Wallet
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarCollapse" />
             <Navbar.Collapse id="navbarCollapse">
               <Nav className="me-auto mb-2 mb-md-0">
-                <Nav.Link onClick={() => scrollToSection("features")}>
+                <Nav.Link
+                  className="my-navbar"
+                  onClick={() => scrollToSection("features")}
+                >
                   Features
                 </Nav.Link>
-                <Nav.Link onClick={() => scrollToSection("coins")}>
+                <Nav.Link
+                  className="my-navbar"
+                  onClick={() => scrollToSection("coins")}
+                >
                   Coins
                 </Nav.Link>
-                <Nav.Link onClick={() => scrollToSection("about")}>
+                <Nav.Link
+                  className="my-navbar"
+                  onClick={() => scrollToSection("about")}
+                >
                   About Us
                 </Nav.Link>
-                <Nav.Link onClick={handleShow}>Login</Nav.Link>
+                <Nav.Link className="my-navbar" onClick={handleShow}>
+                  Login
+                </Nav.Link>
               </Nav>
             </Navbar.Collapse>
           </Container>

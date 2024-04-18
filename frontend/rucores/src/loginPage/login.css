@@ -224,6 +224,16 @@
     height: 32rem;
   }
   
+  .my-navbar-brand {
+    color: #eef0f3; /* Replace with your desired color */
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .my-navbar {
+    color: #eef0f3; /* Replace with your desired color */
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
   
   /* MARKETING CONTENT
   -------------------------------------------------- */
@@ -266,7 +276,23 @@
     font-weight: 700;
     font-style: normal;
     color: black;
+    font-size: 3rem;
+  }
+
+  .login-font-Display-Caption-Bold{
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    color: black;
     font-size: 5rem;
+  }
+
+  .login-font-card-Text{
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: black;
+    font-size: 2rem;
   }
 
   .login-font-Text{
@@ -274,7 +300,7 @@
     font-weight: 400;
     font-style: normal;
     color: black;
-    font-size: 1rem;
+    font-size: 1.3rem;
   }
 
   .login-font-Display-Header-Bold{
@@ -312,7 +338,6 @@
     /* Bump up size of carousel content */
     .carousel-caption p {
       margin-bottom: 1.25rem;
-      font-size: 3rem;
       line-height: 1.4;
     }
   

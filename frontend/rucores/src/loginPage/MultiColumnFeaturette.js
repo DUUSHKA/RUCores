@@ -13,12 +13,12 @@ function MultiColumnFeaturette({ clickedSection }) {
           <Row>
             <Col>
               <h2 className="login-font-Display-Header-Featurette-Bold">
-                Rutgers First Virtual Currency: RU Coins.
+                Rutgers First Virtual Currency: RU Coins -
                 <span className="text-body-secondary login-font-Display-Header-Featurette-Bold">
-                  Where Rutgers meets the Blockchain.
+                  {" Where Rutgers meets the Blockchain."}
                 </span>
               </h2>
-              <p className="lead">
+              <p className="lead login-font-Text">
                 The goal for RU Coins is to build into a private blockchain. RU
                 Coins allow for faster and more secure transactions between
                 Rutgers faculty and students. Get research grants converted or
@@ -60,7 +60,7 @@ function MultiColumnFeaturette({ clickedSection }) {
                   Our Mission
                 </span>
               </h2>
-              <p className="lead">
+              <p className="lead login-font-Text">
                 Our mission is to create a centralized area in order to allow
                 students and faculty to be able to quickly access and use
                 Rutgers Core Facilities with ease! We want students to continue

@@ -15,9 +15,11 @@ function CarouselLogin() {
             src={bitcoin}
             alt="First slide"
           />
-          <Carousel.Caption className="Centered-caption login-font-Display-Bold">
-            <p>RU Cores Wallet</p>
-            <p>Using Virtual Currency to schedule Research!</p>
+          <Carousel.Caption className="Centered-caption ">
+            <p className="login-font-Display-Caption-Bold">RU Cores Wallet</p>
+            <p className="login-font-card-Text">
+              Using Virtual Currency to schedule Research!
+            </p>
             <div style={{ minHeight: "110px" }}></div>
             {/* <Button variant="primary" size="lg" href="#">
               Sign up today
@@ -30,9 +32,13 @@ function CarouselLogin() {
             src={LabWorkers}
             alt="Second slide"
           />
-          <Carousel.Caption className="Centered-caption login-font-Display-Bold">
-            <p>State of the art Research Facilities</p>
-            <p>Use Rutgers RU Coins to use Professional Equipment</p>
+          <Carousel.Caption className="Centered-caption ">
+            <p className="login-font-Display-Caption-Bold">
+              State of the art Research Facilities{" "}
+            </p>
+            <p className="login-font-card-Text">
+              Use Rutgers RU Coins to use Professional Equipment
+            </p>
             <div style={{ minHeight: "110px" }}></div>
             {/* <Button variant="primary" size="lg" href="#">
               Learn more
@@ -45,9 +51,13 @@ function CarouselLogin() {
             src={rutgersHealth}
             alt="Third slide"
           />
-          <Carousel.Caption className="Centered-caption login-font-Display-Bold">
-            <p>Open To Faculty and Graduates</p>
-            <p>Rutgers Research Facilites for our Members</p>
+          <Carousel.Caption className="Centered-caption">
+            <p className="login-font-Display-Caption-Bold">
+              Open To Faculty and Graduates
+            </p>
+            <p className="login-font-card-Text">
+              Rutgers Research Facilites for our Members
+            </p>
             <div style={{ minHeight: "110px" }}></div>
             {/* <Button variant="primary" size="lg" href="#">
               Browse gallery
