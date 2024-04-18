@@ -2,7 +2,7 @@ import React from "react";
 import Row from "react-bootstrap/Row";
 import image3 from "../assets/calendar.jpeg";
 import image2 from "../assets/newWallet.png";
-import image1 from "../assets/microscope.jpg";
+import image1 from "../assets/microscope.jpeg";
 import InfoColumn from "./infoColumn";
 
 function MultiColumnInfo() {
