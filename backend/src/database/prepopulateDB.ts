@@ -126,7 +126,7 @@ export const prepopulateDB = async () => {
   user.managedFacilities = Promise.resolve([facility, facility2, facility3]);
   user.sessions = Promise.resolve([session]);
   user.isProvider = true;
-  user.balance = 300;
+  user.balance = 1000;
 
   const user1 = new UserEntity();
   user1.firstName = "Harry";
@@ -144,7 +144,7 @@ export const prepopulateDB = async () => {
   //user1.managedFacilities = Promise.resolve([facility]);
   user1.sessions = Promise.resolve([session]);
   user1.isProvider = false;
-  user1.balance = 100;
+  user1.balance = 1000;
 
   const user2 = new UserEntity();
   user2.firstName = "George";
@@ -164,7 +164,7 @@ export const prepopulateDB = async () => {
   //user1.managedFacilities = Promise.resolve([facility]);
   user2.sessions = Promise.resolve([session]);
   user2.isProvider = false;
-  user2.balance = 300;
+  user2.balance = 1000;
 
   const user3 = new UserEntity();
   user3.firstName = "Kevin";
@@ -175,7 +175,7 @@ export const prepopulateDB = async () => {
   user3.salt = salt3;
   const hmac3 = crypto.createHmac("sha256", salt3);
   user3.hashedPassword = hmac3.update("password").digest("hex");
-  user3.roles = ["user", "provider"];
+  user3.roles = ["provider"];
   user3.isProvider = true;
   user3.bookings = Promise.resolve([chemBooking3, physBooking1, bioBooking2]);
   user3.managedFacilities = Promise.resolve([facility2]);
@@ -200,7 +200,7 @@ export const prepopulateDB = async () => {
   //user1.managedFacilities = Promise.resolve([facility]);
   user3.sessions = Promise.resolve([session]);
   user3.isProvider = false;
-  user3.balance = 300;
+  user3.balance = 1000;
 
   const user4 = new UserEntity();
   user4.firstName = "Carl";
@@ -217,8 +217,8 @@ export const prepopulateDB = async () => {
   //console.log("facility: ", facility);
   user4.managedFacilities = Promise.resolve([facility3]);
   user4.sessions = Promise.resolve([session]);
-  user4.isProvider = false;
-  user4.balance = 300;
+  user4.isProvider = true;
+  user4.balance = 1000;
 
   ///////////////// CHEMISTRY LAB /////////////////////
   const chemAvailability = new AvailabilityEntity();
@@ -387,30 +387,31 @@ export const prepopulateDB = async () => {
   //facility.providers = [user];
   facility.description = "A lab for chemistry experiments";
   facility.address = "123 Rutgers Way";
-  facility.balance = 0;
+  facility.balance = 100;
   facility.equipment = "Microscopes, Bunsen burners, test tubes, beakers, etc.";
 
   booking.startDateTime = chemAvailability.startTime;
   booking.endDateTime = chemAvailability.endTime;
   booking.user = Promise.resolve(user);
   booking.availability = Promise.resolve(chemAvailability);
-  booking.cost = 20;
+  booking.cost = -120;
   booking.facilityId = 1;
 
   const chemBookingTrans = new TransactionEntity();
   chemBookingTrans.date = booking.startDateTime;
   chemBookingTrans.amountChanged = booking.cost;
   chemBookingTrans.user = user;
-  chemBookingTrans.facilityId = booking.facilityId;
+  //chemBookingTrans.facilityId = booking.facilityId;
   chemBookingTrans.facility = facility;
   chemBookingTrans.booking = booking;
   chemBookingTrans.eventDesription = "Chem Lab booking 1";
+  chemBookingTrans.duration = 180;
 
   chemBooking1.startDateTime = chemAvailability1.startTime;
   chemBooking1.endDateTime = chemAvailability1.endTime;
   chemBooking1.user = Promise.resolve(user1);
   chemBooking1.availability = Promise.resolve(chemAvailability1);
-  chemBooking1.cost = 20;
+  chemBooking1.cost = -120;
   chemBooking1.facilityId = 1;
 
   const chemBookingTrans1 = new TransactionEntity();
@@ -421,12 +422,13 @@ export const prepopulateDB = async () => {
   chemBookingTrans1.facility = facility;
   chemBookingTrans1.booking = chemBooking1;
   chemBookingTrans1.eventDesription = "Chem Lab booking 2";
+  chemBookingTrans1.duration = 180;
 
   chemBooking2.startDateTime = chemAvailability2.startTime;
   chemBooking2.endDateTime = dateAdd(chemAvailability2.endTime, "hour", -1.5);
   chemBooking2.user = Promise.resolve(user2);
   chemBooking2.availability = Promise.resolve(chemAvailability2);
-  chemBooking2.cost = 10;
+  chemBooking2.cost = -60;
   chemBooking2.facilityId = 1;
 
   const chemBookingTrans2 = new TransactionEntity();
@@ -437,12 +439,13 @@ export const prepopulateDB = async () => {
   chemBookingTrans2.facility = facility;
   chemBookingTrans2.booking = chemBooking2;
   chemBookingTrans2.eventDesription = "Chem Lab booking 3";
+  chemBookingTrans2.duration = 90;
 
   chemBooking3.startDateTime = chemAvailability3.startTime;
   chemBooking3.endDateTime = dateAdd(chemAvailability3.endTime, "hour", -1.5);
   chemBooking3.user = Promise.resolve(user3);
   chemBooking3.availability = Promise.resolve(chemAvailability3);
-  chemBooking3.cost = 10;
+  chemBooking3.cost = -60;
   chemBooking3.facilityId = 1;
 
   const chemBookingTrans3 = new TransactionEntity();
@@ -453,12 +456,13 @@ export const prepopulateDB = async () => {
   chemBookingTrans3.facility = facility;
   chemBookingTrans3.booking = chemBooking3;
   chemBookingTrans3.eventDesription = "Chem Lab booking 4";
+  chemBookingTrans3.duration = 90;
 
   chemBooking4.startDateTime = dateAdd(chemAvailability3.endTime, "hour", -1.5);
   chemBooking4.endDateTime = chemAvailability3.endTime;
   chemBooking4.user = Promise.resolve(user4);
   chemBooking4.availability = Promise.resolve(chemAvailability3);
-  chemBooking4.cost = 10;
+  chemBooking4.cost = -60;
   chemBooking4.facilityId = 1;
 
   const chemBookingTrans4 = new TransactionEntity();
@@ -469,12 +473,13 @@ export const prepopulateDB = async () => {
   chemBookingTrans4.facility = facility;
   chemBookingTrans4.booking = chemBooking4;
   chemBookingTrans4.eventDesription = "Chem Lab booking 5";
+  chemBookingTrans4.duration = 90;
 
   chemBooking5.startDateTime = chemAvailability7.startTime;
   chemBooking5.endDateTime = chemAvailability7.endTime;
   chemBooking5.user = Promise.resolve(user1);
   chemBooking5.availability = Promise.resolve(chemAvailability7);
-  chemBooking5.cost = 20;
+  chemBooking5.cost = -120;
   chemBooking5.facilityId = 1;
 
   const chemBookingTrans5 = new TransactionEntity();
@@ -485,12 +490,13 @@ export const prepopulateDB = async () => {
   chemBookingTrans5.facility = facility;
   chemBookingTrans5.booking = chemBooking5;
   chemBookingTrans5.eventDesription = "Chem Lab booking 5";
+  chemBookingTrans5.duration = 180;
 
   chemBooking6.startDateTime = chemAvailability5.startTime;
   chemBooking6.endDateTime = dateAdd(chemAvailability5.endTime, "hour", -1.5);
   chemBooking6.user = Promise.resolve(user2);
   chemBooking6.availability = Promise.resolve(chemAvailability5);
-  chemBooking6.cost = 10;
+  chemBooking6.cost = -60;
   chemBooking6.facilityId = 1;
 
   const chemBookingTrans6 = new TransactionEntity();
@@ -501,12 +507,13 @@ export const prepopulateDB = async () => {
   chemBookingTrans6.facility = facility;
   chemBookingTrans6.booking = chemBooking6;
   chemBookingTrans6.eventDesription = "Chem Lab booking 6";
+  chemBookingTrans6.duration = 90;
 
   chemBooking7.startDateTime = dateAdd(chemAvailability9.endTime, "hour", -1.5);
   chemBooking7.endDateTime = chemAvailability9.endTime;
   chemBooking7.user = Promise.resolve(user3);
   chemBooking7.availability = Promise.resolve(chemAvailability9);
-  chemBooking7.cost = 10;
+  chemBooking7.cost = -60;
   chemBooking7.facilityId = 1;
 
   const chemBookingTrans7 = new TransactionEntity();
@@ -517,12 +524,13 @@ export const prepopulateDB = async () => {
   chemBookingTrans7.facility = facility;
   chemBookingTrans7.booking = chemBooking7;
   chemBookingTrans7.eventDesription = "Chem Lab booking 7";
+  chemBookingTrans7.duration = 90;
 
   chemBooking8.startDateTime = chemAvailability13.startTime;
   chemBooking8.endDateTime = chemAvailability13.endTime;
   chemBooking8.user = Promise.resolve(user);
   chemBooking8.availability = Promise.resolve(chemAvailability13);
-  chemBooking8.cost = 20;
+  chemBooking8.cost = -120;
   chemBooking8.facilityId = 1;
 
   const chemBookingTrans8 = new TransactionEntity();
@@ -533,6 +541,7 @@ export const prepopulateDB = async () => {
   chemBookingTrans8.facility = facility;
   chemBookingTrans8.booking = chemBooking8;
   chemBookingTrans8.eventDesription = "Chem Lab booking 8";
+  chemBookingTrans8.duration = 180;
 
   ////////////// PHYSICS LAB ///////////////////
 
@@ -583,7 +592,7 @@ export const prepopulateDB = async () => {
     -5,
   );
   physAvailability5.startTime = dateAdd(physAvailability5.Date, "hour", 6);
-  physAvailability5.endTime = dateAdd(physAvailability5.startTime, "hour", 3);
+  physAvailability5.endTime = dateAdd(physAvailability5.startTime, "hour", 2);
   physAvailability5.facility = Promise.resolve(facility2);
 
   physAvailability5.price = 30;
@@ -591,7 +600,7 @@ export const prepopulateDB = async () => {
   const physAvailability6 = new AvailabilityEntity();
   physAvailability6.Date = dateAdd(date4Original, "day", -5);
   physAvailability6.startTime = dateAdd(physAvailability6.Date, "hour", 2);
-  physAvailability6.endTime = dateAdd(physAvailability6.startTime, "hour", 3);
+  physAvailability6.endTime = dateAdd(physAvailability6.startTime, "hour", 2);
   physAvailability6.facility = Promise.resolve(facility2);
 
   physAvailability6.price = 30;
@@ -603,7 +612,7 @@ export const prepopulateDB = async () => {
     3,
   );
   physAvailability7.startTime = dateAdd(physAvailability7.Date, "hour", 6);
-  physAvailability7.endTime = dateAdd(physAvailability7.startTime, "hour", 3);
+  physAvailability7.endTime = dateAdd(physAvailability7.startTime, "hour", 2);
   physAvailability7.facility = Promise.resolve(facility2);
 
   physAvailability7.price = 30;
@@ -615,7 +624,7 @@ export const prepopulateDB = async () => {
     -15,
   );
   physAvailability8.startTime = dateAdd(physAvailability8.Date, "hour", 6);
-  physAvailability8.endTime = dateAdd(physAvailability8.startTime, "hour", 3);
+  physAvailability8.endTime = dateAdd(physAvailability8.startTime, "hour", 2);
   physAvailability8.facility = Promise.resolve(facility2);
 
   physAvailability8.price = 30;
@@ -623,7 +632,7 @@ export const prepopulateDB = async () => {
   const physAvailability9 = new AvailabilityEntity();
   physAvailability9.Date = dateAdd(date4Original, "day", 12);
   physAvailability9.startTime = dateAdd(physAvailability9.Date, "hour", 6);
-  physAvailability9.endTime = dateAdd(physAvailability9.startTime, "hour", 3);
+  physAvailability9.endTime = dateAdd(physAvailability9.startTime, "hour", 2);
   physAvailability9.facility = Promise.resolve(facility2);
 
   physAvailability9.price = 30;
@@ -635,7 +644,7 @@ export const prepopulateDB = async () => {
     4,
   );
   physAvailability10.startTime = dateAdd(physAvailability10.Date, "hour", 6);
-  physAvailability10.endTime = dateAdd(physAvailability10.startTime, "hour", 3);
+  physAvailability10.endTime = dateAdd(physAvailability10.startTime, "hour", 2);
   physAvailability10.facility = Promise.resolve(facility2);
 
   physAvailability10.price = 30;
@@ -647,7 +656,7 @@ export const prepopulateDB = async () => {
     -6,
   );
   physAvailability11.startTime = dateAdd(physAvailability11.Date, "hour", 5);
-  physAvailability11.endTime = dateAdd(physAvailability11.startTime, "hour", 3);
+  physAvailability11.endTime = dateAdd(physAvailability11.startTime, "hour", 2);
   physAvailability11.facility = Promise.resolve(facility2);
 
   physAvailability11.price = 30;
@@ -659,7 +668,7 @@ export const prepopulateDB = async () => {
     6,
   );
   physAvailability12.startTime = dateAdd(physAvailability12.Date, "hour", 5);
-  physAvailability12.endTime = dateAdd(physAvailability12.startTime, "hour", 3);
+  physAvailability12.endTime = dateAdd(physAvailability12.startTime, "hour", 2);
   physAvailability12.facility = Promise.resolve(facility2);
 
   physAvailability12.price = 30;
@@ -671,7 +680,7 @@ export const prepopulateDB = async () => {
     8,
   );
   physAvailability13.startTime = dateAdd(physAvailability13.Date, "hour", 2);
-  physAvailability13.endTime = dateAdd(physAvailability13.startTime, "hour", 3);
+  physAvailability13.endTime = dateAdd(physAvailability13.startTime, "hour", 2);
   physAvailability13.facility = Promise.resolve(facility2);
 
   physAvailability13.price = 30;
@@ -683,7 +692,7 @@ export const prepopulateDB = async () => {
     -2,
   );
   physAvailability14.startTime = dateAdd(physAvailability14.Date, "hour", 1);
-  physAvailability14.endTime = dateAdd(physAvailability14.startTime, "hour", 3);
+  physAvailability14.endTime = dateAdd(physAvailability14.startTime, "hour", 2);
   physAvailability14.facility = Promise.resolve(facility2);
 
   physAvailability14.price = 30;
@@ -695,7 +704,7 @@ export const prepopulateDB = async () => {
     1,
   );
   physAvailability15.startTime = dateAdd(physAvailability15.Date, "hour", 6);
-  physAvailability15.endTime = dateAdd(physAvailability15.startTime, "hour", 3);
+  physAvailability15.endTime = dateAdd(physAvailability15.startTime, "hour", 2);
   physAvailability15.facility = Promise.resolve(facility2);
 
   physAvailability15.price = 30;
@@ -729,7 +738,7 @@ export const prepopulateDB = async () => {
   physBooking.endDateTime = physAvailability.endTime;
   physBooking.user = Promise.resolve(user3);
   physBooking.availability = Promise.resolve(physAvailability);
-  physBooking.cost = 30;
+  physBooking.cost = -120;
   physBooking.facilityId = 2;
 
   const physBookingTrans = new TransactionEntity();
@@ -740,12 +749,13 @@ export const prepopulateDB = async () => {
   physBookingTrans.facility = facility2;
   physBookingTrans.booking = physBooking;
   physBookingTrans.eventDesription = "Physics Lab booking 1";
+  physBookingTrans.duration = 120;
 
   physBooking1.startDateTime = physAvailability1.startTime;
   physBooking1.endDateTime = physAvailability1.endTime;
   physBooking1.user = Promise.resolve(user2);
   physBooking1.availability = Promise.resolve(physAvailability1);
-  physBooking1.cost = 30;
+  physBooking1.cost = -120;
   physBooking1.facilityId = 2;
 
   const physBookingTrans1 = new TransactionEntity();
@@ -756,12 +766,13 @@ export const prepopulateDB = async () => {
   physBookingTrans1.facility = facility2;
   physBookingTrans1.booking = physBooking1;
   physBookingTrans1.eventDesription = "Physics Lab booking 2";
+  physBookingTrans1.duration = 120;
 
   physBooking2.startDateTime = physAvailability4.startTime;
   physBooking2.endDateTime = dateAdd(physAvailability4.endTime, "hour", -1);
   physBooking2.user = Promise.resolve(user1);
   physBooking2.availability = Promise.resolve(physAvailability4);
-  physBooking2.cost = 15;
+  physBooking2.cost = -60;
   physBooking2.facilityId = 2;
 
   const physBookingTrans2 = new TransactionEntity();
@@ -772,12 +783,13 @@ export const prepopulateDB = async () => {
   physBookingTrans2.facility = facility2;
   physBookingTrans2.booking = physBooking2;
   physBookingTrans2.eventDesription = "Physics Lab booking 3";
+  physBookingTrans2.duration = 60;
 
   physBooking3.startDateTime = dateAdd(physAvailability4.endTime, "hour", -1);
   physBooking3.endDateTime = physAvailability4.endTime;
   physBooking3.user = Promise.resolve(user);
   physBooking3.availability = Promise.resolve(physAvailability4);
-  physBooking3.cost = 15;
+  physBooking3.cost = -60;
   physBooking3.facilityId = 2;
 
   const physBookingTrans3 = new TransactionEntity();
@@ -788,12 +800,13 @@ export const prepopulateDB = async () => {
   physBookingTrans3.facility = facility2;
   physBookingTrans3.booking = physBooking3;
   physBookingTrans3.eventDesription = "Physics Lab booking 4";
+  physBookingTrans3.duration = 60;
 
   physBooking4.startDateTime = physAvailability7.startTime;
   physBooking4.endDateTime = physAvailability7.endTime;
   physBooking4.user = Promise.resolve(user3);
   physBooking4.availability = Promise.resolve(physAvailability7);
-  physBooking4.cost = 30;
+  physBooking4.cost = -120;
   physBooking4.facilityId = 2;
 
   const physBookingTrans4 = new TransactionEntity();
@@ -804,12 +817,13 @@ export const prepopulateDB = async () => {
   physBookingTrans4.facility = facility2;
   physBookingTrans4.booking = physBooking4;
   physBookingTrans4.eventDesription = "Physics Lab booking 5";
+  physBookingTrans4.duration = 120;
 
   physBooking5.startDateTime = physAvailability9.startTime;
   physBooking5.endDateTime = physAvailability9.endTime;
   physBooking5.user = Promise.resolve(user2);
   physBooking5.availability = Promise.resolve(physAvailability9);
-  physBooking5.cost = 30;
+  physBooking5.cost = -120;
   physBooking5.facilityId = 2;
 
   const physBookingTrans5 = new TransactionEntity();
@@ -820,12 +834,13 @@ export const prepopulateDB = async () => {
   physBookingTrans5.facility = facility2;
   physBookingTrans5.booking = physBooking5;
   physBookingTrans5.eventDesription = "Physics Lab booking 6";
+  physBookingTrans5.duration = 120;
 
   physBooking6.startDateTime = physAvailability12.startTime;
   physBooking6.endDateTime = dateAdd(physAvailability12.endTime, "hour", -1);
   physBooking6.user = Promise.resolve(user1);
   physBooking6.availability = Promise.resolve(physAvailability12);
-  physBooking6.cost = 15;
+  physBooking6.cost = -60;
   physBooking6.facilityId = 2;
 
   const physBookingTrans6 = new TransactionEntity();
@@ -836,12 +851,13 @@ export const prepopulateDB = async () => {
   physBookingTrans6.facility = facility2;
   physBookingTrans6.booking = physBooking6;
   physBookingTrans6.eventDesription = "Physics Lab booking 7";
+  physBookingTrans6.duration = 60;
 
   physBooking7.startDateTime = dateAdd(physAvailability14.endTime, "hour", -1);
   physBooking7.endDateTime = physAvailability14.endTime;
   physBooking7.user = Promise.resolve(user);
   physBooking7.availability = Promise.resolve(physAvailability14);
-  physBooking7.cost = 15;
+  physBooking7.cost = -60;
   physBooking7.facilityId = 2;
 
   const physBookingTrans7 = new TransactionEntity();
@@ -852,12 +868,13 @@ export const prepopulateDB = async () => {
   physBookingTrans7.facility = facility2;
   physBookingTrans7.booking = physBooking7;
   physBookingTrans7.eventDesription = "Physics Lab booking 8";
+  physBookingTrans7.duration = 60;
 
   physBooking8.startDateTime = physAvailability11.startTime;
   physBooking8.endDateTime = physAvailability11.endTime;
   physBooking8.user = Promise.resolve(user2);
   physBooking8.availability = Promise.resolve(physAvailability11);
-  physBooking8.cost = 30;
+  physBooking8.cost = -120;
   physBooking8.facilityId = 2;
 
   const physBookingTrans8 = new TransactionEntity();
@@ -868,12 +885,13 @@ export const prepopulateDB = async () => {
   physBookingTrans8.facility = facility2;
   physBookingTrans8.booking = physBooking8;
   physBookingTrans8.eventDesription = "Physics Lab booking 9";
+  physBookingTrans8.duration = 120;
 
   physBooking9.startDateTime = physAvailability15.startTime;
   physBooking9.endDateTime = dateAdd(physAvailability15.endTime, "hour", -1);
   physBooking9.user = Promise.resolve(user1);
   physBooking9.availability = Promise.resolve(physAvailability15);
-  physBooking9.cost = 15;
+  physBooking9.cost = -60;
   physBooking9.facilityId = 2;
 
   const physBookingTrans9 = new TransactionEntity();
@@ -884,6 +902,7 @@ export const prepopulateDB = async () => {
   physBookingTrans9.facility = facility2;
   physBookingTrans9.booking = physBooking9;
   physBookingTrans9.eventDesription = "Physics Lab booking 10";
+  physBookingTrans9.duration = 60;
 
   //////////////BIOLOGY///////////////
 
@@ -893,7 +912,7 @@ export const prepopulateDB = async () => {
   bioAvailability.endTime = dateAdd(bioAvailability.startTime, "hour", 3);
   bioAvailability.facility = Promise.resolve(facility3);
   //physAvailability.bookings = Promise.resolve([physBooking]);
-  bioAvailability.price = 60;
+  bioAvailability.price = 30;
 
   const bioAvailability1 = new AvailabilityEntity();
   bioAvailability1.Date = dateAdd(date3Original, "week", 1);
@@ -901,7 +920,7 @@ export const prepopulateDB = async () => {
   bioAvailability1.endTime = dateAdd(bioAvailability1.startTime, "hour", 3);
   bioAvailability1.facility = Promise.resolve(facility3);
   //physAvailability.bookings = Promise.resolve([physBooking]);
-  bioAvailability1.price = 60;
+  bioAvailability1.price = 30;
 
   const bioAvailability2 = new AvailabilityEntity();
   bioAvailability2.Date = dateAdd(date3Original, "week", 2);
@@ -909,7 +928,7 @@ export const prepopulateDB = async () => {
   bioAvailability2.endTime = dateAdd(bioAvailability2.startTime, "hour", 3);
   bioAvailability2.facility = Promise.resolve(facility3);
   //physAvailability.bookings = Promise.resolve([physBooking]);
-  bioAvailability2.price = 60;
+  bioAvailability2.price = 30;
 
   const bioAvailability3 = new AvailabilityEntity();
   bioAvailability3.Date = dateAdd(date3Original, "week", 3);
@@ -917,7 +936,7 @@ export const prepopulateDB = async () => {
   bioAvailability3.endTime = dateAdd(bioAvailability3.startTime, "hour", 3);
   bioAvailability3.facility = Promise.resolve(facility3);
   //physAvailability.bookings = Promise.resolve([physBooking]);
-  bioAvailability3.price = 60;
+  bioAvailability3.price = 30;
 
   const bioAvailability4 = new AvailabilityEntity();
   bioAvailability4.Date = dateAdd(date3Original, "week", 4);
@@ -925,7 +944,7 @@ export const prepopulateDB = async () => {
   bioAvailability4.endTime = dateAdd(bioAvailability4.startTime, "hour", 3);
   bioAvailability4.facility = Promise.resolve(facility3);
   //physAvailability.bookings = Promise.resolve([physBooking]);
-  bioAvailability4.price = 60;
+  bioAvailability4.price = 30;
 
   const bioAvailability5 = new AvailabilityEntity();
   bioAvailability5.Date = dateAdd(
@@ -937,7 +956,7 @@ export const prepopulateDB = async () => {
   bioAvailability5.endTime = dateAdd(bioAvailability5.startTime, "hour", 3);
   bioAvailability5.facility = Promise.resolve(facility3);
 
-  bioAvailability5.price = 60;
+  bioAvailability5.price = 30;
 
   const bioAvailability6 = new AvailabilityEntity();
   bioAvailability6.Date = dateAdd(date4Original, "day", -25);
@@ -945,7 +964,7 @@ export const prepopulateDB = async () => {
   bioAvailability6.endTime = dateAdd(bioAvailability6.startTime, "hour", 3);
   bioAvailability6.facility = Promise.resolve(facility3);
 
-  bioAvailability6.price = 60;
+  bioAvailability6.price = 30;
 
   const bioAvailability7 = new AvailabilityEntity();
   bioAvailability7.Date = dateAdd(
@@ -957,7 +976,7 @@ export const prepopulateDB = async () => {
   bioAvailability7.endTime = dateAdd(bioAvailability7.startTime, "hour", 3);
   bioAvailability7.facility = Promise.resolve(facility3);
 
-  bioAvailability7.price = 60;
+  bioAvailability7.price = 30;
 
   const bioAvailability8 = new AvailabilityEntity();
   bioAvailability8.Date = dateAdd(
@@ -969,7 +988,7 @@ export const prepopulateDB = async () => {
   bioAvailability8.endTime = dateAdd(bioAvailability8.startTime, "hour", 3);
   bioAvailability8.facility = Promise.resolve(facility3);
 
-  bioAvailability8.price = 60;
+  bioAvailability8.price = 30;
 
   const bioAvailability9 = new AvailabilityEntity();
   bioAvailability9.Date = dateAdd(date4Original, "day", 17);
@@ -977,7 +996,7 @@ export const prepopulateDB = async () => {
   bioAvailability9.endTime = dateAdd(bioAvailability9.startTime, "hour", 3);
   bioAvailability9.facility = Promise.resolve(facility3);
 
-  bioAvailability9.price = 60;
+  bioAvailability9.price = 30;
 
   const bioAvailability10 = new AvailabilityEntity();
   bioAvailability10.Date = dateAdd(
@@ -989,7 +1008,7 @@ export const prepopulateDB = async () => {
   bioAvailability10.endTime = dateAdd(bioAvailability10.startTime, "hour", 3);
   bioAvailability10.facility = Promise.resolve(facility3);
 
-  bioAvailability10.price = 60;
+  bioAvailability10.price = 30;
 
   const bioAvailability11 = new AvailabilityEntity();
   bioAvailability11.Date = dateAdd(
@@ -1001,7 +1020,7 @@ export const prepopulateDB = async () => {
   bioAvailability11.endTime = dateAdd(bioAvailability11.startTime, "hour", 3);
   bioAvailability11.facility = Promise.resolve(facility3);
 
-  bioAvailability11.price = 60;
+  bioAvailability11.price = 30;
 
   const bioAvailability12 = new AvailabilityEntity();
   bioAvailability12.Date = dateAdd(
@@ -1013,7 +1032,7 @@ export const prepopulateDB = async () => {
   bioAvailability12.endTime = dateAdd(bioAvailability12.startTime, "hour", 3);
   bioAvailability12.facility = Promise.resolve(facility3);
 
-  bioAvailability12.price = 60;
+  bioAvailability12.price = 30;
 
   const bioAvailability13 = new AvailabilityEntity();
   bioAvailability13.Date = dateAdd(
@@ -1025,7 +1044,7 @@ export const prepopulateDB = async () => {
   bioAvailability13.endTime = dateAdd(bioAvailability13.startTime, "hour", 3);
   bioAvailability13.facility = Promise.resolve(facility3);
 
-  bioAvailability13.price = 60;
+  bioAvailability13.price = 30;
 
   const bioAvailability14 = new AvailabilityEntity();
   bioAvailability14.Date = dateAdd(
@@ -1037,7 +1056,7 @@ export const prepopulateDB = async () => {
   bioAvailability14.endTime = dateAdd(bioAvailability14.startTime, "hour", 3);
   bioAvailability14.facility = Promise.resolve(facility3);
 
-  bioAvailability14.price = 60;
+  bioAvailability14.price = 30;
 
   const bioAvailability15 = new AvailabilityEntity();
   bioAvailability15.Date = dateAdd(
@@ -1049,7 +1068,7 @@ export const prepopulateDB = async () => {
   bioAvailability15.endTime = dateAdd(bioAvailability15.startTime, "hour", 3);
   bioAvailability15.facility = Promise.resolve(facility3);
 
-  bioAvailability15.price = 60;
+  bioAvailability15.price = 30;
 
   facility3.name = "Biology Center";
   facility3.availabilities = Promise.resolve([
@@ -1073,14 +1092,14 @@ export const prepopulateDB = async () => {
   //facility.providers = [user];
   facility3.description = "A lab for biological research";
   facility3.address = "999 Rutgers Way";
-  facility3.balance = 150;
+  facility3.balance = 100;
   facility3.equipment = "Microscope, Test Tube, Thermometer, Centrifuge, etc.";
 
   bioBooking.startDateTime = bioAvailability3.startTime;
   bioBooking.endDateTime = dateAdd(bioAvailability3.endTime, "hour", -2);
   bioBooking.user = Promise.resolve(user1);
   bioBooking.availability = Promise.resolve(bioAvailability3);
-  bioBooking.cost = 20;
+  bioBooking.cost = -60;
   bioBooking.facilityId = 3;
 
   const bioBookingTrans = new TransactionEntity();
@@ -1091,12 +1110,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans.facility = facility3;
   bioBookingTrans.booking = bioBooking;
   bioBookingTrans.eventDesription = "Bio Lab booking 1";
+  bioBookingTrans.duration = 60;
 
   bioBooking1.startDateTime = dateAdd(bioAvailability3.startTime, "hour", -2);
   bioBooking1.endDateTime = dateAdd(bioAvailability3.endTime, "hour", -1);
   bioBooking1.user = Promise.resolve(user2);
   bioBooking1.availability = Promise.resolve(bioAvailability3);
-  bioBooking1.cost = 20;
+  bioBooking1.cost = -60;
   bioBooking1.facilityId = 3;
 
   const bioBookingTrans1 = new TransactionEntity();
@@ -1107,12 +1127,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans1.facility = facility3;
   bioBookingTrans1.booking = bioBooking1;
   bioBookingTrans1.eventDesription = "Bio Lab booking 2";
+  bioBookingTrans1.duration = 60;
 
   bioBooking2.startDateTime = dateAdd(bioAvailability3.startTime, "hour", -1);
   bioBooking2.endDateTime = bioAvailability3.endTime;
   bioBooking2.user = Promise.resolve(user3);
   bioBooking2.availability = Promise.resolve(bioAvailability3);
-  bioBooking2.cost = 20;
+  bioBooking2.cost = -60;
   bioBooking2.facilityId = 3;
 
   const bioBookingTrans2 = new TransactionEntity();
@@ -1123,12 +1144,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans2.facility = facility3;
   bioBookingTrans2.booking = bioBooking2;
   bioBookingTrans2.eventDesription = "Bio Lab booking 3";
+  bioBookingTrans.duration = 60;
 
   bioBooking3.startDateTime = bioAvailability1.startTime;
   bioBooking3.endDateTime = bioAvailability1.endTime;
   bioBooking3.user = Promise.resolve(user4);
   bioBooking3.availability = Promise.resolve(bioAvailability1);
-  bioBooking3.cost = 60;
+  bioBooking3.cost = -180;
   bioBooking3.facilityId = 3;
 
   const bioBookingTrans3 = new TransactionEntity();
@@ -1139,12 +1161,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans3.facility = facility3;
   bioBookingTrans3.booking = bioBooking3;
   bioBookingTrans3.eventDesription = "Bio Lab booking 3";
+  bioBookingTrans3.duration = 180;
 
   bioBooking4.startDateTime = bioAvailability4.startTime;
   bioBooking4.endDateTime = bioAvailability4.endTime;
   bioBooking4.user = Promise.resolve(user4);
   bioBooking4.availability = Promise.resolve(bioAvailability4);
-  bioBooking4.cost = 60;
+  bioBooking4.cost = -180;
   bioBooking4.facilityId = 3;
 
   const bioBookingTrans4 = new TransactionEntity();
@@ -1155,12 +1178,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans4.facility = facility3;
   bioBookingTrans4.booking = bioBooking4;
   bioBookingTrans4.eventDesription = "Bio Lab booking 4";
+  bioBookingTrans4.duration = 180;
 
   bioBooking5.startDateTime = bioAvailability7.startTime;
   bioBooking5.endDateTime = dateAdd(bioAvailability7.endTime, "hour", -2);
   bioBooking5.user = Promise.resolve(user1);
   bioBooking5.availability = Promise.resolve(bioAvailability7);
-  bioBooking5.cost = 20;
+  bioBooking5.cost = -60;
   bioBooking5.facilityId = 3;
 
   const bioBookingTrans5 = new TransactionEntity();
@@ -1171,12 +1195,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans5.facility = facility3;
   bioBookingTrans5.booking = bioBooking5;
   bioBookingTrans5.eventDesription = "Bio Lab booking 5";
+  bioBookingTrans5.duration = 60;
 
   bioBooking6.startDateTime = dateAdd(bioAvailability13.startTime, "hour", -1);
   bioBooking6.endDateTime = bioAvailability13.endTime;
   bioBooking6.user = Promise.resolve(user3);
   bioBooking6.availability = Promise.resolve(bioAvailability13);
-  bioBooking6.cost = 20;
+  bioBooking6.cost = -60;
   bioBooking6.facilityId = 3;
 
   const bioBookingTrans6 = new TransactionEntity();
@@ -1187,12 +1212,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans6.facility = facility3;
   bioBookingTrans6.booking = bioBooking6;
   bioBookingTrans6.eventDesription = "Bio Lab booking 6";
+  bioBookingTrans5.duration = 60;
 
   bioBooking7.startDateTime = bioAvailability9.startTime;
   bioBooking7.endDateTime = bioAvailability9.endTime;
   bioBooking7.user = Promise.resolve(user2);
   bioBooking7.availability = Promise.resolve(bioAvailability9);
-  bioBooking7.cost = 60;
+  bioBooking7.cost = -180;
   bioBooking7.facilityId = 3;
 
   const bioBookingTrans7 = new TransactionEntity();
@@ -1203,12 +1229,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans7.facility = facility3;
   bioBookingTrans7.booking = bioBooking7;
   bioBookingTrans7.eventDesription = "Bio Lab booking 7";
+  bioBookingTrans7.duration = 180;
 
   bioBooking8.startDateTime = dateAdd(bioAvailability12.startTime, "hour", -2);
   bioBooking8.endDateTime = dateAdd(bioAvailability12.endTime, "hour", -1);
   bioBooking8.user = Promise.resolve(user);
   bioBooking8.availability = Promise.resolve(bioAvailability12);
-  bioBooking8.cost = 20;
+  bioBooking8.cost = -60;
   bioBooking8.facilityId = 3;
 
   const bioBookingTrans8 = new TransactionEntity();
@@ -1219,12 +1246,13 @@ export const prepopulateDB = async () => {
   bioBookingTrans8.facility = facility3;
   bioBookingTrans8.booking = bioBooking8;
   bioBookingTrans8.eventDesription = "Bio Lab booking 8";
+  bioBookingTrans8.duration = 60;
 
   bioBooking9.startDateTime = bioAvailability14.startTime;
   bioBooking9.endDateTime = bioAvailability14.endTime;
   bioBooking9.user = Promise.resolve(user1);
   bioBooking9.availability = Promise.resolve(bioAvailability14);
-  bioBooking9.cost = 60;
+  bioBooking9.cost = -180;
   bioBooking9.facilityId = 3;
 
   const bioBookingTrans9 = new TransactionEntity();
@@ -1235,6 +1263,7 @@ export const prepopulateDB = async () => {
   bioBookingTrans9.facility = facility3;
   bioBookingTrans9.booking = bioBooking9;
   bioBookingTrans9.eventDesription = "Bio Lab booking 9";
+  bioBookingTrans9.duration = 180;
 
   await AppDataSource.manager.save(user);
   await AppDataSource.manager.save(user1);

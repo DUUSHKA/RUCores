@@ -51,7 +51,7 @@ function FacilityTransactionHistory(prop) {
         placement="right"
         delay={{ show: 250, hide: 400 }}
         overlay={
-          <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"} : ${transaction[1]?.eventDesription}`}</Tooltip>
+          <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged * -1} RU Coins - ${transaction[1]?.facility?.name || "Purchase"} : ${transaction[1]?.eventDesription}`}</Tooltip>
         }
       >
         <ListGroup.Item className="historyListItem">
