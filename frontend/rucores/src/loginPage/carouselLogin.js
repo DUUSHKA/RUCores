@@ -1,8 +1,8 @@
 import React from "react";
 import Carousel from "react-bootstrap/Carousel";
-import bitcoin from "../assets/RUCoinBannerImage.jpg";
 import LabWorkers from "../assets/labWork.jpg";
 import "../assets/Logo-Rutgers-University.jpg";
+import bitcoin from "../assets/RUCoinBannerImage.jpg";
 import rutgersHealth from "../assets/rutgersHealth.jpg";
 
 function CarouselLogin() {
@@ -34,7 +34,7 @@ function CarouselLogin() {
           />
           <Carousel.Caption className="Centered-caption ">
             <p className="login-font-Display-Caption-Bold">
-              State of the art Research Facilities{" "}
+              State of the Art Research Facilities{" "}
             </p>
             <p className="login-font-card-Text">
               Use Rutgers RU Coins to use Professional Equipment
