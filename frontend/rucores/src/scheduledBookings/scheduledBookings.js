@@ -27,7 +27,11 @@ function ScheduledBookings() {
     setError(false);
   };
 
-  const handleClose = () => setShowModals([]);
+  const handleClose = () => {
+    setError(false);
+    setSuccess(false);
+    setShowModals([]);
+  };
   const handleShow = (booking) => {
     setSelectedBooking(booking);
     setShowModals([booking.id]);
