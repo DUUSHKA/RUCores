@@ -348,7 +348,7 @@ function EditFacility() {
 
             {/* New availability price input */}
             <InputGroup className="mb-3">
-              <InputGroup.Text>Price</InputGroup.Text>
+              <InputGroup.Text>Price / Block (30 mins)</InputGroup.Text>
               <Form.Control
                 type="number"
                 name="price"
