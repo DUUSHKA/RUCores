@@ -29,7 +29,7 @@ function FacilityTransactionHistory(prop) {
     if (transactionData && transactionData.length > 0) {
       setTransactionHistory(
         transactionData.map((item) => [
-          `${item.transactionType} ${item.amountChanged} RU Coins ${new Date(
+          `${item.transactionType} ${-1 * item.amountChanged} RU Coins ${new Date(
             item.date,
           ).toLocaleString()}`,
           item,
@@ -51,7 +51,7 @@ function FacilityTransactionHistory(prop) {
         placement="right"
         delay={{ show: 250, hide: 400 }}
         overlay={
-          <Tooltip id="button-tooltip-2">{`${transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"} : ${transaction[1]?.eventDesription}`}</Tooltip>
+          <Tooltip id="button-tooltip-2">{`${-1 * transaction[1].amountChanged} RU Coins - ${transaction[1]?.facility?.name || "Purchase"} : ${transaction[1]?.eventDesription}`}</Tooltip>
         }
       >
         <ListGroup.Item className="historyListItem">
