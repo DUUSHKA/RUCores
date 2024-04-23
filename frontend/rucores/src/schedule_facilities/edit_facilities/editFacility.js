@@ -265,17 +265,6 @@ function EditFacility() {
               />
             </InputGroup>
 
-            {/* Facility balance input */}
-            <InputGroup className="mb-3">
-              <InputGroup.Text>Balance</InputGroup.Text>
-              <Form.Control
-                type="number"
-                name="balance"
-                value={facility.balance}
-                onChange={(e) => handleInputChange(e, setFacility)}
-              />
-            </InputGroup>
-
             {/* Update facility button */}
 
             <Button variant="primary" type="submit">
