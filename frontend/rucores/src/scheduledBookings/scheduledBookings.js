@@ -108,7 +108,7 @@ function ScheduledBookings() {
           onHide={handleClose}
         >
           <Modal.Header closeButton>
-            <Modal.Title>
+            <Modal.Title style={{ overflowWrap: "anywhere" }}>
               {selectedBooking.__availability__.__facility__
                 ? selectedBooking.__availability__.__facility__.name
                 : "Deleted"}
@@ -117,33 +117,33 @@ function ScheduledBookings() {
           <Modal.Body>
             <div>
               <h2>Current Booking Details</h2>
-              <p>
+              <p style={{ overflowWrap: "anywhere" }}>
                 <strong>Booking Start Date/Time:</strong>{" "}
                 {formatDate(selectedBooking.startDateTime)}
               </p>
-              <p>
+              <p style={{ overflowWrap: "anywhere" }}>
                 <strong>Booking End Date/Time:</strong>{" "}
                 {formatDate(selectedBooking.endDateTime)}
               </p>
-              <p>
+              <p style={{ overflowWrap: "anywhere" }}>
                 <strong>Booking Cost:</strong> {selectedBooking.cost}
               </p>
             </div>
             <div>
               <h2>Facility Details</h2>
-              <p>
+              <p style={{ overflowWrap: "anywhere" }}>
                 <strong>Facility Address:</strong>{" "}
                 {selectedBooking.__availability__.__facility__
                   ? selectedBooking.__availability__.__facility__.address
                   : "Loading"}
               </p>
-              <p>
+              <p style={{ overflowWrap: "anywhere" }}>
                 <strong>Facility Description:</strong>{" "}
                 {selectedBooking.__availability__.__facility__
                   ? selectedBooking.__availability__.__facility__.description
                   : "Loading"}
               </p>
-              <p>
+              <p style={{ overflowWrap: "anywhere" }}>
                 <strong>Facility Equipment:</strong>{" "}
                 {selectedBooking.__availability__.__facility__
                   ? selectedBooking.__availability__.__facility__.equipment

@@ -12,6 +12,7 @@
 
 .SelectSpacer{
     width:930px;
+    overflow-wrap:anywhere;
 }
 
 .walletName{

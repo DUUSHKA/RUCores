@@ -160,7 +160,7 @@ function FacilityInfo(prop) {
         dialogClassName="enlargeModal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>
+          <Modal.Title style={{ overflowWrap: "anywhere" }}>
             Create Booking for {prop.facilityDetails.name}
           </Modal.Title>
         </Modal.Header>
