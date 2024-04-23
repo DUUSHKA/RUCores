@@ -113,7 +113,9 @@ function WeeklyCard(props) {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{cardObj.cardTitle}</Modal.Title>
+          <Modal.Title style={{ overflowWrap: "anywhere" }}>
+            {cardObj.cardTitle}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
@@ -133,19 +135,19 @@ function WeeklyCard(props) {
           </div>
           <div>
             <h2>Facility Details</h2>
-            <p>
+            <p style={{ overflowWrap: "anywhere" }}>
               <strong>Facility Address:</strong>{" "}
               {booking
                 ? booking.__availability__.__facility__.address
                 : "Loading"}
             </p>
-            <p>
+            <p style={{ overflowWrap: "anywhere" }}>
               <strong>Facility Description:</strong>{" "}
               {booking
                 ? booking.__availability__.__facility__.description
                 : "Loading"}
             </p>
-            <p>
+            <p style={{ overflowWrap: "anywhere" }}>
               <strong>Facility Equipment:</strong>{" "}
               {booking
                 ? booking.__availability__.__facility__.equipment
