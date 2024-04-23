@@ -95,8 +95,13 @@ function WeeklyCard(props) {
       {/* <SuccessFailureAlert variant="danger" alertText="opened" show={error}></SuccessFailureAlert> */}
       <Card style={{ width: "100%" }}>
         <Card.Body>
-          <Card.Title>{cardObj.cardTitle}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">
+          <Card.Title style={{ overflowWrap: "anywhere" }}>
+            {cardObj.cardTitle}
+          </Card.Title>
+          <Card.Subtitle
+            className="mb-2 text-muted"
+            style={{ overflowWrap: "anywhere" }}
+          >
             {cardObj.subtitle}
           </Card.Subtitle>
           <Card.Text>{cardObj.description}</Card.Text>
