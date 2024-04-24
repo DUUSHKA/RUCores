@@ -68,7 +68,7 @@ function NavBarLogin({ onSectionClick }) {
       </header>
 
       {showModal && (
-        <Modal show={showModal} onHide={closeModal}>
+        <Modal show={showModal} onHide={closeModal} size="xl">
           <Modal.Header closeButton>
             <Modal.Title>Login to RUCores Wallet</Modal.Title>
           </Modal.Header>
