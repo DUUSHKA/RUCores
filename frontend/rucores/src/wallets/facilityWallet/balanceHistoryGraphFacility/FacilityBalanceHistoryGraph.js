@@ -13,9 +13,9 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { Line } from "react-chartjs-2";
+import BookingCalls from "../../../BookingCalls";
 import User from "../../../UserCalls";
 import "./balanceHistoryGraph.css";
-import BookingCalls from "../../../BookingCalls";
 function FacilityBalanceHistoryGraph(props) {
   /**
    * data values for graph (random, shown for loading)
@@ -140,7 +140,7 @@ function FacilityBalanceHistoryGraph(props) {
   useEffect(() => {
     if (facilityAnalytics) {
       setSpendingData(
-        facilityAnalytics.monthlyData.map((item) => item.totalBooked),
+        facilityAnalytics.monthlyData.map((item) => item.earnings),
       );
     }
   }, [facilityAnalytics]);
