@@ -105,6 +105,8 @@ export const prepopulateDB = async () => {
   const date3Original = new Date(2024, 4, 15, 12, 0, 0);
   const date4Original = new Date(2023, 3, 4, 12, 0, 0);
   const date5Original = new Date(2023, 9, 4, 12, 0, 0);
+  const date6Original = new Date(2024, 3, 24, 12, 0, 0);
+  const date7Original = new Date(2024, 3, 26, 12, 0, 0);
   // booking.bookingId = i;
   // facility.id = i;
   // availability.availabilityId = i;
@@ -120,7 +122,7 @@ export const prepopulateDB = async () => {
   const hmac = crypto.createHmac("sha256", salt);
   user.hashedPassword = hmac.update("password").digest("hex");
   user.roles = ["provider", "admin"];
-  user.bookings = Promise.resolve([booking, physBooking3]);
+  user.bookings = Promise.resolve([booking, chemBooking1, physBooking3]);
   //console.log("user: ", user);
   //console.log("facility: ", facility);
   user.managedFacilities = Promise.resolve([facility, facility2, facility3]);
@@ -138,7 +140,7 @@ export const prepopulateDB = async () => {
   const hmac1 = crypto.createHmac("sha256", salt1);
   user1.hashedPassword = hmac1.update("password").digest("hex");
   user1.roles = ["user"];
-  user1.bookings = Promise.resolve([chemBooking1, physBooking2, bioBooking]);
+  user1.bookings = Promise.resolve([physBooking2, bioBooking]);
   //console.log("user: ", user);
   //console.log("facility: ", facility);
   //user1.managedFacilities = Promise.resolve([facility]);
@@ -222,7 +224,7 @@ export const prepopulateDB = async () => {
 
   ///////////////// CHEMISTRY LAB /////////////////////
   const chemAvailability = new AvailabilityEntity();
-  chemAvailability.Date = date1Original;
+  chemAvailability.Date = date6Original;
   chemAvailability.startTime = dateAdd(chemAvailability.Date, "hour", 3);
   chemAvailability.endTime = dateAdd(chemAvailability.startTime, "hour", 3);
   chemAvailability.facility = Promise.resolve(facility);
@@ -230,7 +232,7 @@ export const prepopulateDB = async () => {
   chemAvailability.price = 20;
 
   const chemAvailability1 = new AvailabilityEntity();
-  chemAvailability1.Date = dateAdd(date1Original, "day", 1);
+  chemAvailability1.Date = dateAdd(date7Original, "day", 1);
   chemAvailability1.startTime = dateAdd(chemAvailability1.Date, "hour", 2);
   chemAvailability1.endTime = dateAdd(chemAvailability1.startTime, "hour", 3);
   chemAvailability1.facility = Promise.resolve(facility);
@@ -578,7 +580,7 @@ export const prepopulateDB = async () => {
   physAvailability3.price = 30;
 
   const physAvailability4 = new AvailabilityEntity();
-  physAvailability4.Date = date3Original;
+  physAvailability4.Date = date7Original;
   physAvailability4.startTime = dateAdd(physAvailability4.Date, "hour", 2);
   physAvailability4.endTime = dateAdd(physAvailability4.startTime, "hour", 2);
   physAvailability4.facility = Promise.resolve(facility2);
