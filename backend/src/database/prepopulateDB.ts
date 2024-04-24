@@ -394,12 +394,12 @@ export const prepopulateDB = async () => {
   booking.endDateTime = chemAvailability.endTime;
   booking.user = Promise.resolve(user);
   booking.availability = Promise.resolve(chemAvailability);
-  booking.cost = -120;
+  booking.cost = 120;
   booking.facilityId = 1;
 
   const chemBookingTrans = new TransactionEntity();
   chemBookingTrans.date = booking.startDateTime;
-  chemBookingTrans.amountChanged = booking.cost;
+  chemBookingTrans.amountChanged = -6 * booking.cost;
   chemBookingTrans.user = user;
   //chemBookingTrans.facilityId = booking.facilityId;
   chemBookingTrans.facility = facility;
@@ -411,12 +411,12 @@ export const prepopulateDB = async () => {
   chemBooking1.endDateTime = chemAvailability1.endTime;
   chemBooking1.user = Promise.resolve(user1);
   chemBooking1.availability = Promise.resolve(chemAvailability1);
-  chemBooking1.cost = -120;
+  chemBooking1.cost = 120;
   chemBooking1.facilityId = 1;
 
   const chemBookingTrans1 = new TransactionEntity();
   chemBookingTrans1.date = chemBooking1.startDateTime;
-  chemBookingTrans1.amountChanged = chemBooking1.cost;
+  chemBookingTrans1.amountChanged = -6 * chemBooking1.cost;
   chemBookingTrans1.user = user1;
   chemBookingTrans1.facilityId = chemBooking1.facilityId;
   chemBookingTrans1.facility = facility;
@@ -428,12 +428,12 @@ export const prepopulateDB = async () => {
   chemBooking2.endDateTime = dateAdd(chemAvailability2.endTime, "hour", -1.5);
   chemBooking2.user = Promise.resolve(user2);
   chemBooking2.availability = Promise.resolve(chemAvailability2);
-  chemBooking2.cost = -60;
+  chemBooking2.cost = 60;
   chemBooking2.facilityId = 1;
 
   const chemBookingTrans2 = new TransactionEntity();
   chemBookingTrans2.date = chemBooking2.startDateTime;
-  chemBookingTrans2.amountChanged = chemBooking2.cost;
+  chemBookingTrans2.amountChanged = -3 * chemBooking2.cost;
   chemBookingTrans2.user = user2;
   chemBookingTrans2.facilityId = chemBooking2.facilityId;
   chemBookingTrans2.facility = facility;
@@ -445,12 +445,12 @@ export const prepopulateDB = async () => {
   chemBooking3.endDateTime = dateAdd(chemAvailability3.endTime, "hour", -1.5);
   chemBooking3.user = Promise.resolve(user3);
   chemBooking3.availability = Promise.resolve(chemAvailability3);
-  chemBooking3.cost = -60;
+  chemBooking3.cost = 60;
   chemBooking3.facilityId = 1;
 
   const chemBookingTrans3 = new TransactionEntity();
   chemBookingTrans3.date = chemBooking3.startDateTime;
-  chemBookingTrans3.amountChanged = chemBooking3.cost;
+  chemBookingTrans3.amountChanged = -3 * chemBooking3.cost;
   chemBookingTrans3.user = user3;
   chemBookingTrans3.facilityId = chemBooking3.facilityId;
   chemBookingTrans3.facility = facility;
@@ -462,12 +462,12 @@ export const prepopulateDB = async () => {
   chemBooking4.endDateTime = chemAvailability3.endTime;
   chemBooking4.user = Promise.resolve(user4);
   chemBooking4.availability = Promise.resolve(chemAvailability3);
-  chemBooking4.cost = -60;
+  chemBooking4.cost = 60;
   chemBooking4.facilityId = 1;
 
   const chemBookingTrans4 = new TransactionEntity();
   chemBookingTrans4.date = chemBooking4.startDateTime;
-  chemBookingTrans4.amountChanged = chemBooking4.cost;
+  chemBookingTrans4.amountChanged = -3 * chemBooking4.cost;
   chemBookingTrans4.user = user4;
   chemBookingTrans4.facilityId = chemBooking4.facilityId;
   chemBookingTrans4.facility = facility;
@@ -479,12 +479,12 @@ export const prepopulateDB = async () => {
   chemBooking5.endDateTime = chemAvailability7.endTime;
   chemBooking5.user = Promise.resolve(user1);
   chemBooking5.availability = Promise.resolve(chemAvailability7);
-  chemBooking5.cost = -120;
+  chemBooking5.cost = 120;
   chemBooking5.facilityId = 1;
 
   const chemBookingTrans5 = new TransactionEntity();
   chemBookingTrans5.date = chemBooking5.startDateTime;
-  chemBookingTrans5.amountChanged = chemBooking5.cost;
+  chemBookingTrans5.amountChanged = -6 * chemBooking5.cost;
   chemBookingTrans5.user = user1;
   chemBookingTrans5.facilityId = chemBooking5.facilityId;
   chemBookingTrans5.facility = facility;
@@ -496,12 +496,12 @@ export const prepopulateDB = async () => {
   chemBooking6.endDateTime = dateAdd(chemAvailability5.endTime, "hour", -1.5);
   chemBooking6.user = Promise.resolve(user2);
   chemBooking6.availability = Promise.resolve(chemAvailability5);
-  chemBooking6.cost = -60;
+  chemBooking6.cost = 60;
   chemBooking6.facilityId = 1;
 
   const chemBookingTrans6 = new TransactionEntity();
   chemBookingTrans6.date = chemBooking6.startDateTime;
-  chemBookingTrans6.amountChanged = chemBooking6.cost;
+  chemBookingTrans6.amountChanged = -3 * chemBooking6.cost;
   chemBookingTrans6.user = user2;
   chemBookingTrans6.facilityId = chemBooking6.facilityId;
   chemBookingTrans6.facility = facility;
@@ -513,12 +513,12 @@ export const prepopulateDB = async () => {
   chemBooking7.endDateTime = chemAvailability9.endTime;
   chemBooking7.user = Promise.resolve(user3);
   chemBooking7.availability = Promise.resolve(chemAvailability9);
-  chemBooking7.cost = -60;
+  chemBooking7.cost = 60;
   chemBooking7.facilityId = 1;
 
   const chemBookingTrans7 = new TransactionEntity();
   chemBookingTrans7.date = chemBooking7.startDateTime;
-  chemBookingTrans7.amountChanged = chemBooking7.cost;
+  chemBookingTrans7.amountChanged = -3 * chemBooking7.cost;
   chemBookingTrans7.user = user3;
   chemBookingTrans7.facilityId = chemBooking7.facilityId;
   chemBookingTrans7.facility = facility;
@@ -530,12 +530,12 @@ export const prepopulateDB = async () => {
   chemBooking8.endDateTime = chemAvailability13.endTime;
   chemBooking8.user = Promise.resolve(user);
   chemBooking8.availability = Promise.resolve(chemAvailability13);
-  chemBooking8.cost = -120;
+  chemBooking8.cost = 120;
   chemBooking8.facilityId = 1;
 
   const chemBookingTrans8 = new TransactionEntity();
   chemBookingTrans8.date = chemBooking8.startDateTime;
-  chemBookingTrans8.amountChanged = chemBooking8.cost;
+  chemBookingTrans8.amountChanged = -6 * chemBooking8.cost;
   chemBookingTrans8.user = user;
   chemBookingTrans8.facilityId = chemBooking8.facilityId;
   chemBookingTrans8.facility = facility;
@@ -738,12 +738,12 @@ export const prepopulateDB = async () => {
   physBooking.endDateTime = physAvailability.endTime;
   physBooking.user = Promise.resolve(user3);
   physBooking.availability = Promise.resolve(physAvailability);
-  physBooking.cost = -120;
+  physBooking.cost = 120;
   physBooking.facilityId = 2;
 
   const physBookingTrans = new TransactionEntity();
   physBookingTrans.date = physBooking.startDateTime;
-  physBookingTrans.amountChanged = physBooking.cost;
+  physBookingTrans.amountChanged = -4 * physBooking.cost;
   physBookingTrans.user = user3;
   physBookingTrans.facilityId = physBooking.facilityId;
   physBookingTrans.facility = facility2;
@@ -755,12 +755,12 @@ export const prepopulateDB = async () => {
   physBooking1.endDateTime = physAvailability1.endTime;
   physBooking1.user = Promise.resolve(user2);
   physBooking1.availability = Promise.resolve(physAvailability1);
-  physBooking1.cost = -120;
+  physBooking1.cost = 120;
   physBooking1.facilityId = 2;
 
   const physBookingTrans1 = new TransactionEntity();
   physBookingTrans1.date = physBooking1.startDateTime;
-  physBookingTrans1.amountChanged = physBooking1.cost;
+  physBookingTrans1.amountChanged = -4 * physBooking1.cost;
   physBookingTrans1.user = user2;
   physBookingTrans1.facilityId = physBooking1.facilityId;
   physBookingTrans1.facility = facility2;
@@ -772,12 +772,12 @@ export const prepopulateDB = async () => {
   physBooking2.endDateTime = dateAdd(physAvailability4.endTime, "hour", -1);
   physBooking2.user = Promise.resolve(user1);
   physBooking2.availability = Promise.resolve(physAvailability4);
-  physBooking2.cost = -60;
+  physBooking2.cost = 60;
   physBooking2.facilityId = 2;
 
   const physBookingTrans2 = new TransactionEntity();
   physBookingTrans2.date = physBooking2.startDateTime;
-  physBookingTrans2.amountChanged = physBooking2.cost;
+  physBookingTrans2.amountChanged = -2 * physBooking2.cost;
   physBookingTrans2.user = user1;
   physBookingTrans2.facilityId = physBooking2.facilityId;
   physBookingTrans2.facility = facility2;
@@ -789,12 +789,12 @@ export const prepopulateDB = async () => {
   physBooking3.endDateTime = physAvailability4.endTime;
   physBooking3.user = Promise.resolve(user);
   physBooking3.availability = Promise.resolve(physAvailability4);
-  physBooking3.cost = -60;
+  physBooking3.cost = 60;
   physBooking3.facilityId = 2;
 
   const physBookingTrans3 = new TransactionEntity();
   physBookingTrans3.date = physBooking3.startDateTime;
-  physBookingTrans3.amountChanged = physBooking3.cost;
+  physBookingTrans3.amountChanged = -2 * physBooking3.cost;
   physBookingTrans3.user = user;
   physBookingTrans3.facilityId = physBooking3.facilityId;
   physBookingTrans3.facility = facility2;
@@ -806,12 +806,12 @@ export const prepopulateDB = async () => {
   physBooking4.endDateTime = physAvailability7.endTime;
   physBooking4.user = Promise.resolve(user3);
   physBooking4.availability = Promise.resolve(physAvailability7);
-  physBooking4.cost = -120;
+  physBooking4.cost = 120;
   physBooking4.facilityId = 2;
 
   const physBookingTrans4 = new TransactionEntity();
   physBookingTrans4.date = physBooking4.startDateTime;
-  physBookingTrans4.amountChanged = physBooking4.cost;
+  physBookingTrans4.amountChanged = -4 * physBooking4.cost;
   physBookingTrans4.user = user3;
   physBookingTrans4.facilityId = physBooking4.facilityId;
   physBookingTrans4.facility = facility2;
@@ -823,12 +823,12 @@ export const prepopulateDB = async () => {
   physBooking5.endDateTime = physAvailability9.endTime;
   physBooking5.user = Promise.resolve(user2);
   physBooking5.availability = Promise.resolve(physAvailability9);
-  physBooking5.cost = -120;
+  physBooking5.cost = 120;
   physBooking5.facilityId = 2;
 
   const physBookingTrans5 = new TransactionEntity();
   physBookingTrans5.date = physBooking5.startDateTime;
-  physBookingTrans5.amountChanged = physBooking5.cost;
+  physBookingTrans5.amountChanged = -4 * physBooking5.cost;
   physBookingTrans5.user = user2;
   physBookingTrans5.facilityId = physBooking5.facilityId;
   physBookingTrans5.facility = facility2;
@@ -840,12 +840,12 @@ export const prepopulateDB = async () => {
   physBooking6.endDateTime = dateAdd(physAvailability12.endTime, "hour", -1);
   physBooking6.user = Promise.resolve(user1);
   physBooking6.availability = Promise.resolve(physAvailability12);
-  physBooking6.cost = -60;
+  physBooking6.cost = 60;
   physBooking6.facilityId = 2;
 
   const physBookingTrans6 = new TransactionEntity();
   physBookingTrans6.date = physBooking6.startDateTime;
-  physBookingTrans6.amountChanged = physBooking6.cost;
+  physBookingTrans6.amountChanged = -2 * physBooking6.cost;
   physBookingTrans6.user = user1;
   physBookingTrans6.facilityId = physBooking6.facilityId;
   physBookingTrans6.facility = facility2;
@@ -857,12 +857,12 @@ export const prepopulateDB = async () => {
   physBooking7.endDateTime = physAvailability14.endTime;
   physBooking7.user = Promise.resolve(user);
   physBooking7.availability = Promise.resolve(physAvailability14);
-  physBooking7.cost = -60;
+  physBooking7.cost = 60;
   physBooking7.facilityId = 2;
 
   const physBookingTrans7 = new TransactionEntity();
   physBookingTrans7.date = physBooking7.startDateTime;
-  physBookingTrans7.amountChanged = physBooking7.cost;
+  physBookingTrans7.amountChanged = -2 * physBooking7.cost;
   physBookingTrans7.user = user;
   physBookingTrans7.facilityId = physBooking7.facilityId;
   physBookingTrans7.facility = facility2;
@@ -874,12 +874,12 @@ export const prepopulateDB = async () => {
   physBooking8.endDateTime = physAvailability11.endTime;
   physBooking8.user = Promise.resolve(user2);
   physBooking8.availability = Promise.resolve(physAvailability11);
-  physBooking8.cost = -120;
+  physBooking8.cost = 120;
   physBooking8.facilityId = 2;
 
   const physBookingTrans8 = new TransactionEntity();
   physBookingTrans8.date = physBooking8.startDateTime;
-  physBookingTrans8.amountChanged = physBooking8.cost;
+  physBookingTrans8.amountChanged = -4 * physBooking8.cost;
   physBookingTrans8.user = user2;
   physBookingTrans8.facilityId = physBooking8.facilityId;
   physBookingTrans8.facility = facility2;
@@ -891,12 +891,12 @@ export const prepopulateDB = async () => {
   physBooking9.endDateTime = dateAdd(physAvailability15.endTime, "hour", -1);
   physBooking9.user = Promise.resolve(user1);
   physBooking9.availability = Promise.resolve(physAvailability15);
-  physBooking9.cost = -60;
+  physBooking9.cost = 60;
   physBooking9.facilityId = 2;
 
   const physBookingTrans9 = new TransactionEntity();
   physBookingTrans9.date = physBooking9.startDateTime;
-  physBookingTrans9.amountChanged = physBooking9.cost;
+  physBookingTrans9.amountChanged = -2 * physBooking9.cost;
   physBookingTrans9.user = user1;
   physBookingTrans9.facilityId = physBooking9.facilityId;
   physBookingTrans9.facility = facility2;
@@ -1099,12 +1099,12 @@ export const prepopulateDB = async () => {
   bioBooking.endDateTime = dateAdd(bioAvailability3.endTime, "hour", -2);
   bioBooking.user = Promise.resolve(user1);
   bioBooking.availability = Promise.resolve(bioAvailability3);
-  bioBooking.cost = -60;
+  bioBooking.cost = 60;
   bioBooking.facilityId = 3;
 
   const bioBookingTrans = new TransactionEntity();
   bioBookingTrans.date = bioBooking.startDateTime;
-  bioBookingTrans.amountChanged = bioBooking.cost;
+  bioBookingTrans.amountChanged = -2 * bioBooking.cost;
   bioBookingTrans.user = user1;
   bioBookingTrans.facilityId = bioBooking.facilityId;
   bioBookingTrans.facility = facility3;
@@ -1116,12 +1116,12 @@ export const prepopulateDB = async () => {
   bioBooking1.endDateTime = dateAdd(bioAvailability3.endTime, "hour", -1);
   bioBooking1.user = Promise.resolve(user2);
   bioBooking1.availability = Promise.resolve(bioAvailability3);
-  bioBooking1.cost = -60;
+  bioBooking1.cost = 60;
   bioBooking1.facilityId = 3;
 
   const bioBookingTrans1 = new TransactionEntity();
   bioBookingTrans1.date = bioBooking1.startDateTime;
-  bioBookingTrans1.amountChanged = bioBooking1.cost;
+  bioBookingTrans1.amountChanged = -2 * bioBooking1.cost;
   bioBookingTrans1.user = user2;
   bioBookingTrans1.facilityId = bioBooking1.facilityId;
   bioBookingTrans1.facility = facility3;
@@ -1133,12 +1133,12 @@ export const prepopulateDB = async () => {
   bioBooking2.endDateTime = bioAvailability3.endTime;
   bioBooking2.user = Promise.resolve(user3);
   bioBooking2.availability = Promise.resolve(bioAvailability3);
-  bioBooking2.cost = -60;
+  bioBooking2.cost = 60;
   bioBooking2.facilityId = 3;
 
   const bioBookingTrans2 = new TransactionEntity();
   bioBookingTrans2.date = bioBooking2.startDateTime;
-  bioBookingTrans2.amountChanged = bioBooking2.cost;
+  bioBookingTrans2.amountChanged = -2 * bioBooking2.cost;
   bioBookingTrans2.user = user2;
   bioBookingTrans2.facilityId = bioBooking2.facilityId;
   bioBookingTrans2.facility = facility3;
@@ -1150,12 +1150,12 @@ export const prepopulateDB = async () => {
   bioBooking3.endDateTime = bioAvailability1.endTime;
   bioBooking3.user = Promise.resolve(user4);
   bioBooking3.availability = Promise.resolve(bioAvailability1);
-  bioBooking3.cost = -180;
+  bioBooking3.cost = 180;
   bioBooking3.facilityId = 3;
 
   const bioBookingTrans3 = new TransactionEntity();
   bioBookingTrans3.date = bioBooking3.startDateTime;
-  bioBookingTrans3.amountChanged = bioBooking3.cost;
+  bioBookingTrans3.amountChanged = -6 * bioBooking3.cost;
   bioBookingTrans3.user = user4;
   bioBookingTrans3.facilityId = bioBooking3.facilityId;
   bioBookingTrans3.facility = facility3;
@@ -1167,12 +1167,12 @@ export const prepopulateDB = async () => {
   bioBooking4.endDateTime = bioAvailability4.endTime;
   bioBooking4.user = Promise.resolve(user4);
   bioBooking4.availability = Promise.resolve(bioAvailability4);
-  bioBooking4.cost = -180;
+  bioBooking4.cost = 180;
   bioBooking4.facilityId = 3;
 
   const bioBookingTrans4 = new TransactionEntity();
   bioBookingTrans4.date = bioBooking4.startDateTime;
-  bioBookingTrans4.amountChanged = bioBooking4.cost;
+  bioBookingTrans4.amountChanged = -6 * bioBooking4.cost;
   bioBookingTrans4.user = user4;
   bioBookingTrans4.facilityId = bioBooking4.facilityId;
   bioBookingTrans4.facility = facility3;
@@ -1184,12 +1184,12 @@ export const prepopulateDB = async () => {
   bioBooking5.endDateTime = dateAdd(bioAvailability7.endTime, "hour", -2);
   bioBooking5.user = Promise.resolve(user1);
   bioBooking5.availability = Promise.resolve(bioAvailability7);
-  bioBooking5.cost = -60;
+  bioBooking5.cost = 60;
   bioBooking5.facilityId = 3;
 
   const bioBookingTrans5 = new TransactionEntity();
   bioBookingTrans5.date = bioBooking5.startDateTime;
-  bioBookingTrans5.amountChanged = bioBooking5.cost;
+  bioBookingTrans5.amountChanged = -2 * bioBooking5.cost;
   bioBookingTrans5.user = user1;
   bioBookingTrans5.facilityId = bioBooking5.facilityId;
   bioBookingTrans5.facility = facility3;
@@ -1201,12 +1201,12 @@ export const prepopulateDB = async () => {
   bioBooking6.endDateTime = bioAvailability13.endTime;
   bioBooking6.user = Promise.resolve(user3);
   bioBooking6.availability = Promise.resolve(bioAvailability13);
-  bioBooking6.cost = -60;
+  bioBooking6.cost = 60;
   bioBooking6.facilityId = 3;
 
   const bioBookingTrans6 = new TransactionEntity();
   bioBookingTrans6.date = bioBooking6.startDateTime;
-  bioBookingTrans6.amountChanged = bioBooking6.cost;
+  bioBookingTrans6.amountChanged = -2 * bioBooking6.cost;
   bioBookingTrans6.user = user3;
   bioBookingTrans6.facilityId = bioBooking6.facilityId;
   bioBookingTrans6.facility = facility3;
@@ -1218,12 +1218,12 @@ export const prepopulateDB = async () => {
   bioBooking7.endDateTime = bioAvailability9.endTime;
   bioBooking7.user = Promise.resolve(user2);
   bioBooking7.availability = Promise.resolve(bioAvailability9);
-  bioBooking7.cost = -180;
+  bioBooking7.cost = 180;
   bioBooking7.facilityId = 3;
 
   const bioBookingTrans7 = new TransactionEntity();
   bioBookingTrans7.date = bioBooking7.startDateTime;
-  bioBookingTrans7.amountChanged = bioBooking7.cost;
+  bioBookingTrans7.amountChanged = -6 * bioBooking7.cost;
   bioBookingTrans7.user = user2;
   bioBookingTrans7.facilityId = bioBooking7.facilityId;
   bioBookingTrans7.facility = facility3;
@@ -1235,12 +1235,12 @@ export const prepopulateDB = async () => {
   bioBooking8.endDateTime = dateAdd(bioAvailability12.endTime, "hour", -1);
   bioBooking8.user = Promise.resolve(user);
   bioBooking8.availability = Promise.resolve(bioAvailability12);
-  bioBooking8.cost = -60;
+  bioBooking8.cost = 60;
   bioBooking8.facilityId = 3;
 
   const bioBookingTrans8 = new TransactionEntity();
   bioBookingTrans8.date = bioBooking8.startDateTime;
-  bioBookingTrans8.amountChanged = bioBooking8.cost;
+  bioBookingTrans8.amountChanged = -2 * bioBooking8.cost;
   bioBookingTrans8.user = user;
   bioBookingTrans8.facilityId = bioBooking8.facilityId;
   bioBookingTrans8.facility = facility3;
@@ -1252,12 +1252,12 @@ export const prepopulateDB = async () => {
   bioBooking9.endDateTime = bioAvailability14.endTime;
   bioBooking9.user = Promise.resolve(user1);
   bioBooking9.availability = Promise.resolve(bioAvailability14);
-  bioBooking9.cost = -180;
+  bioBooking9.cost = 180;
   bioBooking9.facilityId = 3;
 
   const bioBookingTrans9 = new TransactionEntity();
   bioBookingTrans9.date = bioBooking9.startDateTime;
-  bioBookingTrans9.amountChanged = bioBooking9.cost;
+  bioBookingTrans9.amountChanged = -6 * bioBooking9.cost;
   bioBookingTrans9.user = user1;
   bioBookingTrans9.facilityId = bioBooking9.facilityId;
   bioBookingTrans9.facility = facility3;
